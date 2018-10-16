@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="main">
-        
+    <Grid x:Name="Start">
+        <Button x:Name="Start1" Content="Button" HorizontalAlignment="Left" Height="50" Margin="225,139,0,0" VerticalAlignment="Top" Width="338" Click="Start1_Click"/>
+
     </Grid>
 </Window>

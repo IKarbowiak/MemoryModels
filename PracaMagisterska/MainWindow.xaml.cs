@@ -24,5 +24,14 @@ namespace PracaMagisterska
         {
             InitializeComponent();
         }
+
+        private void Start1_Click(object sender, RoutedEventArgs e)
+        {
+            Model1 model1 = new Model1(20, 2, 3);
+            double[] re = model1.Flow(50);
+            Console.WriteLine(re[0]);
+            Console.WriteLine(re[1]);
+        }
     }
+
 }
