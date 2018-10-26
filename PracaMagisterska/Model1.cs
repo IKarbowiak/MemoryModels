@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace PracaMagisterska
 {
@@ -36,11 +37,23 @@ namespace PracaMagisterska
                 return res0;
             }
 
+            //var aTimer = new System.Timers.Timer(1000);
+
+            //aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
+            //aTimer.Interval = 1000;
+            //aTimer.Enabled = true;
+
             // The volume of liquid which flowed up
             double flowedVolume = this.input_surface * this.speed * (time - outFlowTime);
             double[] res = { outFlowTime, flowedVolume };
             return res;
         }
+
+        //public void OnTimedEvent(object source, ElapsedEventArgs e)
+        //{
+        //    Console.WriteLine("Ha");
+        //}
     }
 
     public class Model2 : Model

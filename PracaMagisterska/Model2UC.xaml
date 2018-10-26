@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="PracaMagisterska.Model2UC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PracaMagisterska"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Rectangle x:Name="RecInModel2UC" Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="0, 0, 167, 0" Width="50" Stroke="Black" VerticalAlignment="Stretch"/>
+        <Rectangle x:Name="RecMiddleModel2UC" Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="58, 0, 0, 0" Width="100" Stroke="Black" VerticalAlignment="Stretch"/>
+        <Rectangle x:Name="RecOutModel2UC" Fill="#FFF4F4F5" Stroke="Black" HorizontalAlignment="Stretch" Margin="0, 0,80,0" Height="30" Width="40" VerticalAlignment="Stretch"/>
+        <Grid x:Name="GridInModel2UC" Height="8" Margin="0, 0, 167, 0" Width="50">
+        </Grid>
+        <Grid x:Name="GridMiddleModel2UC" Height="8" Margin="0, 0, 167, 0" Width="50">
+        </Grid>
+        <Grid x:Name="GridOutputModel2UC" Height="8" Margin="58, 0, 0, 0" Width="100">
+        </Grid>
+        <Grid Height="30" Margin="0, 0, 80, 0" Width="40">
+        </Grid>
+    </Grid>
+</UserControl>

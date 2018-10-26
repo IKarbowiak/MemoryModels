@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Timers;
+using System.Threading;
 
 namespace PracaMagisterska
 {
@@ -20,9 +22,19 @@ namespace PracaMagisterska
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Rectangle[][] arrayModel1;
+        private Model1UC model1uc;
+
         public MainWindow()
         {
             InitializeComponent();
+
+
+            model1uc = new Model1UC();
+            Grid.SetColumn(model1uc, 1);
+            Grid.SetRow(model1uc, 1);
+            gridModel1Main.Children.Add(model1uc);
+
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
@@ -35,14 +47,18 @@ namespace PracaMagisterska
             double speed = validateRes[2];
             double time = validateRes[3];
 
+
             if ((neuronLength > 0 ) && ( denAxdiam >0) && (speed > 0))
             {
-
-
-                Model1 model1 = new Model1(neuronLength, denAxdiam, speed);
-                double[] re = model1.Flow(time);
-                M1TimeBlock.Text = re[0].ToString("0.##");
-                M1VolumeBlock.Text = re[1].ToString("0.##");
+                model1uc.length = neuronLength;
+                double[] re1 = model1uc.Flow(20);
+                M1TimeBlock.Text = re1[0].ToString("0.##");
+                M1VolumeBlock.Text = re1[1].ToString("0.##");
+                //Model1b model1b = new Model1b(neuronLength, denAxdiam, speed, arrayModel1);
+                //double[] re = model1b.Flow(time);
+                //Thread.Sleep(3000);
+                //M1TimeBlock.Text = re[0].ToString("0.##");
+                //M1VolumeBlock.Text = re[1].ToString("0.##");
 
                 Model2 model2 = new Model2(neuronLength, denAxdiam, speed);
                 double[] re2 = model2.Flow(time);
@@ -53,6 +69,8 @@ namespace PracaMagisterska
                 double[] re3 = model3.Flow(time);
                 M3TimeBlock.Text = re3[0].ToString("0.##");
                 M3VolumeBlock.Text = re3[1].ToString("0.##");
+
+
 
             }
 
@@ -132,8 +150,15 @@ namespace PracaMagisterska
 
         }
 
-    }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 myWindow = new Window1();
 
+            myWindow.ShowDialog();
+
+            //MessageBox.Show(myWindow.tbReturn.Text);
+        }
+    }
 
 
 }
