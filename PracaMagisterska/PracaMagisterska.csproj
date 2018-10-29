@@ -54,15 +54,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Axon.xaml.cs">
+      <DependentUpon>Axon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dendrite.xaml.cs">
+      <DependentUpon>Dendrite.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model1UC.xaml.cs">
       <DependentUpon>Model1UC.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model2UC.xaml.cs">
       <DependentUpon>Model2UC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model3UC.xaml.cs">
+      <DependentUpon>Model3UC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Neuron1.xaml.cs">
+      <DependentUpon>Neuron1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Soma.xaml.cs">
+      <DependentUpon>Soma.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
+    <Page Include="Axon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dendrite.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -81,6 +104,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model2UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Model3UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Neuron1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Soma.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

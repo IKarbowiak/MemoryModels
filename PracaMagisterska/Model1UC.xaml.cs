@@ -17,24 +17,12 @@ using System.Threading;
 
 namespace PracaMagisterska
 {
-    public static class ExtensionMethods
-    {
-        private static Action EmptyDelegate = delegate () { };
-
-
-        public static void Refresh(this UIElement uiElement)
-
-        {
-            uiElement.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, EmptyDelegate);
-        }
-    }
 
     /// <summary>
     /// Interaction logic for Model1UC.xaml
     /// </summary>
     public partial class Model1UC : UserControl
     {
-        public Rectangle[][] arrayModel1;
         public double length { get; set; }
         public double diameter { get; set; }
         public double speed { get; set; }
@@ -175,6 +163,7 @@ namespace PracaMagisterska
 
         public void fillfunc(object sender, EventArgs e, double time)
         {
+            Console.WriteLine("I am in fill");
             if (!unload) {
                 int colToFill = countColumns + colToFilAfter1s;
 

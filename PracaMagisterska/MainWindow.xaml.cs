@@ -20,10 +20,27 @@ namespace PracaMagisterska
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    public static class ExtensionMethods
+    {
+        private static Action EmptyDelegate = delegate () { };
+
+
+        public static void Refresh(this UIElement uiElement)
+
+        {
+            uiElement.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, EmptyDelegate);
+        }
+    }
+
+
     public partial class MainWindow : Window
     {
-        private Rectangle[][] arrayModel1;
         private Model1UC model1uc;
+        //private Model2UC model2uc;
+        private Model3UC model3uc;
+        private Dendrite dendrite;
+        private Soma soma;
+        private Axon axon;
 
         public MainWindow()
         {
@@ -34,6 +51,36 @@ namespace PracaMagisterska
             Grid.SetColumn(model1uc, 1);
             Grid.SetRow(model1uc, 1);
             gridModel1Main.Children.Add(model1uc);
+
+            dendrite = new Dendrite();
+            dendrite.HorizontalAlignment = HorizontalAlignment.Left;
+            Grid.SetColumn(dendrite, 1);
+            Grid.SetRow(dendrite, 1);
+            gridModel2Main.Children.Add(dendrite);
+
+            axon = new Axon();
+            axon.HorizontalAlignment = HorizontalAlignment.Right;
+            //soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
+            Grid.SetColumn(axon, 1);
+            Grid.SetRow(axon, 1);
+            gridModel2Main.Children.Add(axon);
+
+            soma = new Soma();
+            soma.HorizontalAlignment = HorizontalAlignment.Center;
+            soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
+            Grid.SetColumn(soma, 1);
+            Grid.SetRow(soma, 1);
+            gridModel2Main.Children.Add(soma);
+
+            //model2uc = new Model2UC();
+            //Grid.SetColumn(model2uc, 1);
+            //Grid.SetRow(model2uc, 1);
+            //gridModel2Main.Children.Add(model2uc);
+
+            model3uc = new Model3UC();
+            Grid.SetColumn(model3uc, 1);
+            Grid.SetRow(model3uc, 1);
+            gridModel3Main.Children.Add(model3uc);
 
         }
 
@@ -54,21 +101,30 @@ namespace PracaMagisterska
                 double[] re1 = model1uc.Flow(20);
                 M1TimeBlock.Text = re1[0].ToString("0.##");
                 M1VolumeBlock.Text = re1[1].ToString("0.##");
+
+                dendrite.length = (double)neuronLength;
+                double[] re2 = dendrite.flow((double)time, speed);
+
+                double[] res3 = soma.flow((double)time, speed);
+                double[] res4 = axon.flow((double)time, speed);
+
+                //model2uc.length = neuronLength;
+                //double[] re2 = model2uc.Flow(time);
                 //Model1b model1b = new Model1b(neuronLength, denAxdiam, speed, arrayModel1);
                 //double[] re = model1b.Flow(time);
                 //Thread.Sleep(3000);
                 //M1TimeBlock.Text = re[0].ToString("0.##");
                 //M1VolumeBlock.Text = re[1].ToString("0.##");
 
-                Model2 model2 = new Model2(neuronLength, denAxdiam, speed);
-                double[] re2 = model2.Flow(time);
-                M2TimeBlock.Text = re2[0].ToString("0.##");
-                M2VolumeBlock.Text = re2[1].ToString("0.##");
+                //Model2 model2 = new Model2(neuronLength, denAxdiam, speed);
+                //double[] re2 = model2.Flow(time);
+                //M2TimeBlock.Text = re2[0].ToString("0.##");
+                //M2VolumeBlock.Text = re2[1].ToString("0.##");
 
-                Model3 model3 = new Model3(neuronLength, denAxdiam, speed);
-                double[] re3 = model3.Flow(time);
-                M3TimeBlock.Text = re3[0].ToString("0.##");
-                M3VolumeBlock.Text = re3[1].ToString("0.##");
+                //Model3 model3 = new Model3(neuronLength, denAxdiam, speed);
+                //double[] re3 = model3.Flow(time);
+                //M3TimeBlock.Text = re3[0].ToString("0.##");
+                //M3VolumeBlock.Text = re3[1].ToString("0.##");
 
 
 
