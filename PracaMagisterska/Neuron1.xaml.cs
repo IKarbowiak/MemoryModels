@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace PracaMagisterska
 {
@@ -24,29 +25,53 @@ namespace PracaMagisterska
         private Dendrite dendrite;
         private Soma soma;
         private Axon axon;
+        private System.Windows.Threading.DispatcherTimer timer;
 
         public Neuron1()
         {
             InitializeComponent();
-            dendrite = new Dendrite();
+            dendrite = new Dendrite(false);
             dendrite.HorizontalAlignment = HorizontalAlignment.Left;
             Grid.SetColumn(dendrite, 1);
             Grid.SetRow(dendrite, 1);
             neuronGrid.Children.Add(dendrite);
 
-            axon = new Axon();
+            axon = new Axon(false);
             axon.HorizontalAlignment = HorizontalAlignment.Right;
-            //soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
             Grid.SetColumn(axon, 1);
             Grid.SetRow(axon, 1);
             neuronGrid.Children.Add(axon);
 
-            soma = new Soma();
+            soma = new Soma(false);
             soma.HorizontalAlignment = HorizontalAlignment.Center;
             soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
             Grid.SetColumn(soma, 1);
             Grid.SetRow(soma, 1);
             neuronGrid.Children.Add(soma);
+        }
+
+        public void flow(double time, double speed)
+        {
+            // TODO: zrobic w kazdym fuckcje ktora zwraca tylko czas zeby tutaj moznabylo to zebrac i wrzucic potem do wyniko
+            // osobna fukncja do wywyolywania tego przepływu samego
+            timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += (sender, e) => { dendrite.newFlow(sender, e, 6, soma, axon); };
+            timer.Start();
+
+            System.Windows.Threading.DispatcherTimer timer2 = new System.Windows.Threading.DispatcherTimer();
+            timer2.Interval = TimeSpan.FromSeconds(40);
+            timer2.Tick += (sender, e) => { stopTimer(sender, e); };
+            timer2.Start();
+
+            //dendrite.flow(time, speed);
+            //soma.flow(time, speed, this.axon);
+        }
+
+        public void stopTimer(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Console.WriteLine("Stop timer in Neuron");
         }
     }
 }

@@ -41,6 +41,7 @@ namespace PracaMagisterska
         private Dendrite dendrite;
         private Soma soma;
         private Axon axon;
+        private Neuron1 neuron1;
 
         public MainWindow()
         {
@@ -52,30 +53,11 @@ namespace PracaMagisterska
             Grid.SetRow(model1uc, 1);
             gridModel1Main.Children.Add(model1uc);
 
-            dendrite = new Dendrite();
-            dendrite.HorizontalAlignment = HorizontalAlignment.Left;
-            Grid.SetColumn(dendrite, 1);
-            Grid.SetRow(dendrite, 1);
-            gridModel2Main.Children.Add(dendrite);
+            neuron1 = new Neuron1();
+            Grid.SetColumn(neuron1, 1);
+            Grid.SetRow(neuron1, 1);
+            gridModel2Main.Children.Add(neuron1);
 
-            axon = new Axon();
-            axon.HorizontalAlignment = HorizontalAlignment.Right;
-            //soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
-            Grid.SetColumn(axon, 1);
-            Grid.SetRow(axon, 1);
-            gridModel2Main.Children.Add(axon);
-
-            soma = new Soma();
-            soma.HorizontalAlignment = HorizontalAlignment.Center;
-            soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
-            Grid.SetColumn(soma, 1);
-            Grid.SetRow(soma, 1);
-            gridModel2Main.Children.Add(soma);
-
-            //model2uc = new Model2UC();
-            //Grid.SetColumn(model2uc, 1);
-            //Grid.SetRow(model2uc, 1);
-            //gridModel2Main.Children.Add(model2uc);
 
             model3uc = new Model3UC();
             Grid.SetColumn(model3uc, 1);
@@ -102,11 +84,7 @@ namespace PracaMagisterska
                 M1TimeBlock.Text = re1[0].ToString("0.##");
                 M1VolumeBlock.Text = re1[1].ToString("0.##");
 
-                dendrite.length = (double)neuronLength;
-                double[] re2 = dendrite.flow((double)time, speed);
-
-                double[] res3 = soma.flow((double)time, speed);
-                double[] res4 = axon.flow((double)time, speed);
+                neuron1.flow((double)time, speed);
 
                 //model2uc.length = neuronLength;
                 //double[] re2 = model2uc.Flow(time);

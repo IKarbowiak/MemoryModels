@@ -24,7 +24,9 @@ namespace PracaMagisterska
         public double length { get; set; }
         private double diameter { get; set; }
         private double surface { get; set; }
+        private bool dimension3D { get; set; }
         private double volume;
+        private double liquidVolume = 0;
         private Rectangle[][] recDenArray;
         private System.Windows.Threading.DispatcherTimer timer;
         private int columnsCounter = 0;
@@ -32,20 +34,83 @@ namespace PracaMagisterska
         private bool isFull = false;
 
 
-        public Dendrite()
+        public Dendrite(bool dim3d)
         {
             InitializeComponent();
             Console.WriteLine("Dendrite");
             this.length = 31;
             this.diameter = 0.4;
+            this.dimension3D = dim3d;
             this.calculateParameters();
             recDenArray = this.splitRecModel(denrdriteRec, dendriteGrid);
         }
 
         public void calculateParameters()
         {
-            this.surface = Math.Pow((this.diameter / 2), 2) * Math.PI;
-            this.volume = this.length * this.surface;
+            if (dimension3D)
+            {
+                this.surface = Math.Pow((this.diameter / 2), 2) * Math.PI;
+                this.volume = this.length * this.surface;
+            }
+            else
+            {
+                this.volume = this.length * this.diameter;
+            }
+
+        }
+
+        public void newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
+        {
+            
+            if (this.liquidVolume < this.volume && this.volume <= (this.liquidVolume + volumeIncrease))
+            {
+                this.liquidVolume += volumeIncrease;
+                int colToFillin1s = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
+                if (colToFillin1s > 0)
+                {
+                    this.fillRect(colToFillin1s);
+                }
+            }
+            else
+            {
+                double volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
+                this.liquidVolume = this.volume;
+                int colToFillin1s = (int)denrdriteRec.Width - this.columnsCounter;
+                this.fillRect(colToFillin1s);
+
+                soma.newFlow(volumeIncrease, axon);
+            }
+        }
+
+        private void fillRect(int collToFill)
+        {
+            Console.WriteLine("In fill den");
+            int colToFill = this.columnsCounter + collToFill;
+
+            if (colToFill > recDenArray[0].Length)
+            {
+                colToFill = recDenArray[0].Length;
+            }
+
+            for (int i = this.columnsCounter; i < (colToFill); i++)
+            {
+                for (int j = 0; j < recDenArray.Length; j++)
+                {
+                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.Blue;
+                    recDenArray[j][i].Refresh();
+
+                }
+            }
+
+            this.columnsCounter += collToFill;
+
+            if (this.columnsCounter >= recDenArray[0].Length)
+            {
+                Console.WriteLine("In stop dend");
+                isFull = true;
+                this.columnsCounter = recDenArray[0].Length - 1;
+
+            }
         }
 
         public double[] flow(double time, double speed)
