@@ -30,7 +30,6 @@ namespace PracaMagisterska
         private Rectangle[][] recDenArray;
         private System.Windows.Threading.DispatcherTimer timer;
         private int columnsCounter = 0;
-        private int seconds = 0;
         private bool isFull = false;
 
 
@@ -117,6 +116,26 @@ namespace PracaMagisterska
                 this.columnsCounter = recDenArray[0].Length - 1;
 
             }
+        }
+
+
+        public void unloadFunc()
+        {
+            Console.WriteLine("Dendirte unload");
+            Console.WriteLine(this.columnsCounter);
+
+            for (int i = this.recDenArray[0].Length - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < recDenArray.Length; j++)
+                {
+                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+                    recDenArray[j][i].Refresh();
+
+                }
+            }
+
+            this.columnsCounter = 0;
+
         }
 
 

@@ -28,9 +28,9 @@ namespace PracaMagisterska
         private double surface;
         private double volume;
         private double threshold;
+        private int rowToReachTeshold;
         private double liquidVolume = 0;
         private Rectangle[][] recSomaArray;
-        private System.Windows.Threading.DispatcherTimer timer;
         private int rowCounter = 0;
         private bool isFull = false;
         //public bool IsEnabled { get; set; }
@@ -60,6 +60,7 @@ namespace PracaMagisterska
             this.dendriteSurface = Math.Pow((this.dendriteDiameter / 2), 2) * Math.PI;
             Console.WriteLine("Dendite surface " + this.dendriteSurface);
             this.threshold = (this.diameter / 2 - this.axonDiameter / 2) * this.volume /  (this.diameter);
+            this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }
 
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
@@ -140,6 +141,25 @@ namespace PracaMagisterska
 
         }
 
+        public void unloadFunc()
+        {
+            Console.WriteLine("Soma unload");
+            Console.WriteLine(this.rowCounter);
+            Console.WriteLine(this.rowToReachTeshold);
+
+            //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
+            for (int j = 10; j < 20; j++)
+            {
+                for (int i = 0; i < recSomaArray[0].Length; i++)
+                {
+                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+                    recSomaArray[j][i].Refresh();
+
+                }
+            }
+
+
+        }
 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {

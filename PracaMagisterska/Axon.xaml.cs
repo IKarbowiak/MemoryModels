@@ -28,9 +28,7 @@ namespace PracaMagisterska
         private double volume;
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
-        private System.Windows.Threading.DispatcherTimer timer;
         private int columnsCounter = 0;
-        private int seconds = 0;
         private bool isFull = false;
 
         public Axon(bool dim3d)
@@ -118,10 +116,27 @@ namespace PracaMagisterska
             }
         }
 
-       
+        public void unloadFunc()
+       {
+            Console.WriteLine("Axon unload");
+            Console.WriteLine(this.columnsCounter);
 
 
-        public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
+            for (int i = this.recAxonArray[0].Length - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < recAxonArray.Length; j++)
+                {
+                    recAxonArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+                    recAxonArray[j][i].Refresh();
+            
+                 }
+             }
+
+            this.columnsCounter = 0;
+
+        }
+
+    public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
             int rowNumber = Convert.ToInt32(modelElement.Height);
             int columnNumber = Convert.ToInt32(modelElement.Width);
