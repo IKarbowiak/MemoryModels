@@ -74,11 +74,6 @@ namespace PracaMagisterska
             int columnNumber = Convert.ToInt32(model1UI.Width);
 
             Rectangle rec;
-            Console.WriteLine(rowNumber);
-            Console.WriteLine(columnNumber);
-
-            Console.WriteLine(gridModel1UC.Width);
-            Console.WriteLine(gridModel1UC.Height);
 
 
             recArray = new Rectangle[rowNumber][];
@@ -105,7 +100,6 @@ namespace PracaMagisterska
                         Name = "rec_" + i + "_" + j
                     };
 
-                    Console.WriteLine(rec.Name);
                     recArray[i][j] = rec;
 
                     gridModel1UC.Children.Add(rec);

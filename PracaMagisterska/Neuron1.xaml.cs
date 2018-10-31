@@ -26,6 +26,7 @@ namespace PracaMagisterska
         private Soma soma;
         private Axon axon;
         private System.Windows.Threading.DispatcherTimer timer;
+        private double outFlowVolume = 0;
 
         public Neuron1()
         {
@@ -52,11 +53,22 @@ namespace PracaMagisterska
 
         public void flow(double time, double speed)
         {
-            // TODO: zrobic w kazdym fuckcje ktora zwraca tylko czas zeby tutaj moznabylo to zebrac i wrzucic potem do wyniko
-            // osobna fukncja do wywyolywania tego przepływu samego
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (sender, e) => { dendrite.newFlow(sender, e, 6, soma, axon); };
+            timer.Tick += (sender, e) => {Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, 6, soma, axon);
+                if (dendriteRes.Item1)
+                {
+                    Console.WriteLine(dendriteRes);
+                    Console.WriteLine(dendriteRes.Item1);
+                    Console.WriteLine(dendriteRes.Item2);
+                    Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes.Item2);
+                    if (somaRes.Item1)
+                    {
+                        Console.WriteLine(somaRes);
+                        axon.newFlow(sender, e, somaRes.Item2);
+                    }
+                }
+            };
             timer.Start();
 
             System.Windows.Threading.DispatcherTimer timer2 = new System.Windows.Threading.DispatcherTimer();
@@ -71,6 +83,7 @@ namespace PracaMagisterska
         public void stopTimer(object sender, EventArgs e)
         {
             timer.Stop();
+            Console.WriteLine(axon.flowedOutVolume);
             Console.WriteLine("Stop timer in Neuron");
         }
     }

@@ -38,7 +38,7 @@ namespace PracaMagisterska
         {
             InitializeComponent();
             Console.WriteLine("Dendrite");
-            this.length = 31;
+            this.length = 1.5;
             this.diameter = 0.4;
             this.dimension3D = dim3d;
             this.calculateParameters();
@@ -59,10 +59,10 @@ namespace PracaMagisterska
 
         }
 
-        public void newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
         {
-            
-            if (this.liquidVolume < this.volume && this.volume <= (this.liquidVolume + volumeIncrease))
+            double volumeToPush = volumeIncrease;
+            if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
                 int colToFillin1s = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
@@ -70,16 +70,22 @@ namespace PracaMagisterska
                 {
                     this.fillRect(colToFillin1s);
                 }
+                this.isFull = false;
             }
             else
             {
-                double volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
+                volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
                 int colToFillin1s = (int)denrdriteRec.Width - this.columnsCounter;
                 this.fillRect(colToFillin1s);
 
-                soma.newFlow(volumeIncrease, axon);
+                //soma.newFlow(volumeIncrease, axon);
+
+                this.isFull = true;
             }
+            Console.WriteLine("In dendrite " + volumeToPush);
+            Tuple<bool, double> result = new Tuple<bool, double>(this.isFull, volumeToPush);
+            return result;
         }
 
         private void fillRect(int collToFill)
@@ -113,119 +119,6 @@ namespace PracaMagisterska
             }
         }
 
-        public double[] flow(double time, double speed)
-        {
-            double outFlowTime = this.volume / (this.surface * speed);
-            Console.WriteLine("Out flow time dendrite: " + outFlowTime);
-            if (outFlowTime >= time)
-            {
-                Console.WriteLine("Out flow bigger than time");
-                double[] res0 = { 0, 0 };
-                return res0;
-            }
-
-            int colToFillIn1s = (int)((double)denrdriteRec.Width / outFlowTime);
-
-            if (colToFillIn1s == 0)
-            {
-                colToFillIn1s = 1;
-            }
-
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (sender, e) => {fillFunc(sender, e, time, colToFillIn1s); };
-            timer.Start();
-
-            double flowedVolume = this.surface * speed * (time - outFlowTime);
-
-            double[] res = { outFlowTime, flowedVolume };
-            return res;
-        }
-
-        private void fillFunc(object sender, EventArgs e, double time, int colToFillIn1s)
-        {
-            if (!isFull)
-            {
-                Console.WriteLine("In fill den");
-                int colToFill = this.columnsCounter + colToFillIn1s;
-
-                if (colToFill > recDenArray[0].Length)
-                {
-                    colToFill = recDenArray[0].Length;
-                }
-
-                for (int i = this.columnsCounter; i < (colToFill); i++)
-                {
-                    for (int j = 0; j < recDenArray.Length; j++)
-                    {
-                        recDenArray[j][i].Fill = System.Windows.Media.Brushes.Blue;
-                        recDenArray[j][i].Refresh();
-
-                    }
-                }
-
-                this.columnsCounter += colToFillIn1s;
-                seconds++;
-
-                if (this.columnsCounter >= recDenArray[0].Length || seconds >= (int)time)
-                {
-                    Console.WriteLine("In stop");
-                    isFull = true;
-                    this.columnsCounter = recDenArray[0].Length - 1;
-                    timer.Stop();
-
-                    
-                    //Thread.Sleep((int)time*10 - seconds);
-                    //Console.WriteLine( "Time "  + ((int)time*10 - seconds));
-                    //seconds = 0;
-
-                    //timer.Start();
-
-                }
-            }
-
-            //else
-            //{
-            //    this.unloadFunc(colToFillIn1s);
-            //}
-
-
-        }
-
-        public void unloadFunc(int colToFillIn1s)
-        {
-            Console.WriteLine("I am here");
-            Console.WriteLine(this.columnsCounter);
-            bool stop = false;
-
-            int colToUnfill = this.columnsCounter - colToFillIn1s;
-
-            if (colToUnfill <= 0)
-            {
-                colToUnfill = 0;
-                stop = true;
-            }
-
-            for (int i = this.columnsCounter; i >= (colToUnfill); i--)
-            {
-                for (int j = 0; j < recDenArray.Length; j++)
-                {
-                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-                    recDenArray[j][i].Refresh();
-
-                }
-            }
-
-            this.columnsCounter -= colToFillIn1s;
-
-            if (stop)
-            {
-                timer.Stop();
-                Console.WriteLine("Stop timer 1");
-            }
-
-        }
-       
 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
@@ -264,7 +157,6 @@ namespace PracaMagisterska
                         Name = "rec_" + i + "_" + j
                     };
 
-                    Console.WriteLine(rec.Name);
                     recArray[i][j] = rec;
 
                     modelGrid.Children.Add(rec);
