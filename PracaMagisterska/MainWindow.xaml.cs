@@ -83,16 +83,19 @@ namespace PracaMagisterska
 
             if ((neuronLength > 0 ) && ( denAxdiam >0) && (speed > 0))
             {
+
                 model1uc.length = neuronLength;
                 double[] re1 = model1uc.Flow(20);
                 M1TimeBlock.Text = re1[0].ToString("0.##");
                 M1VolumeBlock.Text = re1[1].ToString("0.##");
 
-                //neuron0.flow((double)time, speed);
+                neuron0.flow((double)time, speed);
 
                 neuron1.flow((double)time, speed);
 
                 neuron2.flow((double)time, speed);
+
+                //Parallel.Invoke(() => neuron0.flow((double)time, speed), () => neuron2.flow((double)time, speed), () => double[] re1 = model1uc.Flow(20));
 
             }
 
