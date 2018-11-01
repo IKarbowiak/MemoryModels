@@ -46,7 +46,7 @@ namespace PracaMagisterska
 
             soma = new Soma(false);
             soma.HorizontalAlignment = HorizontalAlignment.Center;
-            soma.Margin = new System.Windows.Thickness(0, 0, 84, 0);
+            soma.Margin = new System.Windows.Thickness(0, 0, 190, 0);
             Grid.SetColumn(soma, 1);
             Grid.SetRow(soma, 1);
             neuronGrid.Children.Add(soma);

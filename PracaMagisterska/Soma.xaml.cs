@@ -31,7 +31,7 @@ namespace PracaMagisterska
         private int rowToReachTeshold;
         private double liquidVolume = 0;
         private Rectangle[][] recSomaArray;
-        private int rowCounter = 0;
+        private int rowCounter;
         private bool isFull = false;
         //public bool IsEnabled { get; set; }
 
@@ -43,6 +43,7 @@ namespace PracaMagisterska
             this.dimension3D = dim3d;
             this.calculateParameters();
             recSomaArray = this.splitRecModel(somaRec, somaGrid);
+            this.rowCounter = recSomaArray.Length - 1;
         }
 
         public void calculateParameters()
@@ -121,24 +122,30 @@ namespace PracaMagisterska
         private void fillRect(int rowlToFill)
         {
             Console.WriteLine("In soma fill REC");
-            int rowToFill = rowCounter + rowlToFill;
+            int rowToFill = rowCounter - rowlToFill;
 
-            if (rowToFill > recSomaArray.Length)
+            if (rowToFill < 0)
             {
-                rowToFill = recSomaArray.Length;
+                rowToFill = 0;
             }
-            for (int j = rowCounter; j < (rowToFill); j++)
+            for (int j = rowCounter; j > (rowToFill); j--)
             {
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
-                    recSomaArray[recSomaArray.Length - 1 - j][i].Fill = System.Windows.Media.Brushes.Blue;
-                    recSomaArray[recSomaArray.Length - 1 - j][i].Refresh();
+                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Blue;
+                    recSomaArray[j][i].Refresh();
 
                 }
             }
 
-            rowCounter += rowlToFill;
-
+            if (rowToFill > 0)
+            {
+                rowCounter -= rowlToFill;
+            }
+            else
+            {
+                rowCounter =  0;
+            }
         }
 
         public void unloadFunc()
@@ -148,7 +155,7 @@ namespace PracaMagisterska
             Console.WriteLine(this.rowToReachTeshold);
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
-            for (int j = 10; j < 20; j++)
+            for (int j = this.rowCounter; j < this.rowToReachTeshold + 2; j++)
             {
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {

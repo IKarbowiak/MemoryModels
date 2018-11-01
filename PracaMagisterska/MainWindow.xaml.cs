@@ -36,12 +36,12 @@ namespace PracaMagisterska
     public partial class MainWindow : Window
     {
         private Model1UC model1uc;
-        //private Model2UC model2uc;
-        private Model3UC model3uc;
         private Dendrite dendrite;
         private Soma soma;
         private Axon axon;
+        private Neuron0 neuron0;
         private Neuron1 neuron1;
+        private Neuron2 neuron2;
 
         public MainWindow()
         {
@@ -53,16 +53,20 @@ namespace PracaMagisterska
             Grid.SetRow(model1uc, 1);
             gridModel1Main.Children.Add(model1uc);
 
+            //neuron0 = new Neuron0();
+            //Grid.SetColumn(neuron0, 1);
+            //Grid.SetRow(neuron0, 1);
+            //gridModel1Main.Children.Add(neuron0);
+
             neuron1 = new Neuron1();
             Grid.SetColumn(neuron1, 1);
             Grid.SetRow(neuron1, 1);
             gridModel2Main.Children.Add(neuron1);
 
-
-            model3uc = new Model3UC();
-            Grid.SetColumn(model3uc, 1);
-            Grid.SetRow(model3uc, 1);
-            gridModel3Main.Children.Add(model3uc);
+            neuron2 = new Neuron2();
+            Grid.SetColumn(neuron2, 1);
+            Grid.SetRow(neuron2, 1);
+            gridModel3Main.Children.Add(neuron2);
 
         }
 
@@ -84,27 +88,11 @@ namespace PracaMagisterska
                 M1TimeBlock.Text = re1[0].ToString("0.##");
                 M1VolumeBlock.Text = re1[1].ToString("0.##");
 
+                //neuron0.flow((double)time, speed);
+
                 neuron1.flow((double)time, speed);
 
-                //model2uc.length = neuronLength;
-                //double[] re2 = model2uc.Flow(time);
-                //Model1b model1b = new Model1b(neuronLength, denAxdiam, speed, arrayModel1);
-                //double[] re = model1b.Flow(time);
-                //Thread.Sleep(3000);
-                //M1TimeBlock.Text = re[0].ToString("0.##");
-                //M1VolumeBlock.Text = re[1].ToString("0.##");
-
-                //Model2 model2 = new Model2(neuronLength, denAxdiam, speed);
-                //double[] re2 = model2.Flow(time);
-                //M2TimeBlock.Text = re2[0].ToString("0.##");
-                //M2VolumeBlock.Text = re2[1].ToString("0.##");
-
-                //Model3 model3 = new Model3(neuronLength, denAxdiam, speed);
-                //double[] re3 = model3.Flow(time);
-                //M3TimeBlock.Text = re3[0].ToString("0.##");
-                //M3VolumeBlock.Text = re3[1].ToString("0.##");
-
-
+                neuron2.flow((double)time, speed);
 
             }
 
@@ -121,8 +109,8 @@ namespace PracaMagisterska
             M3VolumeBlock.Text = "";
 
             neuronLenBox.Text = "";
-            denAxDiamBox.Text = "";
-            speedBox.Text = "";
+            denDiamBox.Text = "";
+            flowBox.Text = "";
             timeBox.Text = "";
         }
 
@@ -133,7 +121,7 @@ namespace PracaMagisterska
             double speed = 0;
             double time = 0;
 
-            if (String.IsNullOrEmpty(neuronLenBox.Text) || denAxDiamBox.Text.Contains('.') || (Double.Parse(neuronLenBox.Text) < 30))
+            if (String.IsNullOrEmpty(neuronLenBox.Text) || denDiamBox.Text.Contains('.') || (Double.Parse(neuronLenBox.Text) < 30))
             {
                 neuronLenBox.BorderBrush = System.Windows.Media.Brushes.Red;
                 infoNeuron.Foreground = Brushes.Red;
@@ -146,26 +134,26 @@ namespace PracaMagisterska
                 neuronLength = Int32.Parse(neuronLenBox.Text);
             }
 
-            if (String.IsNullOrEmpty(denAxDiamBox.Text) || denAxDiamBox.Text.Contains('.') || (0.3 > Double.Parse(denAxDiamBox.Text)) || (Double.Parse(denAxDiamBox.Text) > 0.5))
+            if (String.IsNullOrEmpty(denDiamBox.Text) || denDiamBox.Text.Contains('.') || (0.3 > Double.Parse(denDiamBox.Text)) || (Double.Parse(denDiamBox.Text) > 0.5))
             {
-                denAxDiamBox.BorderBrush = System.Windows.Media.Brushes.Red;
-                denAxDiamInfo.Foreground = Brushes.Red;
+                denDiamBox.BorderBrush = System.Windows.Media.Brushes.Red;
+                denDiamBox.Foreground = Brushes.Red;
             }
             else
             {
-                denAxDiamBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                denAxDiamInfo.Foreground = Brushes.Black;
-                denAxdiam = Double.Parse(denAxDiamBox.Text);
+                denDiamBox.BorderBrush = System.Windows.Media.Brushes.Gray;
+                denDiamBox.Foreground = Brushes.Black;
+                denAxdiam = Double.Parse(denDiamBox.Text);
             }
 
-            if (speedBox.Text.Contains('.') || String.IsNullOrEmpty(speedBox.Text) || (Double.Parse(speedBox.Text) < 0))
-            {
-                speedBox.BorderBrush = System.Windows.Media.Brushes.Red;
+            if (flowBox.Text.Contains('.') || String.IsNullOrEmpty(flowBox.Text) || (Double.Parse(flowBox.Text) < 0))
+            { 
+                flowBox.BorderBrush = System.Windows.Media.Brushes.Red;
             }
             else
             {
-                speedBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                speed = Double.Parse(speedBox.Text);
+                flowBox.BorderBrush = System.Windows.Media.Brushes.Gray;
+                speed = Double.Parse(flowBox.Text);
             }
 
 
@@ -191,6 +179,15 @@ namespace PracaMagisterska
             myWindow.ShowDialog();
 
             //MessageBox.Show(myWindow.tbReturn.Text);
+        }
+
+        private void defaultParButton_Click(object sender, RoutedEventArgs e)
+        {
+            neuronLenBox.Text = "40";
+            denDiamBox.Text = "0,4";
+            axonDiamBox.Text = "0,4";
+            flowBox.Text = "8";
+            timeBox.Text = "30";
         }
     }
 

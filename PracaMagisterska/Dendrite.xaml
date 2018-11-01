@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PracaMagisterska"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Width="41" Height="8">
-        <Rectangle x:Name="denrdriteRec" Width="41" Height="8" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
-        <Grid x:Name="dendriteGrid" Width="41" Height="8"></Grid>
+             d:DesignHeight="11" d:DesignWidth="80">
+    <Grid Width="80" Height="11">
+        <Rectangle x:Name="denrdriteRec" Width="80" Height="11" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
+        <Grid x:Name="dendriteGrid" Width="80" Height="11"></Grid>
     </Grid>
 </UserControl>

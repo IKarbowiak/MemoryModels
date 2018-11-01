@@ -60,7 +60,7 @@ namespace PracaMagisterska
 
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
         {
-            double volumeToPush = volumeIncrease;
+            double volumeToPush = 0;
             if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
