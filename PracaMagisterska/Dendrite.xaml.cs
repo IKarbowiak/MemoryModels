@@ -22,9 +22,9 @@ namespace PracaMagisterska
     public partial class Dendrite : UserControl
     {
         public double length { get; set; }
-        private double diameter { get; set; }
-        private double surface { get; set; }
-        private bool dimension3D { get; set; }
+        public double diameter { get; set; }
+        private double surface;
+        private bool dimension3D;
         private double volume;
         private double liquidVolume = 0;
         private Rectangle[][] recDenArray;

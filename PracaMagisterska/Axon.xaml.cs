@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace PracaMagisterska
 {
@@ -22,8 +23,8 @@ namespace PracaMagisterska
     {
         public double length { get; set; }
         public double diameter { get; set; }
-        public bool dimension3D { get; set; }
-        public double surface { get; set; }
+        public bool dimension3D;
+        public double surface;
         public double flowedOutVolume { get; set; }
         private double volume;
         private double liquidVolume;
@@ -69,7 +70,8 @@ namespace PracaMagisterska
                 {
                     colToFillin1s = 1;
                 }
-                this.fillRect(colToFillin1s);
+
+                    this.fillRect(colToFillin1s);
             }
             else
             {
@@ -78,6 +80,7 @@ namespace PracaMagisterska
                 int colToFillin1s = (int)axonRec.Width - this.columnsCounter;
                 if (colToFillin1s > 0)
                 {
+
                     this.fillRect(colToFillin1s);
                 }
                 this.flowedOutVolume += volumeToPush;

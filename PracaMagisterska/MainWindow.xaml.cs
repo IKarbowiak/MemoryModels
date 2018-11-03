@@ -76,30 +76,50 @@ namespace PracaMagisterska
             double[] validateRes = validate_boxes();
 
             double neuronLength = validateRes[0];
-            double denAxdiam = validateRes[1];
-            double speed = validateRes[2];
-            double time = validateRes[3];
+            double denDiam = validateRes[1];
+            double axDiam = validateRes[2];
+            double flow = validateRes[3];
+            double time = validateRes[4];
 
 
-            if ((neuronLength > 0 ) && ( denAxdiam >0) && (speed > 0))
+            if ((neuronLength > 0 ) && ( denDiam >0) && (axDiam > 0) && (flow >0 ) && (time> 0))
             {
-
                 model1uc.length = neuronLength;
                 double[] re1 = model1uc.Flow(20);
-                M1TimeBlock.Text = re1[0].ToString("0.##");
-                M1VolumeBlock.Text = re1[1].ToString("0.##");
 
-                neuron0.flow((double)time, speed);
+                neuron1.neuronLength = neuronLength;
+                neuron1.denDiam = denDiam;
+                neuron1.axDiam = axDiam;
 
-                neuron1.flow((double)time, speed);
+                neuron2.neuronLength = neuronLength;
+                neuron2.denDiam = denDiam;
+                neuron2.axDiam = axDiam;
 
-                neuron2.flow((double)time, speed);
+                neuron1.flow((double)time, flow);
+                neuron2.flow((double)time, flow);
 
-                //Parallel.Invoke(() => neuron0.flow((double)time, speed), () => neuron2.flow((double)time, speed), () => double[] re1 = model1uc.Flow(20));
+                //M1TimeBlock.Text = re1[0].ToString("0.##");
+                //M1VolumeBlock.Text = re1[1].ToString("0.##");
+
+
+                //neuron1.flow((double)time, speed);
+
+                //var task0 = Task.Factory.StartNew(() => model1uc.Flow(20));
+                //var task1 = Task.Factory.StartNew(() => neuron1.flow((double)time, speed));
+                //var task2 = Task.Factory.StartNew(() => neuron2.flow((double)time, speed));
+
+                //neuron0.flow((double)time, speed);
+
+
+
+
+                //Parallel.Invoke(() => neuron0.flow((double)time, speed), () => neuron2.flow((double)time, speed));
 
             }
 
         }
+
+
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
@@ -120,8 +140,9 @@ namespace PracaMagisterska
         private double[] validate_boxes()
         {
             double neuronLength = 0;
-            double denAxdiam = 0;
-            double speed = 0;
+            double denDiam = 0;
+            double axDiam = 0;
+            double flow = 0;
             double time = 0;
 
             if (String.IsNullOrEmpty(neuronLenBox.Text) || denDiamBox.Text.Contains('.') || (Double.Parse(neuronLenBox.Text) < 30))
@@ -137,40 +158,55 @@ namespace PracaMagisterska
                 neuronLength = Int32.Parse(neuronLenBox.Text);
             }
 
-            if (String.IsNullOrEmpty(denDiamBox.Text) || denDiamBox.Text.Contains('.') || (0.3 > Double.Parse(denDiamBox.Text)) || (Double.Parse(denDiamBox.Text) > 0.5))
+
+            TextBox[] boxes = { axonDiamBox, denDiamBox };
+            foreach (TextBox box in boxes)
             {
-                denDiamBox.BorderBrush = System.Windows.Media.Brushes.Red;
-                denDiamBox.Foreground = Brushes.Red;
-            }
-            else
-            {
-                denDiamBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                denDiamBox.Foreground = Brushes.Black;
-                denAxdiam = Double.Parse(denDiamBox.Text);
+                if (String.IsNullOrEmpty(box.Text) || box.Text.Contains('.') || (0.3 > Double.Parse(box.Text)) || (Double.Parse(box.Text) > 0.5))
+                {
+                    box.BorderBrush = System.Windows.Media.Brushes.Red;
+                    box.Foreground = Brushes.Red;
+                }
+                else
+                {
+                    box.BorderBrush = System.Windows.Media.Brushes.Gray;
+                    box.Foreground = Brushes.Black;
+                    if (box == axonDiamBox)
+                    {
+                        axDiam = Double.Parse(axonDiamBox.Text);
+
+                    }
+                    else
+                    {
+                        denDiam = Double.Parse(axonDiamBox.Text);
+                    }
+                }
             }
 
-            if (flowBox.Text.Contains('.') || String.IsNullOrEmpty(flowBox.Text) || (Double.Parse(flowBox.Text) < 0))
-            { 
-                flowBox.BorderBrush = System.Windows.Media.Brushes.Red;
-            }
-            else
+            TextBox[] boxes2 = { flowBox, timeBox };
+            foreach (TextBox box in boxes2)
             {
-                flowBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                speed = Double.Parse(flowBox.Text);
+
+                if (box.Text.Contains('.') || String.IsNullOrEmpty(box.Text) || (Double.Parse(box.Text) < 0))
+                {
+                    box.BorderBrush = System.Windows.Media.Brushes.Red;
+                }
+                else
+                {
+                    box.BorderBrush = System.Windows.Media.Brushes.Gray;
+                    if (box == flowBox)
+                    {
+                        flow = Double.Parse(flowBox.Text);
+                    }
+                    else
+                    {
+                        time = Double.Parse(timeBox.Text);
+                    }
+                }
             }
 
 
-            if (timeBox.Text.Contains('.') || String.IsNullOrEmpty(timeBox.Text) || (Double.Parse(timeBox.Text) < 0))
-            {
-                timeBox.BorderBrush = System.Windows.Media.Brushes.Red;
-            }
-            else
-            {
-                timeBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                time = Double.Parse(timeBox.Text);
-            }
-
-            double[] res = { neuronLength, denAxdiam, speed, time };
+            double[] res = { neuronLength, denDiam, axDiam, flow, time };
             return res;
 
         }
@@ -191,6 +227,12 @@ namespace PracaMagisterska
             axonDiamBox.Text = "0,4";
             flowBox.Text = "8";
             timeBox.Text = "30";
+        }
+
+        private void stopButton_Click(object sender, RoutedEventArgs e)
+        {
+            neuron1.stopFlow();
+            neuron2.stopFlow();
         }
     }
 

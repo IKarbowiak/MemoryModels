@@ -22,9 +22,7 @@ namespace PracaMagisterska
     {
         public double diameter { get; set; }
         public double axonDiameter {get; set;}
-        private bool dimension3D { get; set; }
-        public double dendriteDiameter;
-        public double dendriteSurface;
+        private bool dimension3D;
         private double surface;
         private double volume;
         private double threshold;
@@ -39,8 +37,8 @@ namespace PracaMagisterska
         {
             InitializeComponent();
             this.diameter = 15;
-            this.dendriteDiameter = 0.4;
             this.dimension3D = dim3d;
+            this.axonDiameter = 0.4;
             this.calculateParameters();
             recSomaArray = this.splitRecModel(somaRec, somaGrid);
             this.rowCounter = recSomaArray.Length - 1;
@@ -58,8 +56,6 @@ namespace PracaMagisterska
             {
                 this.volume = this.diameter * this.diameter;
             }
-            this.dendriteSurface = Math.Pow((this.dendriteDiameter / 2), 2) * Math.PI;
-            Console.WriteLine("Dendite surface " + this.dendriteSurface);
             this.threshold = (this.diameter / 2 - this.axonDiameter / 2) * this.volume /  (this.diameter);
             this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }

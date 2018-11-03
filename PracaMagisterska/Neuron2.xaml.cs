@@ -17,12 +17,12 @@ using System.Threading;
 namespace PracaMagisterska
 {
     /// <summary>
-    /// Interaction logic for Neuron1.xaml
+    /// Interaction logic for Neuron2.xaml
     /// </summary>
-    public partial class Neuron1 : UserControl
+    public partial class Neuron2 : UserControl
     {
-
-        private Dendrite dendrite;
+        private Dendrite dendrite1;
+        private Dendrite dendrite2;
         private Soma soma;
         private Axon axon;
         public double neuronLength { get; set; }
@@ -32,14 +32,25 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer2;
         private double outFlowVolume = 0;
 
-        public Neuron1()
+        public Neuron2()
         {
             InitializeComponent();
-            dendrite = new Dendrite(false);
-            dendrite.HorizontalAlignment = HorizontalAlignment.Left;
-            Grid.SetColumn(dendrite, 1);
-            Grid.SetRow(dendrite, 1);
-            neuronGrid.Children.Add(dendrite);
+            dendrite1 = new Dendrite(false);
+            dendrite1.HorizontalAlignment = HorizontalAlignment.Left;
+            dendrite1.VerticalAlignment = VerticalAlignment.Top;
+            dendrite1.Margin = new System.Windows.Thickness(0, 12, 0, 0);
+            Grid.SetColumn(dendrite1, 1);
+            Grid.SetRow(dendrite1, 1);
+            neuronGrid.Children.Add(dendrite1);
+
+            InitializeComponent();
+            dendrite2 = new Dendrite(false);
+            dendrite2.HorizontalAlignment = HorizontalAlignment.Left;
+            dendrite2.VerticalAlignment = VerticalAlignment.Bottom;
+            dendrite2.Margin = new System.Windows.Thickness(0, 0, 0,12);
+            Grid.SetColumn(dendrite2, 1);
+            Grid.SetRow(dendrite2, 1);
+            neuronGrid.Children.Add(dendrite2);
 
             axon = new Axon(false);
             axon.HorizontalAlignment = HorizontalAlignment.Right;
@@ -55,11 +66,14 @@ namespace PracaMagisterska
             neuronGrid.Children.Add(soma);
         }
 
-        public void flow(double time, double flow)
+        public void flow(double time, double speed)
         {
             this.outFlowVolume = 0;
-            dendrite.length = this.neuronLength / 26;
-            dendrite.diameter = denDiam;
+            dendrite1.length = this.neuronLength / 26;
+            dendrite1.diameter = denDiam;
+
+            dendrite2.length = this.neuronLength / 26;
+            dendrite2.diameter = denDiam;
 
             axon.length = this.neuronLength * 20 / 26;
             axon.diameter = this.axDiam;
@@ -69,13 +83,15 @@ namespace PracaMagisterska
 
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (sender, e) => {Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow, soma, axon);
-                if (dendriteRes.Item1)
+            timer.Tick += (sender, e) =>
+            {
+                Tuple<bool, double> dendriteRes1 = dendrite1.newFlow(sender, e, 8, soma, axon);
+                Tuple<bool, double> dendriteRes2 = dendrite2.newFlow(sender, e, 8, soma, axon);
+                if (dendriteRes1.Item1 | dendriteRes2.Item1)
                 {
-                    Console.WriteLine(dendriteRes);
-                    Console.WriteLine(dendriteRes.Item1);
-                    Console.WriteLine(dendriteRes.Item2);
-                    Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes.Item2);
+                    Console.WriteLine("Den 1" + dendriteRes1);
+                    Console.WriteLine("Den 2" + dendriteRes2);
+                    Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes1.Item2 + dendriteRes2.Item2);
                     if (somaRes.Item1)
                     {
                         Console.WriteLine(somaRes);
@@ -86,13 +102,13 @@ namespace PracaMagisterska
             timer.Start();
 
             timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer2.Interval = TimeSpan.FromSeconds(time);
+            timer2.Interval = TimeSpan.FromSeconds(30);
             timer2.Tick += (sender, e) => { stopTimer(sender, e); };
             timer2.Start();
-
             //dendrite.flow(time, speed);
             //soma.flow(time, speed, this.axon);
         }
+
         public void stopFlow()
         {
             timer.Stop();
@@ -104,11 +120,15 @@ namespace PracaMagisterska
             timer.Stop();
             Dispatcher.Invoke(() => { axon.unloadFunc(); });
             Dispatcher.Invoke(() => { soma.unloadFunc(); });
-            Dispatcher.Invoke(() => { dendrite.unloadFunc(); });
+            Dispatcher.Invoke(() => { dendrite1.unloadFunc(); });
+            Dispatcher.Invoke(() => { dendrite2.unloadFunc(); });
+            //axon.unloadFunc();
+            //soma.unloadFunc();
+            //dendrite1.unloadFunc();
+            //dendrite2.unloadFunc();
             timer2.Stop();
-            outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine(axon.flowedOutVolume);
-            Console.WriteLine("Stop timer in Neuron1");
+            Console.WriteLine("Stop timer in Neuron2");
         }
     }
 }
