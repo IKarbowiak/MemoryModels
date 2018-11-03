@@ -58,6 +58,7 @@ namespace PracaMagisterska
 
         }
 
+
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
         {
             double volumeToPush = 0;

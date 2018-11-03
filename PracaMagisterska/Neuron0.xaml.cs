@@ -28,19 +28,20 @@ namespace PracaMagisterska
         public Neuron0()
         {
             InitializeComponent();
-            axon = new Axon(false);
-            axon.HorizontalAlignment = HorizontalAlignment.Right;
+            axon = new Axon(recWidth: 380);
+            //axon.changeRecSize(380, 11);
+            axon.HorizontalAlignment = HorizontalAlignment.Left;
             Grid.SetColumn(axon, 0);
             Grid.SetRow(axon, 0);
             neuronGrid.Children.Add(axon);
         }
 
-        public void flow(double time, double speed)
+        public void flow(double time, double flow)
         {
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += (sender, e) => {
-                axon.newFlow(sender, e, 8);
+                axon.newFlow(sender, e, flow);
             };
             timer.Start();
 

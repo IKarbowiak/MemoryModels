@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:PracaMagisterska"
              mc:Ignorable="d" 
              d:DesignHeight="11" d:DesignWidth="80">
-    <Grid Width="80" Height="11">
-        <Rectangle x:Name="denrdriteRec" Width="80" Height="11" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
-        <Grid x:Name="dendriteGrid" Width="80" Height="11"></Grid>
+    <Grid x:Name="mainGrid" Width="80" Height="11">
+        <Rectangle Width="80" Height="11" x:Name="denrdriteRec" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
+        <Grid Width="80" Height="11" x:Name="dendriteGrid"></Grid>
     </Grid>
 </UserControl>

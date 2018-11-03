@@ -48,15 +48,15 @@ namespace PracaMagisterska
             InitializeComponent();
 
 
-            model1uc = new Model1UC();
-            Grid.SetColumn(model1uc, 1);
-            Grid.SetRow(model1uc, 1);
-            gridModel1Main.Children.Add(model1uc);
+            //model1uc = new Model1UC();
+            //Grid.SetColumn(model1uc, 1);
+            //Grid.SetRow(model1uc, 1);
+            //gridModel1Main.Children.Add(model1uc);
 
-            //neuron0 = new Neuron0();
-            //Grid.SetColumn(neuron0, 1);
-            //Grid.SetRow(neuron0, 1);
-            //gridModel1Main.Children.Add(neuron0);
+            neuron0 = new Neuron0();
+            Grid.SetColumn(neuron0, 1);
+            Grid.SetRow(neuron0, 1);
+            gridModel1Main.Children.Add(neuron0);
 
             neuron1 = new Neuron1();
             Grid.SetColumn(neuron1, 1);
@@ -84,8 +84,8 @@ namespace PracaMagisterska
 
             if ((neuronLength > 0 ) && ( denDiam >0) && (axDiam > 0) && (flow >0 ) && (time> 0))
             {
-                model1uc.length = neuronLength;
-                double[] re1 = model1uc.Flow(20);
+                //model1uc.length = neuronLength;
+                //double[] re1 = model1uc.Flow(20);
 
                 neuron1.neuronLength = neuronLength;
                 neuron1.denDiam = denDiam;
@@ -95,6 +95,7 @@ namespace PracaMagisterska
                 neuron2.denDiam = denDiam;
                 neuron2.axDiam = axDiam;
 
+                neuron0.flow((double)time, flow);
                 neuron1.flow((double)time, flow);
                 neuron2.flow((double)time, flow);
 

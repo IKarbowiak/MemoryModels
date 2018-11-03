@@ -30,9 +30,11 @@ namespace PracaMagisterska
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
         private int columnsCounter = 0;
+        private System.Windows.Threading.DispatcherTimer timer;
+        private System.Windows.Threading.DispatcherTimer timer2;
         private bool isFull = false;
 
-        public Axon(bool dim3d)
+        public Axon(bool dim3d = false, int recWidth = 260, int recHeight = 11)
         {
             InitializeComponent();
             this.length = 31;
@@ -41,6 +43,11 @@ namespace PracaMagisterska
             this.dimension3D = dim3d;
             this.flowedOutVolume = 0;
             this.calculateParameters();
+            if (recWidth != 260 || recHeight != 11)
+            {
+                Console.WriteLine("Here");
+                changeRecSize(recWidth, recHeight);
+            }
             recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
@@ -59,6 +66,19 @@ namespace PracaMagisterska
             
         }
 
+        public void changeRecSize(int width, int height)
+        {
+
+            mainGrid.Width = width;
+            mainGrid.Height = height;
+
+            axonRec.Height = height;
+            axonRec.Width = width;
+            axonGrid.Height = height;
+            axonGrid.Width = width;
+            //this.recAxonArray = this.splitRecModel(axonRec, axonGrid);
+        }
+
         public void newFlow(object sender, EventArgs e, double volumeIncrease)
         {
             Console.WriteLine("In aaxon new flow");
@@ -71,7 +91,26 @@ namespace PracaMagisterska
                     colToFillin1s = 1;
                 }
 
-                    this.fillRect(colToFillin1s);
+                //if (colToFillin1s > 1)
+                //{
+                //    timer = new System.Windows.Threading.DispatcherTimer();
+                //    timer.Interval = TimeSpan.FromMilliseconds(1);
+                //    timer.Tick += (sender2, e1) =>
+                //    {
+                //        fillRect(sender2, e, 1);
+                //    };
+                //    timer.Start();
+
+                //    timer2 = new System.Windows.Threading.DispatcherTimer();
+                //    timer2.Interval = TimeSpan.FromMilliseconds(colToFillin1s+4);
+                //    timer2.Tick += (sender2, e2) => { timer.Stop(); timer2.Stop();  };
+                //    timer2.Start();
+                //}
+                //else
+                //{
+                //    this.fillRect(sender, e, colToFillin1s);
+                //}
+                this.fillRect(sender, e, colToFillin1s);
             }
             else
             {
@@ -81,14 +120,33 @@ namespace PracaMagisterska
                 if (colToFillin1s > 0)
                 {
 
-                    this.fillRect(colToFillin1s);
+                    //if (colToFillin1s > 1)
+                    //{
+                    //    timer = new System.Windows.Threading.DispatcherTimer();
+                    //    timer.Interval = TimeSpan.FromMilliseconds(1);
+                    //    timer.Tick += (sender2, e1) =>
+                    //    {
+                    //        fillRect(sender2, e, 1);
+                    //    };
+                    //    timer.Start();
+
+                    //    timer2 = new System.Windows.Threading.DispatcherTimer();
+                    //    timer2.Interval = TimeSpan.FromMilliseconds(colToFillin1s + 4);
+                    //    timer2.Tick += (sender2, e2) => { timer.Stop(); timer2.Stop(); };
+                    //    timer2.Start();
+                    //}
+                    //else
+                    //{
+                    //    this.fillRect(sender, e, colToFillin1s);
+                    //}
+                    this.fillRect(sender, e, colToFillin1s);
                 }
                 this.flowedOutVolume += volumeToPush;
 
             }
         }
 
-        private void fillRect(int collToFill)
+        private void fillRect(object sender, EventArgs e, int collToFill)
         {
             Console.WriteLine("In fill den");
             int colToFill = this.columnsCounter + collToFill;
