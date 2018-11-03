@@ -109,6 +109,15 @@ namespace PracaMagisterska
             //soma.flow(time, speed, this.axon);
         }
 
+        public void reset()
+        {
+            axon.reset();
+            soma.reset();
+            dendrite1.reset();
+            dendrite2.reset();
+        }
+
+
         public void stopFlow()
         {
             timer.Stop();

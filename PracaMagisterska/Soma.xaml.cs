@@ -164,6 +164,20 @@ namespace PracaMagisterska
 
         }
 
+        public void reset()
+        {
+            this.liquidVolume = 0;
+            this.rowCounter = recSomaArray.Length - 1;
+            for (int i = 0; i < this.recSomaArray[0].Length; i++)
+            {
+                for (int j = 0; j < recSomaArray.Length; j++)
+                {
+                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+                }
+            }
+
+        }
+
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
             int rowNumber = Convert.ToInt32(modelElement.Height);

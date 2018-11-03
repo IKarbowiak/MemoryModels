@@ -99,6 +99,13 @@ namespace PracaMagisterska
             timer2.Stop();
         }
 
+        public void reset()
+        {
+            axon.reset();
+            soma.reset();
+            dendrite.reset();
+        }
+
         public void stopTimer(object sender, EventArgs e)
         {
             timer.Stop();

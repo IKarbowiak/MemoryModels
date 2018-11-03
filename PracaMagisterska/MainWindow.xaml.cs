@@ -133,8 +133,12 @@ namespace PracaMagisterska
 
             neuronLenBox.Text = "";
             denDiamBox.Text = "";
+            axonDiamBox.Text = "";
             flowBox.Text = "";
             timeBox.Text = "";
+
+            neuron1.reset();
+            neuron2.reset();
         }
 
         private double[] validate_boxes()

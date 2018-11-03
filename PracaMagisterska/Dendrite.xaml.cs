@@ -138,6 +138,20 @@ namespace PracaMagisterska
 
         }
 
+        public void reset()
+        {
+            this.columnsCounter = 0;
+            this.liquidVolume = 0;
+            for (int i = 0; i < this.recDenArray[0].Length; i++)
+            {
+                for (int j = 0; j < recDenArray.Length; j++)
+                {
+                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+                }
+            }
+
+        }
+
 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
