@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         ResizeMode="CanResize"
-        Title="MainWindow" Height="700" Width="1200">
+        Title="MainWindow" Height="600" Width="1200">
     <Grid x:Name="Start" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
@@ -20,7 +20,7 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Top" TextAlignment="Center" FontSize="30" Margin="10,10,0.8,0" Height="40">Simple Neuron Model</TextBlock>
-        <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,0,140,20" Background="Beige"/>
+        <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,0,140,20"/>
         <Button x:Name="stopButton" Grid.Row="0" Grid.Column="1" Content="Stop" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,0,0,20" Click="stopButton_Click" />
         <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,0,0,20" Click="resetButton_Click"/>
         <Button Grid.Row="0" Grid.Column="2" Width="80" Height="20" Click="Button_Click">New Window</Button>
@@ -76,12 +76,15 @@
 
         </Grid>
 
-        <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0.2,1,1">
+        <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -96,6 +99,16 @@
             <TextBlock x:Name="denDiamInfo" Grid.Column="0" Grid.Row="2" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12">(value should be between 0,3 and 0,5 <Run Text="&#x3bc;"/>m)</TextBlock>
             <TextBox x:Name="denDiamBox" Grid.Column="1" Grid.Row="2" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
 
+            <TextBlock Grid.Column="0" Grid.Row="3" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16">Axon diameter [<Run Text="&#x3bc;" />m]</TextBlock>
+            <TextBlock x:Name="axonDiamInfo" Grid.Column="0" Grid.Row="3" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12">(value should be between 0,3 and 0,5 <Run Text="&#x3bc;"/>m)</TextBlock>
+            <TextBox x:Name="axonDiamBox" Grid.Column="1" Grid.Row="3" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" Grid.ColumnSpan="1" Margin="0,0,0, 0" Height="16"><Run Text="Flow "/><Run Text="&#x394;" />V / <Run Text="&#x394;" />t</TextBlock>
+            <TextBox x:Name="flowBox" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
+
+            <TextBlock Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" Margin="0,5,0,0"><Run Text="Flow time [s]"/></TextBlock>
+            <TextBox x:Name="timeBox" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"></TextBox>
+
         </Grid>
         <Grid HorizontalAlignment="Stretch"  Grid.Row="2" Grid.Column="0" >
             <Grid.ColumnDefinitions>
@@ -107,7 +120,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16">Axon diameter [<Run Text="&#x3bc;" />m]</TextBlock>
+            <!--<TextBlock Grid.Column="0" Grid.Row="0" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16">Axon diameter [<Run Text="&#x3bc;" />m]</TextBlock>
             <TextBlock x:Name="axonDiamInfo" Grid.Column="0" Grid.Row="0" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12">(value should be between 0,3 and 0,5 <Run Text="&#x3bc;"/>m)</TextBlock>
             <TextBox x:Name="axonDiamBox" Grid.Column="1" Grid.Row="0" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
 
@@ -115,7 +128,7 @@
             <TextBox x:Name="flowBox" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
 
             <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Center" Margin="0,5,0,0"><Run Text="Flow time [s]"/></TextBlock>
-            <TextBox x:Name="timeBox" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"></TextBox>
+            <TextBox x:Name="timeBox" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"></TextBox>-->
 
         </Grid>
         <Grid HorizontalAlignment="Stretch"  Grid.Row="3" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,1.2,0,-0.4">

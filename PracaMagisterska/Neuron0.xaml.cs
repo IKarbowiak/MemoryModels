@@ -23,7 +23,7 @@ namespace PracaMagisterska
         private Axon axon;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
-        private double outFlowVolume = 0;
+        public double outFlowVolume { get; set; }
 
         public Neuron0()
         {
@@ -34,6 +34,7 @@ namespace PracaMagisterska
             Grid.SetColumn(axon, 0);
             Grid.SetRow(axon, 0);
             neuronGrid.Children.Add(axon);
+            outFlowVolume = 0;
         }
 
         public void flow(double time, double flow)
@@ -72,6 +73,7 @@ namespace PracaMagisterska
             axon.stop();
             axon.unloadFunc();
             timer2.Stop();
+            this.outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine(axon.flowedOutVolume);
             Console.WriteLine("Stop timer in Neuron");
         }

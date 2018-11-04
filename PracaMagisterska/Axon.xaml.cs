@@ -183,7 +183,6 @@ namespace PracaMagisterska
                 for (int j = 0; j < recAxonArray.Length; j++)
                 {
                     recAxonArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-                    recAxonArray[j][i].Refresh();
             
                  }
              }
@@ -191,6 +190,8 @@ namespace PracaMagisterska
             this.columnsCounter = 0;
 
         }
+
+
         public void reset()
         {
             this.columnsCounter = 0;

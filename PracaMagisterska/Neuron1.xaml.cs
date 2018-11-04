@@ -30,7 +30,7 @@ namespace PracaMagisterska
         public double axDiam { get; set; }
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
-        private double outFlowVolume = 0;
+        public double outFlowVolume { get; set; }
 
         public Neuron1()
         {
@@ -53,6 +53,8 @@ namespace PracaMagisterska
             Grid.SetColumn(soma, 1);
             Grid.SetRow(soma, 1);
             neuronGrid.Children.Add(soma);
+
+            this.outFlowVolume = 0;
         }
 
         public void flow(double time, double flow)

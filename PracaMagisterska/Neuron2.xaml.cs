@@ -30,11 +30,13 @@ namespace PracaMagisterska
         public double axDiam { get; set; }
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
-        private double outFlowVolume = 0;
+        public double outFlowVolume { get; set; }
 
         public Neuron2()
         {
             InitializeComponent();
+            this.outFlowVolume = 0;
+
             dendrite1 = new Dendrite(false);
             dendrite1.HorizontalAlignment = HorizontalAlignment.Left;
             dendrite1.VerticalAlignment = VerticalAlignment.Top;
@@ -66,7 +68,7 @@ namespace PracaMagisterska
             neuronGrid.Children.Add(soma);
         }
 
-        public void flow(double time, double speed)
+        public void flow(double time, double flow)
         {
             this.outFlowVolume = 0;
             dendrite1.length = this.neuronLength / 26;
@@ -85,8 +87,8 @@ namespace PracaMagisterska
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += (sender, e) =>
             {
-                Tuple<bool, double> dendriteRes1 = dendrite1.newFlow(sender, e, 8, soma, axon);
-                Tuple<bool, double> dendriteRes2 = dendrite2.newFlow(sender, e, 8, soma, axon);
+                Tuple<bool, double> dendriteRes1 = dendrite1.newFlow(sender, e, flow, soma, axon);
+                Tuple<bool, double> dendriteRes2 = dendrite2.newFlow(sender, e, flow, soma, axon);
                 if (dendriteRes1.Item1 | dendriteRes2.Item1)
                 {
                     Console.WriteLine("Den 1" + dendriteRes1);
@@ -102,7 +104,7 @@ namespace PracaMagisterska
             timer.Start();
 
             timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer2.Interval = TimeSpan.FromSeconds(30);
+            timer2.Interval = TimeSpan.FromSeconds(time);
             timer2.Tick += (sender, e) => { stopTimer(sender, e); };
             timer2.Start();
             //dendrite.flow(time, speed);
@@ -134,11 +136,8 @@ namespace PracaMagisterska
             Dispatcher.Invoke(() => { soma.unloadFunc(); });
             Dispatcher.Invoke(() => { dendrite1.unloadFunc(); });
             Dispatcher.Invoke(() => { dendrite2.unloadFunc(); });
-            //axon.unloadFunc();
-            //soma.unloadFunc();
-            //dendrite1.unloadFunc();
-            //dendrite2.unloadFunc();
             timer2.Stop();
+            this.outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine(axon.flowedOutVolume);
             Console.WriteLine("Stop timer in Neuron2");
         }
