@@ -156,7 +156,6 @@ namespace PracaMagisterska
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
                     recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-                    recSomaArray[j][i].Refresh();
 
                 }
             }

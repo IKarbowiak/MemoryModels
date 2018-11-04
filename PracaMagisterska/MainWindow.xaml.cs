@@ -138,6 +138,7 @@ namespace PracaMagisterska
             flowBox.Text = "";
             timeBox.Text = "";
 
+            neuron0.reset();
             neuron1.reset();
             neuron2.reset();
         }
@@ -236,6 +237,7 @@ namespace PracaMagisterska
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
+            neuron0.stopFlow();
             neuron1.stopFlow();
             neuron2.stopFlow();
         }

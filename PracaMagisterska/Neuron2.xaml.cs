@@ -121,6 +121,9 @@ namespace PracaMagisterska
         public void stopFlow()
         {
             timer.Stop();
+            axon.stop();
+            dendrite1.stop();
+            dendrite2.stop();
             timer2.Stop();
         }
 
