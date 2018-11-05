@@ -43,6 +43,8 @@ namespace PracaMagisterska
         private Neuron1 neuron1;
         private Neuron2 neuron2;
         private System.Windows.Threading.DispatcherTimer timer;
+        private System.Windows.Threading.DispatcherTimer timer2;
+        private DateTime TimerStart { get; set; }
 
         public MainWindow()
         {
@@ -70,6 +72,7 @@ namespace PracaMagisterska
             gridModel3Main.Children.Add(neuron2);
 
             timer = new System.Windows.Threading.DispatcherTimer();
+            timer2 = new System.Windows.Threading.DispatcherTimer();
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
@@ -83,6 +86,7 @@ namespace PracaMagisterska
             double flow = validateRes[3];
             double time = validateRes[4];
             timer.Interval = TimeSpan.FromSeconds(time);
+            timer2.Interval = TimeSpan.FromSeconds(1);
 
 
             if ((neuronLength > 0 ) && ( denDiam >0) && (axDiam > 0) && (flow >0 ) && (time> 0))
@@ -103,12 +107,23 @@ namespace PracaMagisterska
                 neuron1.flow((double)time, flow);
                 neuron2.flow((double)time, flow);
 
+                timer2.Tick += (sender2, e2) =>
+                {
+                    this.myTimerTick(sender2, e2);
+                };
+                timer2.Start();
+
                 timer.Tick += (sender2, e1) =>
                 {
                     Console.WriteLine("In tick");
                     showResults(sender2, e);
                 };
                 timer.Start();
+
+                this.TimerStart = DateTime.Now;
+
+
+
 
                 //M1TimeBlock.Text = re1[0].ToString("0.##");
                 //M1VolumeBlock.Text = re1[1].ToString("0.##");
@@ -131,9 +146,16 @@ namespace PracaMagisterska
 
         }
 
+        private void myTimerTick(object sender, EventArgs e)
+        {
+            TimeSpan currentValue = DateTime.Now - this.TimerStart;
+            this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
+        }
+
         private void showResults(object sender, RoutedEventArgs e)
         {
             timer.Stop();
+            timer2.Stop();
             M1VolumeBlock.Text = neuron0.outFlowVolume.ToString();
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString();
             M3VolumeBlock.Text = neuron2.outFlowVolume.ToString();
@@ -156,6 +178,7 @@ namespace PracaMagisterska
             axonDiamBox.Text = "";
             flowBox.Text = "";
             timeBox.Text = "";
+            timerTextBlock.Text = "00:00";
 
             neuron0.reset();
             neuron1.reset();
@@ -256,6 +279,8 @@ namespace PracaMagisterska
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
+            timer.Stop();
+            timer2.Stop();
             neuron0.stopFlow();
             neuron1.stopFlow();
             neuron2.stopFlow();
