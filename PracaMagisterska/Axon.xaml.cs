@@ -172,6 +172,7 @@ namespace PracaMagisterska
             timer.Stop();
         }
 
+
         public void unloadFunc()
        {
             Console.WriteLine("Axon unload");

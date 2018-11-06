@@ -110,6 +110,14 @@ namespace PracaMagisterska
             dendrite.reset();
         }
 
+        public void continueFlow(int time)
+        {
+            Console.WriteLine("In neuron 0 continue");
+            timer.Start();
+            timer2.Interval = TimeSpan.FromSeconds(time);
+            timer2.Start();
+        }
+
         public void stopTimer(object sender, EventArgs e)
         {
             timer.Stop();

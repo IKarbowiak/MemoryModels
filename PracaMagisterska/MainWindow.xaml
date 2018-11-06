@@ -96,15 +96,15 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
             <Button x:Name="defaultParButton" Grid.Column="0" Grid.Row="0" Height="20" Width="100" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0,0,0,10" Background="Beige" Click="defaultParButton_Click" Content="Click for default"/>
             <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/></TextBlock>
-            <TextBlock x:Name="infoNeuron" Grid.Column="0" Grid.Row="1" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12"><Run Text="(length must be bigger than 30"/><Run Text="μ"/><Run Text="m)"/></TextBlock>
+            <TextBlock x:Name="infoNeuron" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(length must be bigger than 30"/><Run Text="μ"/><Run Text="m)"/></TextBlock>
             <TextBox x:Name="neuronLenBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Height="18" Width="50"/>
 
             <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Dendrites diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-            <TextBlock x:Name="denDiamInfo" Grid.Column="0" Grid.Row="2" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
+            <TextBlock x:Name="denDiamInfo" Grid.Column="0" Grid.Row="2" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
             <TextBox x:Name="denDiamBox" Grid.Column="1" Grid.Row="2" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
 
             <TextBlock Grid.Column="0" Grid.Row="3" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-            <TextBlock x:Name="axonDiamInfo" Grid.Column="0" Grid.Row="3" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Bottom" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
+            <TextBlock x:Name="axonDiamInfo" Grid.Column="0" Grid.Row="3" Margin="0,0,0,13" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
             <TextBox x:Name="axonDiamBox" Grid.Column="1" Grid.Row="3" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
 
             <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" Grid.ColumnSpan="1" Margin="0,0,0, 0" Height="16"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
@@ -149,10 +149,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20*"/>
-                <RowDefinition Height="29*"/>
-                <RowDefinition Height="27*"/>
-                <RowDefinition Height="31*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Height="18" ><Run Text="Results"/></TextBlock>
             <!--<TextBlock Grid.Column="0" Grid.Row="1" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center"  FontSize="11" Height="14"><Run Text="Flow delay"/></TextBlock>

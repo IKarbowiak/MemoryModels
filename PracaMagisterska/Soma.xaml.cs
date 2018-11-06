@@ -146,6 +146,7 @@ namespace PracaMagisterska
 
         public void unloadFunc()
         {
+            this.liquidVolume = this.threshold;
             Console.WriteLine("Soma unload");
             Console.WriteLine(this.rowCounter);
             Console.WriteLine(this.rowToReachTeshold);
@@ -176,6 +177,7 @@ namespace PracaMagisterska
             }
 
         }
+
 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {

@@ -45,6 +45,8 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         private DateTime TimerStart { get; set; }
+        private bool newFlow;
+        private double time;
 
         public MainWindow()
         {
@@ -73,67 +75,85 @@ namespace PracaMagisterska
 
             timer = new System.Windows.Threading.DispatcherTimer();
             timer2 = new System.Windows.Threading.DispatcherTimer();
+            this.newFlow = true;
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
         {
-
-            double[] validateRes = validate_boxes();
-
-            double neuronLength = validateRes[0];
-            double denDiam = validateRes[1];
-            double axDiam = validateRes[2];
-            double flow = validateRes[3];
-            double time = validateRes[4];
-            int delay = 0;
-
-            if (timerTextBlock.Text != "00:00")
+            double newTime;
+            int delay;
+            if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
+                Console.WriteLine("Continue main win");
                 string[] seconds = timerTextBlock.Text.Split(':');
                 Console.WriteLine(seconds[0]);
                 Console.WriteLine(seconds[1].Trim(new Char[] {'0',}));
                 delay = Int32.Parse(seconds[1].Trim(new Char[] { '0', }));
-                time = time - delay;
+                newTime = time - delay;
                 Console.WriteLine("New time: " + time);
-            }
-
-            timer.Interval = TimeSpan.FromSeconds(time);
-            timer2.Interval = TimeSpan.FromSeconds(1);
-
-
-            if ((neuronLength > 0 ) && ( denDiam >0) && (axDiam > 0) && (flow >0 ) && (time> 0))
-            {
-                //model1uc.length = neuronLength;
-                //double[] re1 = model1uc.Flow(20);
-                startButton.IsEnabled = false;
-
-                neuron1.neuronLength = neuronLength;
-                neuron1.denDiam = denDiam;
-                neuron1.axDiam = axDiam;
-
-                neuron2.neuronLength = neuronLength;
-                neuron2.denDiam = denDiam;
-                neuron2.axDiam = axDiam;
-
-                neuron0.flow((double)time, flow);
-                neuron1.flow((double)time, flow);
-                neuron2.flow((double)time, flow);
-
-                timer2.Tick += (sender2, e2) =>
-                {
-                    this.myTimerTick(sender2, e2);
-                };
-                timer2.Start();
-
-                timer.Tick += (sender2, e1) =>
-                {
-                    Console.WriteLine("In tick");
-                    showResults(sender2, e);
-                };
+                timer.Interval = TimeSpan.FromSeconds(newTime + 1);
                 timer.Start();
-
-
+                timer2.Start();
                 this.TimerStart = DateTime.Now.AddSeconds(-delay);
+                neuron0.continueFlow((int)newTime);
+                neuron1.continueFlow((int)newTime);
+                neuron2.continueFlow((int)newTime);
+            }
+            else
+            {
+
+                double[] validateRes = validate_boxes();
+
+                double neuronLength = validateRes[0];
+                double denDiam = validateRes[1];
+                double axDiam = validateRes[2];
+                double flow = validateRes[3];
+                time = validateRes[4];
+
+                timer.Interval = TimeSpan.FromSeconds(time);
+                timer2.Interval = TimeSpan.FromSeconds(1);
+
+
+                if ((neuronLength > 0) && (denDiam > 0) && (axDiam > 0) && (flow > 0) && (time > 0))
+                {
+                    //model1uc.length = neuronLength;
+                    //double[] re1 = model1uc.Flow(20);
+                    startButton.IsEnabled = false;
+                    M1VolumeBlock.Text = "0";
+                    M2VolumeBlock.Text = "0";
+                    M3VolumeBlock.Text = "0";
+
+                    neuron1.neuronLength = neuronLength;
+                    neuron1.denDiam = denDiam;
+                    neuron1.axDiam = axDiam;
+
+                    neuron2.neuronLength = neuronLength;
+                    neuron2.denDiam = denDiam;
+                    neuron2.axDiam = axDiam;
+
+                    neuron0.flow((double)time, flow);
+                    neuron1.flow((double)time, flow);
+                    neuron2.flow((double)time, flow);
+
+                    this.TimerStart = DateTime.Now;
+                    timer2.Tick += (sender2, e2) =>
+                    {
+                        this.myTimerTick(sender2, e2);
+                    };
+                    timer2.Start();
+
+
+                    timer.Tick += (sender2, e1) =>
+                    {
+                        Console.WriteLine("In tick");
+                        showResults(sender2, e);
+                    };
+                    timer.Start();
+
+
+                    this.newFlow = false;
+                }
+           
 
 
                 //M1TimeBlock.Text = re1[0].ToString("0.##");
@@ -171,6 +191,7 @@ namespace PracaMagisterska
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString();
             M3VolumeBlock.Text = neuron2.outFlowVolume.ToString();
             startButton.IsEnabled = true;
+            this.newFlow = true;
 
         }
 
@@ -194,6 +215,8 @@ namespace PracaMagisterska
             neuron0.reset();
             neuron1.reset();
             neuron2.reset();
+
+            this.newFlow = true;
         }
 
         private double[] validate_boxes()
@@ -296,6 +319,7 @@ namespace PracaMagisterska
             neuron1.stopFlow();
             neuron2.stopFlow();
             startButton.IsEnabled = true;
+            this.newFlow = false;
         }
     }
 

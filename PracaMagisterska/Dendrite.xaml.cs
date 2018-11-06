@@ -162,6 +162,7 @@ namespace PracaMagisterska
             timer.Stop();
         }
 
+
         public void unloadFunc()
         {
             Console.WriteLine("Dendirte unload");
