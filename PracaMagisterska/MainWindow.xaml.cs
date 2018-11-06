@@ -85,6 +85,18 @@ namespace PracaMagisterska
             double axDiam = validateRes[2];
             double flow = validateRes[3];
             double time = validateRes[4];
+            int delay = 0;
+
+            if (timerTextBlock.Text != "00:00")
+            {
+                string[] seconds = timerTextBlock.Text.Split(':');
+                Console.WriteLine(seconds[0]);
+                Console.WriteLine(seconds[1].Trim(new Char[] {'0',}));
+                delay = Int32.Parse(seconds[1].Trim(new Char[] { '0', }));
+                time = time - delay;
+                Console.WriteLine("New time: " + time);
+            }
+
             timer.Interval = TimeSpan.FromSeconds(time);
             timer2.Interval = TimeSpan.FromSeconds(1);
 
@@ -120,9 +132,8 @@ namespace PracaMagisterska
                 };
                 timer.Start();
 
-                this.TimerStart = DateTime.Now;
 
-
+                this.TimerStart = DateTime.Now.AddSeconds(-delay);
 
 
                 //M1TimeBlock.Text = re1[0].ToString("0.##");
@@ -165,9 +176,9 @@ namespace PracaMagisterska
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
-            M1TimeBlock.Text = "";
-            M2TimeBlock.Text = "";
-            M3TimeBlock.Text = "";
+            //M1TimeBlock.Text = "";
+            //M2TimeBlock.Text = "";
+            //M3TimeBlock.Text = "";
 
             M1VolumeBlock.Text = "";
             M2VolumeBlock.Text = "";
@@ -284,6 +295,7 @@ namespace PracaMagisterska
             neuron0.stopFlow();
             neuron1.stopFlow();
             neuron2.stopFlow();
+            startButton.IsEnabled = true;
         }
     }
 

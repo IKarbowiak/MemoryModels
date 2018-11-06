@@ -139,7 +139,7 @@ namespace PracaMagisterska
             {
                 for (int j = 0; j < recDenArray.Length; j++)
                 {
-                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.Blue;
+                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
 
                 }
             }
