@@ -78,6 +78,9 @@
     <Compile Include="Neuron2.xaml.cs">
       <DependentUpon>Neuron2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SetParametersWindow.xaml.cs">
+      <DependentUpon>SetParametersWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Soma.xaml.cs">
       <DependentUpon>Soma.xaml</DependentUpon>
     </Compile>
@@ -126,6 +129,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Neuron2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SetParametersWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

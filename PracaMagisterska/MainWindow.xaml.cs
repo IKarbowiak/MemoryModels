@@ -35,10 +35,6 @@ namespace PracaMagisterska
 
     public partial class MainWindow : Window
     {
-        private Model1UC model1uc;
-        private Dendrite dendrite;
-        private Soma soma;
-        private Axon axon;
         private Neuron0 neuron0;
         private Neuron1 neuron1;
         private Neuron2 neuron2;
@@ -302,6 +298,8 @@ namespace PracaMagisterska
             //MessageBox.Show(myWindow.tbReturn.Text);
         }
 
+
+
         private void defaultParButton_Click(object sender, RoutedEventArgs e)
         {
             neuronLenBox.Text = "40";
@@ -320,6 +318,13 @@ namespace PracaMagisterska
             neuron2.stopFlow();
             startButton.IsEnabled = true;
             this.newFlow = false;
+        }
+
+        private void setParamButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetParametersWindow myWindow = new SetParametersWindow();
+
+            myWindow.ShowDialog();
         }
     }
 

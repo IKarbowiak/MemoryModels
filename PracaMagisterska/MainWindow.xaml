@@ -94,7 +94,8 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
-            <Button x:Name="defaultParButton" Grid.Column="0" Grid.Row="0" Height="20" Width="100" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0,0,0,10" Background="Beige" Click="defaultParButton_Click" Content="Click for default"/>
+            <Button x:Name="setParamButton" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" Height="20" Width="100" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="50,0,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
+            <Button x:Name="defaultParButton" Grid.Column="0" Grid.Row="0" Height="20" Width="100" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,10" Background="Beige" Click="defaultParButton_Click" Content="Click for default"/>
             <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/></TextBlock>
             <TextBlock x:Name="infoNeuron" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(length must be bigger than 30"/><Run Text="μ"/><Run Text="m)"/></TextBlock>
             <TextBox x:Name="neuronLenBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Height="18" Width="50"/>
