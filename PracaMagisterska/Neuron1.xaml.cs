@@ -31,9 +31,11 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
+        Point startPoint;
 
         public Neuron1()
         {
+            Console.WriteLine("DUPASRAKA");
             InitializeComponent();
             dendrite = new Dendrite(false);
             dendrite.HorizontalAlignment = HorizontalAlignment.Left;
@@ -56,6 +58,32 @@ namespace PracaMagisterska
 
             this.outFlowVolume = 0;
         }
+
+
+        //public Neuron1(Neuron1 neuron1)
+        //{
+        //    InitializeComponent();
+        //    dendrite = new Dendrite(false);
+        //    dendrite.HorizontalAlignment = HorizontalAlignment.Left;
+        //    Grid.SetColumn(dendrite, 1);
+        //    Grid.SetRow(dendrite, 1);
+        //    neuronGrid.Children.Add(dendrite);
+
+        //    axon = new Axon(false);
+        //    axon.HorizontalAlignment = HorizontalAlignment.Right;
+        //    Grid.SetColumn(axon, 1);
+        //    Grid.SetRow(axon, 1);
+        //    neuronGrid.Children.Add(axon);
+
+        //    soma = new Soma(false);
+        //    soma.HorizontalAlignment = HorizontalAlignment.Center;
+        //    soma.Margin = new System.Windows.Thickness(0, 0, 190, 0);
+        //    Grid.SetColumn(soma, 1);
+        //    Grid.SetRow(soma, 1);
+        //    neuronGrid.Children.Add(soma);
+
+        //    this.outFlowVolume = 0;
+        //}
 
         public void flow(double time, double flow)
         {
@@ -128,6 +156,96 @@ namespace PracaMagisterska
             outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine(axon.flowedOutVolume);
             Console.WriteLine("Stop timer in Neuron1");
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DataObject data = new DataObject();
+                Neuron1 neurus = new Neuron1();
+                data.SetData("Object", this);
+                data.SetData("Model", "Model1");
+
+                // Inititate the drag-and-drop operation.
+                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
+            }
+        }
+
+        protected override void OnDrop(DragEventArgs e)
+        {
+            base.OnDrop(e);
+            Console.WriteLine("On drop");
+            // If the DataObject contains string data, extract it.
+            if (e.Data.GetDataPresent("Model"))
+            {
+                string dataString = (string)e.Data.GetData("Model");
+                Console.WriteLine(dataString);
+                // If the string can be converted into a Brush, 
+                // convert it and apply it to the ellipse.
+
+                // Set Effects to notify the drag source what effect
+                // the drag-and-drop operation had.
+                // (Copy if CTRL is pressed; otherwise, move.)
+
+                e.Effects = DragDropEffects.Move;
+                
+                
+            }
+            e.Handled = true;
+        }
+
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+            // Save the current Fill brush so that you can revert back to this value in DragLeave.
+            Console.WriteLine("On drag enter");
+            // If the DataObject contains string data, extract it.
+            if (e.Data.GetDataPresent("Model"))
+            {
+                string dataString = (string)e.Data.GetData("Model");
+
+                Console.WriteLine(dataString);
+            }
+        }
+
+        protected override void OnDragLeave(DragEventArgs e)
+        {
+            base.OnDragLeave(e);
+            // Undo the preview that was applied in OnDragEnter.
+            Console.WriteLine("Leave");
+        }
+
+        protected override void OnDragOver(DragEventArgs e)
+        {
+            base.OnDragOver(e);
+            e.Effects = DragDropEffects.None;
+
+            // If the DataObject contains string data, extract it.
+            if (e.Data.GetDataPresent(DataFormats.StringFormat))
+            {
+                string dataString = (string)e.Data.GetData(DataFormats.StringFormat);
+
+                // If the string can be converted into a Brush, allow copying or moving.
+                BrushConverter converter = new BrushConverter();
+                if (converter.IsValid(dataString))
+                {
+                    // Set Effects to notify the drag source what effect
+                    // the drag-and-drop operation will have. These values are 
+                    // used by the drag source's GiveFeedback event handler.
+                    // (Copy if CTRL is pressed; otherwise, move.)
+                    if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
+                    {
+                        e.Effects = DragDropEffects.Copy;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.Move;
+                    }
+                }
+            }
+            e.Handled = true;
         }
     }
 }

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PracaMagisterska"
              mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="400">
+             d:DesignHeight="60" d:DesignWidth="400"
+             AllowDrop="True">
     <Grid x:Name="neuronGrid" Width="380" Height="60">
             
     </Grid>

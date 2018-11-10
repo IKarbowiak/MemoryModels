@@ -35,17 +35,5 @@ namespace PracaMagisterska
 
         }
         
-
-        //private void ModelComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    string selectedValue = ModelComboBox.SelectedValue.ToString().Split(':')[1];
-        //    Console.WriteLine(selectedValue);
-
-        //    //switch (selectedValue)
-        //    //{
-        //    //    case "Model1": 
-        //    //        te
-        //    //}
-        //}
     }
 }

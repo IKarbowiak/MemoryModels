@@ -5,8 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
+        Title="Window1" Height="650" Width="1200">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.Column="0" Margin="10,40,0,10" BorderBrush="Gray" BorderThickness="1">
+            <StackPanel x:Name="objectHandlerPanel" Background="Beige" AllowDrop="True" DragOver="panel_DragOver">
+                <TextBlock TextAlignment="Center">Model 1</TextBlock>
+                <Viewbox StretchDirection="Both" Stretch="Uniform">
+                    <local:Neuron0 Height="200" Width="450" />
+                </Viewbox>
+                <TextBlock TextAlignment="Center">Model 2</TextBlock>
+                <Viewbox StretchDirection="Both" Stretch="Uniform">
+                    <local:Neuron1 Height="200" Width="450" AllowDrop="True" PreviewMouseLeftButtonDown="neuron1_PreviewMouseLeftButtonDown"
+             PreviewMouseMove="neuon1_MouseMove"/>
+                </Viewbox>
+                <TextBlock TextAlignment="Center">Model 2</TextBlock>
+                <Viewbox StretchDirection="Both" Stretch="Uniform">
+                    <local:Neuron2 Height="200" Width="450"/>
+                </Viewbox>
+            </StackPanel>
+        </Border>
+        <!--<Border Grid.Column="1" Grid.Row="0" Margin="0,45,10,10" BorderBrush="Gray" BorderThickness="1">-->
+        <StackPanel  x:Name="dropCanvas"  Background="Beige" Grid.Column="1" Grid.Row="0" Margin="0,45,10,10" AllowDrop="True" DragOver="panel_DragOver"
+            Drop="panel_Drop">
+
+            </StackPanel>
+        <!--</Border>-->
     </Grid>
 </Window>
