@@ -23,6 +23,9 @@ namespace PracaMagisterska
         Point startPoint;
         string dragPanel;
         bool drag = false;
+        double maxX;
+        double maxY;
+        
 
         public Window1()
         {
@@ -218,8 +221,8 @@ namespace PracaMagisterska
             //    // Console.WriteLine("Dupka");
         }
 
-        private void neuon1_MouseMove(object sender, MouseEventArgs e)
-        {
+        //private void neuon1_MouseMove(object sender, MouseEventArgs e)
+        //{
             //    // Console.WriteLine("Pupka");
             //    //Point mousePos = e.GetPosition(null);
             //    //Vector diff = startPoint - mousePos;
@@ -238,6 +241,71 @@ namespace PracaMagisterska
             //    //    // Initialize the drag & drop operation
             //    //    DragDrop.DoDragDrop(this, data, DragDropEffects.Move);
             //    //}
+        //}
+
+        private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            maxX = dropCanvas.ActualWidth - ((Viewbox)sender).Width;
+            maxY = dropCanvas.ActualHeight - ((Viewbox)sender).Height;
+
+            ((Viewbox)sender).CaptureMouse();
+            Console.WriteLine("In Mouse Down");
+            ((Viewbox)sender).MouseMove += neuron_MouseMove;
+            ((Viewbox)sender).MouseUp += neuron_MouseUp;
         }
+
+        private void neuron_MouseMove(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("In mouse move");
+            var pos = e.GetPosition(dropCanvas);
+            var newX = pos.X - (((Viewbox)sender).Width / 2);
+            var newY = pos.Y - (((Viewbox)sender).Height / 2);
+
+            if (newX < 0) newX = 0;
+            if (newX > maxX) newX = maxX;
+
+            if (newY < 0) newY = 0;
+            if (newY > maxY) newY = maxY;
+
+            ((Viewbox)sender).SetValue(Canvas.LeftProperty, newX);
+            ((Viewbox)sender).SetValue(Canvas.TopProperty, newY);
+
+        }
+
+        private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine("In mouse up");
+            ((Viewbox)sender).ReleaseMouseCapture();
+            ((Viewbox)sender).MouseMove -= neuron_MouseMove;
+            ((Viewbox)sender).MouseUp -= neuron_MouseUp;
+        }
+
+        private void create_neuron0(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
+            Neuron0 newNeuron = new Neuron0();
+            viewbox.Child = newNeuron;
+            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+            dropCanvas.Children.Add(viewbox);
+        }
+
+        private void create_neuron1(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250};
+            Neuron1 newNeuron = new Neuron1();
+            viewbox.Child = newNeuron;
+            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+            dropCanvas.Children.Add(viewbox);
+        }
+
+        private void create_neuron2(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
+            Neuron2 newNeuron = new Neuron2();
+            viewbox.Child = newNeuron;
+            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+            dropCanvas.Children.Add(viewbox);
+        }
+
     }
 }

@@ -158,94 +158,94 @@ namespace PracaMagisterska
             Console.WriteLine("Stop timer in Neuron1");
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DataObject data = new DataObject();
-                Neuron1 neurus = new Neuron1();
-                data.SetData("Object", this);
-                data.SetData("Model", "Model1");
+        //    protected override void OnMouseMove(MouseEventArgs e)
+        //    {
+        //        base.OnMouseMove(e);
+        //        if (e.LeftButton == MouseButtonState.Pressed)
+        //        {
+        //            DataObject data = new DataObject();
+        //            Neuron1 neurus = new Neuron1();
+        //            data.SetData("Object", this);
+        //            data.SetData("Model", "Model1");
 
-                // Inititate the drag-and-drop operation.
-                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
-            }
-        }
+        //            // Inititate the drag-and-drop operation.
+        //            DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
+        //        }
+        //    }
 
-        protected override void OnDrop(DragEventArgs e)
-        {
-            base.OnDrop(e);
-            Console.WriteLine("On drop");
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent("Model"))
-            {
-                string dataString = (string)e.Data.GetData("Model");
-                Console.WriteLine(dataString);
-                // If the string can be converted into a Brush, 
-                // convert it and apply it to the ellipse.
+        //    protected override void OnDrop(DragEventArgs e)
+        //    {
+        //        base.OnDrop(e);
+        //        Console.WriteLine("On drop");
+        //        // If the DataObject contains string data, extract it.
+        //        if (e.Data.GetDataPresent("Model"))
+        //        {
+        //            string dataString = (string)e.Data.GetData("Model");
+        //            Console.WriteLine(dataString);
+        //            // If the string can be converted into a Brush, 
+        //            // convert it and apply it to the ellipse.
 
-                // Set Effects to notify the drag source what effect
-                // the drag-and-drop operation had.
-                // (Copy if CTRL is pressed; otherwise, move.)
+        //            // Set Effects to notify the drag source what effect
+        //            // the drag-and-drop operation had.
+        //            // (Copy if CTRL is pressed; otherwise, move.)
 
-                e.Effects = DragDropEffects.Move;
-                
-                
-            }
-            e.Handled = true;
-        }
+        //            e.Effects = DragDropEffects.Move;
 
-        protected override void OnDragEnter(DragEventArgs e)
-        {
-            base.OnDragEnter(e);
-            // Save the current Fill brush so that you can revert back to this value in DragLeave.
-            Console.WriteLine("On drag enter");
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent("Model"))
-            {
-                string dataString = (string)e.Data.GetData("Model");
 
-                Console.WriteLine(dataString);
-            }
-        }
+        //        }
+        //        e.Handled = true;
+        //    }
 
-        protected override void OnDragLeave(DragEventArgs e)
-        {
-            base.OnDragLeave(e);
-            // Undo the preview that was applied in OnDragEnter.
-            Console.WriteLine("Leave");
-        }
+        //    protected override void OnDragEnter(DragEventArgs e)
+        //    {
+        //        base.OnDragEnter(e);
+        //        // Save the current Fill brush so that you can revert back to this value in DragLeave.
+        //        Console.WriteLine("On drag enter");
+        //        // If the DataObject contains string data, extract it.
+        //        if (e.Data.GetDataPresent("Model"))
+        //        {
+        //            string dataString = (string)e.Data.GetData("Model");
 
-        protected override void OnDragOver(DragEventArgs e)
-        {
-            base.OnDragOver(e);
-            e.Effects = DragDropEffects.None;
+        //            Console.WriteLine(dataString);
+        //        }
+        //    }
 
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent(DataFormats.StringFormat))
-            {
-                string dataString = (string)e.Data.GetData(DataFormats.StringFormat);
+        //    protected override void OnDragLeave(DragEventArgs e)
+        //    {
+        //        base.OnDragLeave(e);
+        //        // Undo the preview that was applied in OnDragEnter.
+        //        Console.WriteLine("Leave");
+        //    }
 
-                // If the string can be converted into a Brush, allow copying or moving.
-                BrushConverter converter = new BrushConverter();
-                if (converter.IsValid(dataString))
-                {
-                    // Set Effects to notify the drag source what effect
-                    // the drag-and-drop operation will have. These values are 
-                    // used by the drag source's GiveFeedback event handler.
-                    // (Copy if CTRL is pressed; otherwise, move.)
-                    if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
-                    {
-                        e.Effects = DragDropEffects.Copy;
-                    }
-                    else
-                    {
-                        e.Effects = DragDropEffects.Move;
-                    }
-                }
-            }
-            e.Handled = true;
-        }
+        //    protected override void OnDragOver(DragEventArgs e)
+        //    {
+        //        base.OnDragOver(e);
+        //        e.Effects = DragDropEffects.None;
+
+        //        // If the DataObject contains string data, extract it.
+        //        if (e.Data.GetDataPresent(DataFormats.StringFormat))
+        //        {
+        //            string dataString = (string)e.Data.GetData(DataFormats.StringFormat);
+
+        //            // If the string can be converted into a Brush, allow copying or moving.
+        //            BrushConverter converter = new BrushConverter();
+        //            if (converter.IsValid(dataString))
+        //            {
+        //                // Set Effects to notify the drag source what effect
+        //                // the drag-and-drop operation will have. These values are 
+        //                // used by the drag source's GiveFeedback event handler.
+        //                // (Copy if CTRL is pressed; otherwise, move.)
+        //                if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
+        //                {
+        //                    e.Effects = DragDropEffects.Copy;
+        //                }
+        //                else
+        //                {
+        //                    e.Effects = DragDropEffects.Move;
+        //                }
+        //            }
+        //        }
+        //        e.Handled = true;
+        //    }
     }
 }
