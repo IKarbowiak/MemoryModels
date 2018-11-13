@@ -129,8 +129,7 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Height="18" ><Run Text="Results"/></TextBlock>
             <!--<TextBlock Grid.Column="0" Grid.Row="1" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center"  FontSize="11" Height="14"><Run Text="Flow delay"/></TextBlock>
             <TextBlock Grid.Column="0" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center"  FontSize="11" Grid.Row="1"><Run Text="[s]"/></TextBlock>-->
-            <TextBlock Grid.Column="1" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center"  Margin="0.4,0,0.2,0" FontSize="11" Grid.Row="1" Height="14"><Run Text="Volume of outflow"/></TextBlock>
-            <TextBlock Grid.Column="1" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center"  Margin="0.4,0,0.2,0.8" FontSize="11" Grid.Row="1" Height="15"><Run Text="["/><Run Text="μ" /><Run Text="m"/><Run Typography.Variants="Superscript" Text="3"/><Run Text="]"/></TextBlock>
+            <TextBlock Grid.Column="1" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center"  Margin="0.4,5,0.2,0" FontSize="11" Grid.Row="1" Height="14"><Run Text="Volume of outflow"/><Run Text=" ["/><Run Text="μ" /><Run Text="m"/><Run Typography.Variants="Superscript" Text="3"/><Run Text="]"/></TextBlock>
             <!--<Border Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" >
                 <TextBlock x:Name="M1TimeBlock" TextAlignment="Center" Height="16" />
             </Border>-->

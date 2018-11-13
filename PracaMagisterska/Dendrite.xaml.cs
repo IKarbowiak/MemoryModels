@@ -37,7 +37,6 @@ namespace PracaMagisterska
         public Dendrite(bool dim3d)
         {
             InitializeComponent();
-            Console.WriteLine("Dendrite");
             this.length = 1.5;
             this.diameter = 0.4;
             this.dimension3D = dim3d;
@@ -127,7 +126,6 @@ namespace PracaMagisterska
 
         private void fillRect(object sender, EventArgs e, int collToFill, int colToFinish)
         {
-            Console.WriteLine("In fill den");
             int colToFill = this.columnsCounter + collToFill;
 
             if (colToFill > recDenArray[0].Length)
@@ -203,11 +201,6 @@ namespace PracaMagisterska
             int columnNumber = Convert.ToInt32(modelElement.Width);
 
             Rectangle rec;
-            Console.WriteLine(rowNumber);
-            Console.WriteLine(columnNumber);
-
-            Console.WriteLine(modelGrid.Width);
-            Console.WriteLine(modelGrid.Height);
 
 
             Rectangle[][] recArray = new Rectangle[rowNumber][];

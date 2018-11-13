@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace PracaMagisterska
 {
     /// <summary>
@@ -62,6 +63,7 @@ namespace PracaMagisterska
 
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
         {
+
             bool push = false;
             Console.WriteLine("In new Soma " + volumeIncrease);
             double increase = this.liquidVolume + volumeIncrease;
@@ -147,9 +149,6 @@ namespace PracaMagisterska
         public void unloadFunc()
         {
             this.liquidVolume = this.threshold;
-            Console.WriteLine("Soma unload");
-            Console.WriteLine(this.rowCounter);
-            Console.WriteLine(this.rowToReachTeshold);
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
             for (int j = this.rowCounter; j < this.rowToReachTeshold + 2; j++)
@@ -185,11 +184,6 @@ namespace PracaMagisterska
             int columnNumber = Convert.ToInt32(modelElement.Width);
 
             Rectangle rec;
-            Console.WriteLine(rowNumber);
-            Console.WriteLine(columnNumber);
-
-            Console.WriteLine(modelGrid.Width);
-            Console.WriteLine(modelGrid.Height);
 
 
             Rectangle[][] recArray = new Rectangle[rowNumber][];

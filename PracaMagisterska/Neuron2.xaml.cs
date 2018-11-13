@@ -91,12 +91,9 @@ namespace PracaMagisterska
                 Tuple<bool, double> dendriteRes2 = dendrite2.newFlow(sender, e, flow, soma, axon);
                 if (dendriteRes1.Item1 | dendriteRes2.Item1)
                 {
-                    Console.WriteLine("Den 1" + dendriteRes1);
-                    Console.WriteLine("Den 2" + dendriteRes2);
                     Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes1.Item2 + dendriteRes2.Item2);
                     if (somaRes.Item1)
                     {
-                        Console.WriteLine(somaRes);
                         axon.newFlow(sender, e, somaRes.Item2);
                     }
                 }
@@ -145,8 +142,6 @@ namespace PracaMagisterska
             Dispatcher.Invoke(() => { dendrite2.unloadFunc(); });
             timer2.Stop();
             this.outFlowVolume = axon.flowedOutVolume;
-            Console.WriteLine(axon.flowedOutVolume);
-            Console.WriteLine("Stop timer in Neuron2");
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {

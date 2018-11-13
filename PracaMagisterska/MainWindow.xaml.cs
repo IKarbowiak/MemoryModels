@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,7 @@ namespace PracaMagisterska
         public MainWindow()
         {
             InitializeComponent();
+            //Debug.Print("This is debug prin");
 
 
             //model1uc = new Model1UC();
@@ -80,13 +82,9 @@ namespace PracaMagisterska
             int delay;
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
-                Console.WriteLine("Continue main win");
                 string[] seconds = timerTextBlock.Text.Split(':');
-                Console.WriteLine(seconds[0]);
-                Console.WriteLine(seconds[1].Trim(new Char[] {'0',}));
                 delay = Int32.Parse(seconds[1].Trim(new Char[] { '0', }));
                 newTime = time - delay;
-                Console.WriteLine("New time: " + time);
                 timer.Interval = TimeSpan.FromSeconds(newTime + 1);
                 timer.Start();
                 timer2.Start();
@@ -323,8 +321,42 @@ namespace PracaMagisterska
         private void setParamButton_Click(object sender, RoutedEventArgs e)
         {
             SetParametersWindow myWindow = new SetParametersWindow();
+            int n;
+
+            myWindow.flowBoxM1.Text = this.flowBox.Text;
+            myWindow.flowBoxM2.Text = this.flowBox.Text;
+            myWindow.flowBoxM3.Text = this.flowBox.Text;
+
+            myWindow.timeBoxM1.Text = this.timeBox.Text;
+            myWindow.timeBoxM2.Text = this.timeBox.Text;
+            myWindow.timeBoxM3.Text = this.timeBox.Text;
+
+            myWindow.denDiamBoxM1.Text = this.denDiamBox.Text;
+            myWindow.denDiamBoxM2.Text = this.denDiamBox.Text;
+            myWindow.den1DiamBoxM3.Text = this.denDiamBox.Text;
+            myWindow.den2DiamBoxM3.Text = this.denDiamBox.Text;
+
+            myWindow.neuronLenBoxM1.Text = this.neuronLenBox.Text;
+
+            if (int.TryParse(this.neuronLenBox.Text, out n))
+            {
+                myWindow.denLenBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+                myWindow.den1LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+                myWindow.den2LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+
+                myWindow.axonLenM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
+                myWindow.axonLenM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
+
+                myWindow.somaDiamBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
+                myWindow.somaDiamBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
+            }
+
+            myWindow.axonDiamBoxM1.Text = this.axonDiamBox.Text;
+            myWindow.axonDiamM2.Text = this.axonDiamBox.Text;
+            myWindow.axonDiamM3.Text = this.axonDiamBox.Text;
 
             myWindow.ShowDialog();
+
         }
     }
 

@@ -44,7 +44,6 @@ namespace PracaMagisterska
             this.calculateParameters();
             if (recWidth != 260 || recHeight != 11)
             {
-                Console.WriteLine("Here");
                 changeRecSize(recWidth, recHeight);
             }
             recAxonArray = this.splitRecModel(axonRec, axonGrid);
@@ -83,7 +82,6 @@ namespace PracaMagisterska
 
         public void newFlow(object sender, EventArgs e, double volumeIncrease)
         {
-            Console.WriteLine("In aaxon new flow");
             if (this.liquidVolume < this.volume && this.volume <= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
@@ -214,12 +212,6 @@ namespace PracaMagisterska
             int columnNumber = Convert.ToInt32(modelElement.Width);
 
             Rectangle rec;
-            Console.WriteLine(rowNumber);
-            Console.WriteLine(columnNumber);
-
-            Console.WriteLine(modelGrid.Width);
-            Console.WriteLine(modelGrid.Height);
-
 
             Rectangle[][] recArray = new Rectangle[rowNumber][];
 
