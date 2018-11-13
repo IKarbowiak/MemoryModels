@@ -291,7 +291,7 @@ namespace PracaMagisterska
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Window1 myWindow = new Window1();
+            DragAndDropPanel myWindow = new DragAndDropPanel();
 
             myWindow.ShowDialog();
 

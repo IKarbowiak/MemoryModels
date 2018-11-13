@@ -18,7 +18,7 @@ namespace PracaMagisterska
     /// Interaction logic for Window1.xaml
     /// </summary>
     /// 
-    public partial class Window1 : Window
+    public partial class DragAndDropPanel : Window
     {
         Point startPoint;
         string dragPanel;
@@ -27,7 +27,7 @@ namespace PracaMagisterska
         double maxY;
         
 
-        public Window1()
+        public DragAndDropPanel()
         {
             InitializeComponent();
             

@@ -27,7 +27,7 @@
         <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,140,0"/>
         <Button x:Name="stopButton" Grid.Row="0" Grid.Column="1" Content="Stop" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,0,0" Click="stopButton_Click" />
         <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,60,0,0" Click="resetButton_Click"/>
-        <Button Grid.Row="0" Grid.Column="2" Width="80" Height="20" Click="Button_Click" Content="Drag and drop panel"/>
+        <Button Grid.Row="0" Grid.Column="2" Width="120" Height="20" Click="Button_Click" Content="Drag and drop panel"/>
         <Grid x:Name="gridModel1Main" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"/>
