@@ -22,9 +22,9 @@ namespace PracaMagisterska
     public partial class Neuron1 : UserControl
     {
 
-        private Dendrite dendrite;
-        private Soma soma;
-        private Axon axon;
+        public Dendrite dendrite { get; set; }
+        public Soma soma { get; set; }
+        public Axon axon { get; set; }
         public double neuronLength { get; set; }
         public double denDiam { get; set; }
         public double axDiam { get; set; }

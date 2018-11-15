@@ -28,7 +28,7 @@ namespace PracaMagisterska
         public Neuron0()
         {
             InitializeComponent();
-            axon = new Axon(recWidth: 380);
+            axon = new Axon(recWidth: 400);
             //axon.changeRecSize(380, 11);
             axon.HorizontalAlignment = HorizontalAlignment.Left;
             Grid.SetColumn(axon, 0);
