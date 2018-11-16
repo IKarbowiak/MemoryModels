@@ -69,7 +69,8 @@ namespace PracaMagisterska
         private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
-            int catchValue = 30;
+            int catchValue_rightleft = 30;
+            int catchValue_updown = 10;
             int offset = 8;
             string neuronType = viewbox.Child.GetType().ToString().Split('.')[1];
             Console.WriteLine("In mouse up " + neuronType);
@@ -85,86 +86,70 @@ namespace PracaMagisterska
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
-            foreach(KeyValuePair<Object, Double[]> element in canvasElements)
+            void set_TopAndBottom_Property(KeyValuePair<Object, Double[]> element, bool condition)
             {
-                Console.WriteLine(element.Key == viewbox);
-                Console.WriteLine((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox))));
-                Console.WriteLine((Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox))));
-
-                if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue) || (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue)))
+                if (condition)
                 {
-                    Console.WriteLine(element.Key + "      " + element.Value);
-                    Console.WriteLine("Inside");
-                    if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue)
+                    if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
                     {
-                        Console.WriteLine(Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)));
-                        Console.WriteLine(" Bee" + element.Value[0] + " " + Canvas.GetRight(viewbox));
-                        Viewbox elBox = (Viewbox)element.Key;
-                        Console.WriteLine(elBox.Child.GetType().ToString());
-                        Console.WriteLine(elBox.Child.GetType().ToString().Split('.')[1] == "Neuron2");
-                        if (elBox.Child.GetType().ToString().Split('.')[1] == "Neuron2")
-                        {
-                            
-                            Console.WriteLine("Ne2");
-                            if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
-                            {
-                                viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
-                                viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
-                            }
-                            else
-                            {
-                                viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
-                                viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
-                            }
-                        }
-                        else
-                        {
-                            viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
-                            viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
-                            
-                        }
-                        viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
-                        viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
-                        Console.WriteLine(Canvas.GetRight(viewbox));
+                        viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
+                        viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
                     }
-                    if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue)
+                    else
                     {
-                        Console.WriteLine(Math.Abs(element.Value[1] - Canvas.GetRight(viewbox)));
-                        Console.WriteLine(" Bee" + element.Value[1] + " " + Canvas.GetRight(viewbox));
-                        if (neuronType == "Neuron2")
-                        {
-                            if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
-                            {
-                                viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
-                                viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
-                            }
-                            else
-                            {
-                                viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
-                                viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
-                            }
-                        }
-                        else
-                        {
-                            viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
-                            viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
-                        }
+                        viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
+                        viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
+                    }
+                }
+                else
+                {
+                    viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
+                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
+                }
 
-                        viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
-                        viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
+            }
+
+            Action linkNeuron = delegate
+            {
+                foreach (KeyValuePair<Object, Double[]> element in canvasElements)
+                {
+                    Console.WriteLine(element.Key == viewbox);
+                    Console.WriteLine((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox))));
+                    Console.WriteLine((Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox))));
+
+                    if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) || (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
+                    {
+                        Console.WriteLine(element.Key + "      " + element.Value);
+                        Console.WriteLine("Inside");
+                        if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
+                        {
+                            Viewbox elBox = (Viewbox)element.Key;
+                            set_TopAndBottom_Property(element, (elBox.Child.GetType().ToString().Split('.')[1] == "Neuron2"));
+                            viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
+                            viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
+                            return;
+                        }
+                        if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
+                        {
+                            set_TopAndBottom_Property(element, (neuronType == "Neuron2"));
+                            viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
+                            viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
+                            return;
+
+                        }
 
                     }
 
                 }
-
-            }
+            };
+            linkNeuron();
+            
 
 
             double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
             canvasElements[sender] =  parameters;
             Console.WriteLine(canvasElements[sender][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
-            //Console.WriteLine(sender.GetType().Name);
         }
 
         private void create_neuron0(object sender, MouseButtonEventArgs e)

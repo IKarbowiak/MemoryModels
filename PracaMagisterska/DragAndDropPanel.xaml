@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="Window1" Height="650" Width="1200">
+        Title="Window1" Height="750" Width="1400">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="8*"/>
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="20" Margin="0,8,0,0">Neuron Panel</TextBlock>
+        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="25" Margin="0,6,0,0">Neuron Panel</TextBlock>
         <Border Grid.Row="0" Grid.Column="0" Margin="10,40,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel x:Name="objectHandlerPanel" Background="Beige" AllowDrop="True"  VerticalAlignment="Stretch">
                 <TextBlock TextAlignment="Center">Model 1</TextBlock>
