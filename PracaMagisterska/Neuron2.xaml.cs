@@ -31,6 +31,7 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
+        public double volumeToPush { get; set; }
 
         public Neuron2()
         {
@@ -94,7 +95,7 @@ namespace PracaMagisterska
                     Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes1.Item2 + dendriteRes2.Item2);
                     if (somaRes.Item1)
                     {
-                        axon.newFlow(sender, e, somaRes.Item2);
+                        this.volumeToPush = axon.newFlow(sender, e, somaRes.Item2);
                     }
                 }
             };

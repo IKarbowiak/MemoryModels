@@ -80,8 +80,9 @@ namespace PracaMagisterska
             //this.recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
-        public void newFlow(object sender, EventArgs e, double volumeIncrease)
+        public double newFlow(object sender, EventArgs e, double volumeIncrease)
         {
+            double volumeToPush = 0;
             if (this.liquidVolume < this.volume && this.volume <= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
@@ -108,7 +109,7 @@ namespace PracaMagisterska
             }
             else
             {
-                double volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
+                volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
                 int colToFillin1s = (int)axonRec.Width - this.columnsCounter;
                 if (colToFillin1s > 0)
@@ -131,6 +132,7 @@ namespace PracaMagisterska
                 this.flowedOutVolume += volumeToPush;
 
             }
+            return volumeToPush;
         }
 
         private void fillRect(object sender, EventArgs e, int collToFill, int colTofinish)

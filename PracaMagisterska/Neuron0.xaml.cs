@@ -24,6 +24,7 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
+        public double volumeToPush { get; set; }
 
         public Neuron0()
         {
@@ -42,9 +43,11 @@ namespace PracaMagisterska
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += (sender, e) => {
-                axon.newFlow(sender, e, flow);
+                this.volumeToPush =  axon.newFlow(sender, e, flow);
+                this.outFlowVolume = axon.flowedOutVolume;
             };
             timer.Start();
+
 
             timer2 = new System.Windows.Threading.DispatcherTimer();
             timer2.Interval = TimeSpan.FromSeconds(time);
@@ -85,93 +88,5 @@ namespace PracaMagisterska
             Console.WriteLine("Stop timer in Neuron");
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DataObject data = new DataObject();
-                Neuron0 neurus = new Neuron0();
-                data.SetData("Object", this);
-                data.SetData("Model", "Model0");
-
-                // Inititate the drag-and-drop operation.
-                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
-            }
-        }
-
-        protected override void OnDrop(DragEventArgs e)
-        {
-            base.OnDrop(e);
-            Console.WriteLine("On drop");
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent("Model"))
-            {
-                string dataString = (string)e.Data.GetData("Model");
-                Console.WriteLine(dataString);
-                // If the string can be converted into a Brush, 
-                // convert it and apply it to the ellipse.
-
-                // Set Effects to notify the drag source what effect
-                // the drag-and-drop operation had.
-                // (Copy if CTRL is pressed; otherwise, move.)
-
-                e.Effects = DragDropEffects.Move;
-
-            }
-            e.Handled = true;
-        }
-
-        protected override void OnDragEnter(DragEventArgs e)
-        {
-            base.OnDragEnter(e);
-            // Save the current Fill brush so that you can revert back to this value in DragLeave.
-            Console.WriteLine("On drag enter");
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent("Model"))
-            {
-                string dataString = (string)e.Data.GetData("Model");
-
-                Console.WriteLine(dataString);
-            }
-        }
-
-        protected override void OnDragLeave(DragEventArgs e)
-        {
-            base.OnDragLeave(e);
-            // Undo the preview that was applied in OnDragEnter.
-            Console.WriteLine("Leave");
-        }
-
-        protected override void OnDragOver(DragEventArgs e)
-        {
-            base.OnDragOver(e);
-            e.Effects = DragDropEffects.None;
-
-            // If the DataObject contains string data, extract it.
-            if (e.Data.GetDataPresent(DataFormats.StringFormat))
-            {
-                string dataString = (string)e.Data.GetData(DataFormats.StringFormat);
-
-                // If the string can be converted into a Brush, allow copying or moving.
-                BrushConverter converter = new BrushConverter();
-                if (converter.IsValid(dataString))
-                {
-                    // Set Effects to notify the drag source what effect
-                    // the drag-and-drop operation will have. These values are 
-                    // used by the drag source's GiveFeedback event handler.
-                    // (Copy if CTRL is pressed; otherwise, move.)
-                    if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
-                    {
-                        e.Effects = DragDropEffects.Copy;
-                    }
-                    else
-                    {
-                        e.Effects = DragDropEffects.Move;
-                    }
-                }
-            }
-            e.Handled = true;
-        }
     }
 }
