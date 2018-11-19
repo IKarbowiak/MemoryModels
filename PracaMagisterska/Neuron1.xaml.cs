@@ -32,7 +32,8 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
         public double volumeToPush { get; set; }
-        Point startPoint;
+        public double flowVolume { get; set; }
+        public bool isFlow { get; set; }
 
         public Neuron1()
         {
@@ -57,11 +58,17 @@ namespace PracaMagisterska
             neuronGrid.Children.Add(soma);
 
             this.outFlowVolume = 0;
+            this.flowVolume = 0;
+            this.isFlow = false;
         }
 
 
-        public void flow(double time, double flow)
+        public void flow(double time, double flow = 0)
         {
+            if (flow == 0)
+            {
+                flow = this.flowVolume;
+            }
             this.outFlowVolume = 0;
             dendrite.length = this.neuronLength / 26;
             dendrite.diameter = denDiam;
@@ -88,18 +95,21 @@ namespace PracaMagisterska
 
             timer2 = new System.Windows.Threading.DispatcherTimer();
             timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Tick += (sender, e) => { stopTimer(sender, e); };
+            timer2.Tick += (sender, e) => { stopTimer(); };
             timer2.Start();
+            this.isFlow = true;
 
             //dendrite.flow(time, speed);
             //soma.flow(time, speed, this.axon);
         }
         public void stopFlow()
         {
+            Console.WriteLine("Stop neuron 1");
             timer.Stop();
             axon.stop();
             dendrite.stop();
             timer2.Stop();
+            this.isFlow = false;
         }
 
         public void reset()
@@ -107,6 +117,8 @@ namespace PracaMagisterska
             axon.reset();
             soma.reset();
             dendrite.reset();
+            this.isFlow = false;
+
         }
 
         public void continueFlow(int time)
@@ -117,7 +129,7 @@ namespace PracaMagisterska
             timer2.Start();
         }
 
-        public void stopTimer(object sender, EventArgs e)
+        public void stopTimer()
         {
             timer.Stop();
             Dispatcher.Invoke(() => { axon.unloadFunc(); });
@@ -126,6 +138,7 @@ namespace PracaMagisterska
             timer2.Stop();
             outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine("Stop timer in Neuron1");
+            this.isFlow = false;
         }
 
      

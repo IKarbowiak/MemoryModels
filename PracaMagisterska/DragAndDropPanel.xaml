@@ -36,7 +36,7 @@
             <StackPanel Background="Ivory">
                 <Button Height="20" Width="90" Margin="0,5,0,5">Set parameters</Button>
                 <Button x:Name="startButton" Height="20" Width="90" Margin="0,5,0,5" Click="startButton_Click">Start</Button>
-                <Button x:Name="stopButton" Height="20" Width="90" Margin="0,5,0,5" >Stop</Button>
+                <Button x:Name="stopButton" Height="20" Width="90" Margin="0,5,0,5" Click="stopButton_Click" >Stop</Button>
                 <Button x:Name="resetButton" Height="20" Width="90" Margin="0,5,0,5" RenderTransformOrigin="0.502,0.5" Click="resetButton_Click" >Reset</Button>
             </StackPanel>
         </Border>

@@ -32,11 +32,15 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
         public double volumeToPush { get; set; }
+        public double flowVolume { get; set; }
+        public bool isFlow { get; set; }
 
         public Neuron2()
         {
             InitializeComponent();
             this.outFlowVolume = 0;
+            this.flowVolume = 0;
+            this.isFlow = false;
 
             dendrite1 = new Dendrite(false);
             dendrite1.HorizontalAlignment = HorizontalAlignment.Left;
@@ -69,8 +73,12 @@ namespace PracaMagisterska
             neuronGrid.Children.Add(soma);
         }
 
-        public void flow(double time, double flow)
+        public void flow(double time, double flow = 0)
         {
+            if (flow == 0)
+            {
+                flow = this.flowVolume;
+            }
             this.outFlowVolume = 0;
             dendrite1.length = this.neuronLength / 26;
             dendrite1.diameter = denDiam;
@@ -103,8 +111,9 @@ namespace PracaMagisterska
 
             timer2 = new System.Windows.Threading.DispatcherTimer();
             timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Tick += (sender, e) => { stopTimer(sender, e); };
+            timer2.Tick += (sender, e) => { stopTimer(); };
             timer2.Start();
+            this.isFlow = true;
             //dendrite.flow(time, speed);
             //soma.flow(time, speed, this.axon);
         }
@@ -125,6 +134,7 @@ namespace PracaMagisterska
             dendrite1.stop();
             dendrite2.stop();
             timer2.Stop();
+            this.isFlow = false;
         }
 
         public void continueFlow(int time)
@@ -134,7 +144,7 @@ namespace PracaMagisterska
             timer2.Start();
         }
 
-        public void stopTimer(object sender, EventArgs e)
+        public void stopTimer()
         {
             timer.Stop();
             Dispatcher.Invoke(() => { axon.unloadFunc(); });
@@ -143,6 +153,8 @@ namespace PracaMagisterska
             Dispatcher.Invoke(() => { dendrite2.unloadFunc(); });
             timer2.Stop();
             this.outFlowVolume = axon.flowedOutVolume;
+            this.isFlow = false;
+
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
