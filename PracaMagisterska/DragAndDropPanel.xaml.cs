@@ -37,6 +37,7 @@ namespace PracaMagisterska
     {
         private double maxX;
         private double maxY;
+        private double[] startPosition;
         private Dictionary<object, double[]> canvasElements;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
@@ -52,19 +53,38 @@ namespace PracaMagisterska
             canvasElements = new Dictionary<object, double[]>();
             timer = new System.Windows.Threading.DispatcherTimer();
             timer2 = new System.Windows.Threading.DispatcherTimer();
+            //Dictionary<string, double[]> check = new Dictionary<string, double[]>();
+            //check.Add("a", new double[] {2.0, 3.0, 4.0});
+            //Console.WriteLine(check["a"]);
+            //bool res = this.checkDictValue(check.Values.ToArray());
+            //Console.WriteLine(res);
+        }
 
+        private bool checkDictValue(double[][] values, double[] compareArray)
+        {
+            foreach (double[] value in values)
+            {
+                if (Enumerable.SequenceEqual(value, compareArray))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
       
         private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            maxX = dropCanvas.ActualWidth - ((Viewbox)sender).Width;
-            maxY = dropCanvas.ActualHeight - ((Viewbox)sender).Height;
+            Viewbox viewbox = (Viewbox)sender;
+            maxX = dropCanvas.ActualWidth - viewbox.Width;
+            maxY = dropCanvas.ActualHeight - viewbox.Height;
 
-            ((Viewbox)sender).CaptureMouse();
+            this.startPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+
+            viewbox.CaptureMouse();
             Console.WriteLine("In Mouse Down");
-            ((Viewbox)sender).MouseMove += neuron_MouseMove;
-            ((Viewbox)sender).MouseUp += neuron_MouseUp;
+            viewbox.MouseMove += neuron_MouseMove;
+            viewbox.MouseUp += neuron_MouseUp;
         }
 
         private void neuron_MouseMove(object sender, MouseEventArgs e)
@@ -142,6 +162,7 @@ namespace PracaMagisterska
                             {
                                 res_List.Add(i);
                                 res_List.Add(j);
+                                Console.WriteLine("Contains " + i + " " + j);
                             }
                         }
                     }
@@ -159,74 +180,102 @@ namespace PracaMagisterska
 
                     if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) || (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
                     {
-                        Console.WriteLine(element.Key + "      " + element.Value);
-                        Console.WriteLine("Inside");
                         //List<object> el_list = new List<object> { element.Key };
 
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
                             Viewbox elBox = (Viewbox)element.Key;
                             set_TopAndBottom_Property(element, (elBox.Child.GetType().ToString().Split('.')[1] == "Neuron2"));
+
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
-                            List<int> checkEl = neuronQueueContainsCheck(element.Key);
-                            if (this.neuronQueue.Count() == 0)
+
+                            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+                            if (this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
                             {
-                                List<object> elements = new List<object>();
-                                elements.Add(viewbox);
-                                elements.Add(element.Key);
-                                this.neuronQueue.Add(elements);
+                                Console.WriteLine("HOP HOP!");
+                                viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.RightProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
                             }
-                            else if (checkEl.Count() > 0 )
-                            //else if (this.neuronQueue.Contains(el_list))
+                            else
                             {
-                                if (checkEl[1] > 0 )
+                                List<int> checkEl = neuronQueueContainsCheck(element.Key);
+                                if (this.neuronQueue.Count() == 0)
                                 {
                                     List<object> elements = new List<object>();
                                     elements.Add(viewbox);
-                                    elements.Add(element.Key);
+                                    elements.Add(elBox);
                                     this.neuronQueue.Add(elements);
                                 }
-                                else
+                                else if (checkEl.Count() > 0)
+                                //else if (this.neuronQueue.Contains(el_list))
                                 {
-                                    this.neuronQueue[checkEl[0]].Insert(checkEl[1], viewbox );
+                                    if (checkEl[1] > 0)
+                                    {
+                                        List<object> elements = new List<object>();
+                                        elements.Add(viewbox);
+                                        elements.Add(elBox);
+                                        this.neuronQueue.Add(elements);
+                                    }
+                                    else
+                                    {
+                                        this.neuronQueue[checkEl[0]].Insert(checkEl[1], viewbox);
+                                    }
+
                                 }
 
+                                return true;
                             }
 
-                            return true;
                         }
                         else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
                         {
                             set_TopAndBottom_Property(element, (neuronType == "Neuron2"));
                             List<int> checkEl = neuronQueueContainsCheck(element.Key);
-                            if (this.neuronQueue.Count() == 0)
+
+                            viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
+                            viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
+                            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+
+                            if (this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
                             {
-                                List<object> elements = new List<object>();
-                                elements.Add(element.Key);
-                                elements.Add(viewbox);
-                                this.neuronQueue.Add(elements);
+                                Console.WriteLine("HOP HOP!");
+                                viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.RightProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
+                                viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
                             }
-                            else if (checkEl.Count() > 0)
+                            else
                             {
-                                if (checkEl.Count() > 2)
+                                if (this.neuronQueue.Count() == 0)
                                 {
+                                    List<object> elements = new List<object>();
+                                    elements.Add(element.Key);
+                                    elements.Add(viewbox);
+                                    this.neuronQueue.Add(elements);
+                                }
+                                else if (checkEl.Count() > 2)
+                                {
+
                                     for (int j = 0; j < checkEl.Count(); j += 2)
                                     {
                                         this.neuronQueue[checkEl[j]].Insert(checkEl[j + 1] + 1, viewbox);
                                     }
+
                                 }
-                                else
+                                else if (checkEl.Count() > 0)
                                 {
-                                    this.neuronQueue[0].Insert(checkEl[1], viewbox);
+                                    this.neuronQueue[0].Insert(checkEl[1] + 1, viewbox);
                                 }
+
+                                Console.WriteLine("Neuron Queue" + this.neuronQueue[0][0].GetType().ToString());
+
+                                return true;
+
                             }
 
-                            viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
-                            viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
-                            Console.WriteLine("Neuron Queue" + this.neuronQueue[0][0].GetType().ToString());
-
-                            return true;
 
                         }
 
