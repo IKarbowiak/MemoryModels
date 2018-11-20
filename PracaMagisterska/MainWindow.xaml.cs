@@ -101,11 +101,11 @@ namespace PracaMagisterska
                 double neuronLength = validateRes[0];
                 double denDiam = validateRes[1];
                 double axDiam = validateRes[2];
-                double flow = validateRes[3];
+                double flow = validateRes[3] / 10;
                 time = validateRes[4];
 
                 timer.Interval = TimeSpan.FromSeconds(time);
-                timer2.Interval = TimeSpan.FromSeconds(1);
+                timer2.Interval = TimeSpan.FromMilliseconds(100);
 
 
                 if ((neuronLength > 0) && (denDiam > 0) && (axDiam > 0) && (flow > 0) && (time > 0))
@@ -125,14 +125,40 @@ namespace PracaMagisterska
                     neuron2.denDiam = denDiam;
                     neuron2.axDiam = axDiam;
 
-                    neuron0.flow((double)time, flow);
-                    neuron1.flow((double)time, flow);
-                    neuron2.flow((double)time, flow);
+                    //neuron0.flow((double)time, flow);
+                    //neuron1.flow((double)time, flow);
+                    //neuron2.flow((double)time, flow);
 
                     this.TimerStart = DateTime.Now;
                     timer2.Tick += (sender2, e2) =>
                     {
+                        this.neuron0.axon.newFlow(sender2, e2, flow);
+
+                        Tuple<bool, double> dendriteRes = neuron1.dendrite.newFlow(sender, e, flow);
+                        Thread.Sleep(10);
+                        if (dendriteRes.Item1)
+                        {
+                            Tuple<bool, double> somaRes = neuron1.soma.newFlow(sender, e, dendriteRes.Item2);
+                            if (somaRes.Item1)
+                            {
+                                neuron1.axon.newFlow(sender, e, somaRes.Item2);
+                            }
+                        }
+
+                        Tuple<bool, double> dendriteRes1 = neuron2.dendrite1.newFlow(sender, e, flow);
+                        Tuple<bool, double> dendriteRes2 = neuron2.dendrite2.newFlow(sender, e, flow);
+                        Thread.Sleep(10);
+                        if (dendriteRes1.Item1 | dendriteRes2.Item1)
+                        {
+                            Tuple<bool, double> somaRes = neuron2.soma.newFlow(sender, e, dendriteRes1.Item2 + dendriteRes2.Item2);
+                            if (somaRes.Item1)
+                            {
+                                neuron2.axon.newFlow(sender, e, somaRes.Item2);
+                            }
+                        }
+
                         this.myTimerTick(sender2, e2);
+                        
                     };
                     timer2.Start();
 
@@ -311,9 +337,9 @@ namespace PracaMagisterska
         {
             timer.Stop();
             timer2.Stop();
-            neuron0.stopFlow();
-            neuron1.stopFlow();
-            neuron2.stopFlow();
+            //neuron0.stopFlow();
+            //neuron1.stopFlow();
+            //neuron2.stopFlow();
             startButton.IsEnabled = true;
             this.newFlow = false;
         }

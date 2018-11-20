@@ -28,8 +28,6 @@ namespace PracaMagisterska
         public double neuronLength { get; set; }
         public double denDiam { get; set; }
         public double axDiam { get; set; }
-        private System.Windows.Threading.DispatcherTimer timer;
-        private System.Windows.Threading.DispatcherTimer timer2;
         public double outFlowVolume { get; set; }
         public double volumeToPush { get; set; }
         public double flowVolume { get; set; }
@@ -79,24 +77,6 @@ namespace PracaMagisterska
             soma.diameter = this.neuronLength * 10 / 26;
             soma.axonDiameter = this.axDiam;
 
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (sender, e) => {Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow, soma, axon);
-                if (dendriteRes.Item1)
-                {
-                    Tuple<bool, double> somaRes = soma.newFlow(sender, e, dendriteRes.Item2);
-                    if (somaRes.Item1)
-                    {
-                       this.volumeToPush = axon.newFlow(sender, e, somaRes.Item2);
-                    }
-                }
-            };
-            timer.Start();
-
-            timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Tick += (sender, e) => { stopTimer(); };
-            timer2.Start();
             this.isFlow = true;
 
             //dendrite.flow(time, speed);
@@ -105,10 +85,6 @@ namespace PracaMagisterska
         public void stopFlow()
         {
             Console.WriteLine("Stop neuron 1");
-            timer.Stop();
-            axon.stop();
-            dendrite.stop();
-            timer2.Stop();
             this.isFlow = false;
         }
 
@@ -124,20 +100,14 @@ namespace PracaMagisterska
         public void continueFlow(int time)
         {
             Console.WriteLine("In neuron 0 continue");
-            timer.Start();
-            timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Start();
         }
 
         public void stopTimer()
         {
-            timer.Stop();
             Dispatcher.Invoke(() => { axon.unloadFunc(); });
             Dispatcher.Invoke(() => { soma.unloadFunc(); });
             Dispatcher.Invoke(() => { dendrite.unloadFunc(); });
-            timer2.Stop();
             outFlowVolume = axon.flowedOutVolume;
-            Console.WriteLine("Stop timer in Neuron1");
             this.isFlow = false;
         }
 

@@ -28,8 +28,6 @@ namespace PracaMagisterska
         private double volume;
         private double liquidVolume = 0;
         private Rectangle[][] recDenArray;
-        private System.Windows.Threading.DispatcherTimer timer;
-        private System.Windows.Threading.DispatcherTimer timer2;
         private int columnsCounter = 0;
         private bool isFull = false;
 
@@ -42,12 +40,6 @@ namespace PracaMagisterska
             this.dimension3D = dim3d;
             this.calculateParameters();
             recDenArray = this.splitRecModel(denrdriteRec, dendriteGrid);
-
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(1);
-
-            timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(3);
         }
 
         public void calculateParameters()
@@ -65,30 +57,17 @@ namespace PracaMagisterska
         }
 
 
-        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, Soma soma, Axon axon)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
         {
             double volumeToPush = 0;
             if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
-                int colToFillin1s = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
+                int colToFill = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
-                if (colToFillin1s > 0)
+                if (colToFill > 0 && this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    if (colToFillin1s > 1 && this.columnsCounter < this.recDenArray[0].Length - 1)
-                    {
-                        timer.Tick += (sender2, e1) =>
-                        {
-                            Console.WriteLine("In tick den");
-                            fillRect(sender2, e, colToFillin1s/2, this.columnsCounter + colToFillin1s);
-                        };
-                        timer.Start();
-                    }
-                    else if (this.columnsCounter < this.recDenArray[0].Length - 1)
-                    {
-                        this.fillRect(sender, e, colToFillin1s, this.columnsCounter + colToFillin1s);
-                    }
-                    //this.fillRect(colToFillin1s);
+                    this.fillRect(colToFill, this.columnsCounter + colToFill);
                 }
                 this.isFull = false;
             }
@@ -98,23 +77,10 @@ namespace PracaMagisterska
                 this.liquidVolume = this.volume;
                 int colToFillin1s = (int)denrdriteRec.Width - this.columnsCounter;
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
-                if (colToFillin1s > 1 && this.columnsCounter < this.recDenArray[0].Length - 1)
+                if (this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    timer.Tick += (sender2, e1) =>
-                    {
-                        Console.WriteLine("In tick den");
-                        fillRect(sender2, e, colToFillin1s / 6, this.columnsCounter + colToFillin1s);
-                    };
-                    timer.Start();
+                    this.fillRect(colToFillin1s, this.columnsCounter + colToFillin1s);
                 }
-                else if (this.columnsCounter < this.recDenArray[0].Length - 1)
-                {
-                    this.fillRect(sender, e, colToFillin1s / 6, this.columnsCounter + colToFillin1s);
-                }
-
-                //this.fillRect(colToFillin1s);
-
-                //soma.newFlow(volumeIncrease, axon);
 
                 this.isFull = true;
             }
@@ -124,7 +90,7 @@ namespace PracaMagisterska
             return result;
         }
 
-        private void fillRect(object sender, EventArgs e, int collToFill, int colToFinish)
+        private void fillRect(int collToFill, int colToFinish)
         {
             int colToFill = this.columnsCounter + collToFill;
 
@@ -146,20 +112,12 @@ namespace PracaMagisterska
 
             if (this.columnsCounter >= colToFinish ||  this.columnsCounter >= recDenArray[0].Length)
             {
-                this.stop();
                 Console.WriteLine("In stop dend");
                 isFull = true;
                 this.columnsCounter = recDenArray[0].Length - 1;
 
             }
         }
-
-        public void stop()
-        {
-            Console.WriteLine("Stop");
-            timer.Stop();
-        }
-
 
         public void unloadFunc()
         {

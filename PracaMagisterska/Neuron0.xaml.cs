@@ -20,9 +20,7 @@ namespace PracaMagisterska
     /// </summary>
     public partial class Neuron0 : UserControl
     {
-        private Axon axon;
-        private System.Windows.Threading.DispatcherTimer timer;
-        private System.Windows.Threading.DispatcherTimer timer2;
+        public Axon axon { get; set; }
         public double outFlowVolume { get; set; }
         public double volumeToPush { get; set; }
         public double flowVolume { get; set; }
@@ -33,7 +31,6 @@ namespace PracaMagisterska
             InitializeComponent();
             axon = new Axon(recWidth: 400);
             //axon.changeRecSize(380, 11);
-            timer = new System.Windows.Threading.DispatcherTimer();
             axon.HorizontalAlignment = HorizontalAlignment.Left;
             Grid.SetColumn(axon, 0);
             Grid.SetRow(axon, 0);
@@ -49,18 +46,6 @@ namespace PracaMagisterska
             {
                 flow = this.flowVolume;
             }
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += (sender, e) => {
-                this.volumeToPush =  axon.newFlow(sender, e, flow);
-                this.outFlowVolume = axon.flowedOutVolume;
-            };
-            timer.Start();
-
-
-            timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Tick += (sender, e) => { stopTimer(); };
-            timer2.Start();
             this.isFlow = true;
 
             //dendrite.flow(time, speed);
@@ -75,25 +60,18 @@ namespace PracaMagisterska
 
         public void stopFlow()
         {
-            timer.Stop();
-            axon.stop();
-            timer2.Stop();
+
             this.isFlow = false;
         }
 
         public void continueFlow(int time)
         {
-            timer.Start();
-            timer2.Interval = TimeSpan.FromSeconds(time);
-            timer2.Start();
+
         }
 
         public void stopTimer()
         {
-            timer.Stop();
-            axon.stop();
             axon.unloadFunc();
-            timer2.Stop();
             this.outFlowVolume = axon.flowedOutVolume;
             Console.WriteLine(axon.flowedOutVolume);
             Console.WriteLine("Stop timer in Neuron");

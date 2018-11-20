@@ -30,7 +30,6 @@ namespace PracaMagisterska
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
         private int columnsCounter = 0;
-        private System.Windows.Threading.DispatcherTimer timer;
         private bool isFull = false;
 
         public Axon(bool dim3d = false, int recWidth = 260, int recHeight = 11)
@@ -47,9 +46,6 @@ namespace PracaMagisterska
                 changeRecSize(recWidth, recHeight);
             }
             recAxonArray = this.splitRecModel(axonRec, axonGrid);
-
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(1);
         }
 
         public void calculateParameters()
@@ -91,19 +87,9 @@ namespace PracaMagisterska
                 {
                     colToFillin1s = 1;
                 }
-                if (colToFillin1s > 1 &&  this.columnsCounter < this.recAxonArray[0].Length - 1)
+                if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                 {
-                    Console.WriteLine("I am inside");
-                    timer.Tick += (sender2, e1) =>
-                    {
-                        Console.WriteLine("In tick");
-                        fillRect(sender2, e, 1, this.columnsCounter + colToFillin1s);
-                    };
-                    timer.Start();
-                }
-                else if (this.columnsCounter < this.recAxonArray[0].Length - 1)
-                {
-                    this.fillRect(sender, e, colToFillin1s, colToFillin1s);
+                    this.fillRect(colToFillin1s, colToFillin1s);
                 }
                 //this.fillRect(sender, e, colToFillin1s);
             }
@@ -114,18 +100,9 @@ namespace PracaMagisterska
                 int colToFillin1s = (int)axonRec.Width - this.columnsCounter;
                 if (colToFillin1s > 0)
                 {
-                    if (colToFillin1s > 1 && this.columnsCounter < this.recAxonArray[0].Length - 1)
+                    if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                     {
-                        timer.Tick += (sender2, e1) =>
-                        {
-                            Console.WriteLine("In tick");
-                            fillRect(sender2, e, colToFillin1s/10, this.columnsCounter + colToFillin1s);
-                        };
-                        timer.Start();
-                    }
-                    else if (this.columnsCounter < this.recAxonArray[0].Length - 1)
-                    {
-                        this.fillRect(sender, e, colToFillin1s/20, this.columnsCounter + colToFillin1s);
+                        this.fillRect(colToFillin1s, this.columnsCounter + colToFillin1s);
                     }
                     //this.fillRect(sender, e, colToFillin1s);
                 }
@@ -135,7 +112,7 @@ namespace PracaMagisterska
             return volumeToPush;
         }
 
-        private void fillRect(object sender, EventArgs e, int collToFill, int colTofinish)
+        private void fillRect(int collToFill, int colTofinish)
         {
             Console.WriteLine("In fill ax");
             int colToFill = this.columnsCounter + collToFill;
@@ -158,18 +135,11 @@ namespace PracaMagisterska
 
             if (this.columnsCounter >= colTofinish || this.columnsCounter >= recAxonArray[0].Length)
             {
-                this.stop();
                 Console.WriteLine("In stop AXON");
                 isFull = true;
                 this.columnsCounter = recAxonArray[0].Length - 1;
 
             }
-        }
-
-        public void stop()
-        {
-            Console.WriteLine("Stop");
-            timer.Stop();
         }
 
 

@@ -32,6 +32,7 @@ namespace PracaMagisterska
         private Rectangle[][] recSomaArray;
         private int rowCounter;
         private bool isFull = false;
+        private double collect_rows = 0;
         //public bool IsEnabled { get; set; }
 
         public Soma(bool dim3d)
@@ -78,7 +79,7 @@ namespace PracaMagisterska
                     volumeToPush = increase - this.threshold;
                     this.liquidVolume += (volumeIncrease - volumeToPush);
                     rowToFillin1s = (int)((double)somaRec.Width * (volumeIncrease - volumeToPush) / this.volume);
-                    Console.WriteLine(rowToFillin1s);
+                    Console.WriteLine("Row to fills" + rowToFillin1s);
                     if (rowToFillin1s > 0)
                     {
                         this.fillRect(rowToFillin1s);
@@ -105,12 +106,18 @@ namespace PracaMagisterska
             else if (this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
-                rowToFillin1s = (int)((double)somaRec.Width * volumeIncrease / this.volume);
-                if (rowToFillin1s == 0)
+                double rowToFill = ((double)somaRec.Width * volumeIncrease / this.volume);
+                if (rowToFill < 1 && this.collect_rows < 1)
                 {
-                    rowToFillin1s = 1;
+                    collect_rows += rowToFill;
+                    rowToFill = 0;
                 }
-                this.fillRect(rowToFillin1s);
+                else
+                {
+                    rowToFill = (int)collect_rows;
+                    collect_rows = 0;
+                }
+                if (rowToFill > 0) this.fillRect((int)rowToFill);
                 this.isFull = false;
             }
             Tuple<bool, double> result = new Tuple<bool, double>(push, volumeToPush);
