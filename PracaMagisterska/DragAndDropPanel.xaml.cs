@@ -89,9 +89,10 @@ namespace PracaMagisterska
 
         private void neuron_MouseMove(object sender, MouseEventArgs e)
         {
+            Viewbox viewbox = (Viewbox)sender;
             var pos = e.GetPosition(dropCanvas);
-            var newX = pos.X - (((Viewbox)sender).Width / 2);
-            var newY = pos.Y - (((Viewbox)sender).Height / 2);
+            var newX = pos.X - (viewbox.Width / 2);
+            var newY = pos.Y - (viewbox.Height / 2);
 
             if (newX < 0) newX = 0;
             if (newX > maxX) newX = maxX;
@@ -99,10 +100,10 @@ namespace PracaMagisterska
             if (newY < 0) newY = 0;
             if (newY > maxY) newY = maxY;
 
-            ((Viewbox)sender).SetValue(Canvas.LeftProperty, newX);
-            ((Viewbox)sender).SetValue(Canvas.RightProperty, newX + ((Viewbox)sender).Width);
-            ((Viewbox)sender).SetValue(Canvas.TopProperty, newY);
-            ((Viewbox)sender).SetValue(Canvas.BottomProperty, newX + ((Viewbox)sender).Height);
+            viewbox.SetValue(Canvas.LeftProperty, newX);
+            viewbox.SetValue(Canvas.RightProperty, newX + viewbox.Width);
+            viewbox.SetValue(Canvas.TopProperty, newY);
+            viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
 
         }
 
@@ -120,7 +121,8 @@ namespace PracaMagisterska
                 //neuron1.flow((double)20, 8);
             }
             var neuron = viewbox.Child;
-            
+
+
             viewbox.ReleaseMouseCapture();
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
@@ -190,8 +192,12 @@ namespace PracaMagisterska
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
 
+                            var pos = e.GetPosition(this.dropCanvas);
+                            bool quit = checkIfQuitBorder(pos.X, pos.Y, viewbox);
+
                             double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-                            if (this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
+
+                            if (!quit && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
                             {
                                 Console.WriteLine("HOP HOP!");
                                 viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
@@ -199,7 +205,7 @@ namespace PracaMagisterska
                                 viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
                                 viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
                             }
-                            else
+                            else if (!quit)
                             {
                                 List<int> checkEl = neuronQueueContainsCheck(element.Key);
                                 if (this.neuronQueue.Count() == 0)
@@ -237,9 +243,14 @@ namespace PracaMagisterska
 
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
+
+                            var pos = e.GetPosition(this.dropCanvas);
+                            bool quit = checkIfQuitBorder(pos.X, pos.Y, viewbox);
+                            Console.WriteLine("Quit " + quit);
+
                             double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
 
-                            if (this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
+                            if (!quit && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
                             {
                                 Console.WriteLine("HOP HOP!");
                                 viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
@@ -247,8 +258,9 @@ namespace PracaMagisterska
                                 viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
                                 viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
                             }
-                            else
+                            else if (!quit)
                             {
+                                Console.WriteLine("Not quit so LINK");
                                 if (this.neuronQueue.Count() == 0)
                                 {
                                     List<object> elements = new List<object>();
@@ -313,16 +325,68 @@ namespace PracaMagisterska
                 }
 
             }
-            //else if (!linked && this.neuronQueue.Count() == 0)
-            //{
-            //    this.neuronQueue.Add(new List<object> { viewbox });
-            //}
+
 
             Console.WriteLine("List count " + this.neuronQueue.Count());
             double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
             canvasElements[sender] =  parameters;
             Console.WriteLine(canvasElements[sender][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
+        }
+
+        private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
+        {
+            double newX = x - (viewbox.Width / 2);
+            double newY = y - (viewbox.Height / 2);
+
+            Console.WriteLine(x + "  ; " + y + "  maxX" + maxX + "  maxY" + maxY + "get Left" + Canvas.GetLeft(viewbox) + " gwt Right " + Canvas.GetRight(viewbox));
+
+            bool quit = false;
+            if (newX < 0) { newX = 0; quit = true; }
+            if (newX > maxX) { newX = maxX; quit = true; }
+
+            if (newY < 0) { newY = 0; quit = true; }
+            if (newY > maxY) { newY = maxY; quit = true; }
+
+            if (quit)
+            {
+                viewbox.SetValue(Canvas.LeftProperty, newX);
+                viewbox.SetValue(Canvas.RightProperty, newX + viewbox.Width);
+                viewbox.SetValue(Canvas.TopProperty, newY);
+                viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
+            }
+
+
+            //if (Canvas.GetLeft(viewbox) < 0)
+            //{
+            //    quit = true;
+            //    viewbox.SetValue(Canvas.LeftProperty, 0.0);
+            //    viewbox.SetValue(Canvas.LeftProperty, viewbox.Width);
+            //};
+
+            //if (Canvas.GetRight(viewbox) > maxX)
+            //{
+            //    quit = true;
+            //    viewbox.SetValue(Canvas.RightProperty, maxX);
+            //    viewbox.SetValue(Canvas.LeftProperty, maxX - viewbox.Width);
+            //};
+
+            //if (Canvas.GetBottom(viewbox) < 0)
+            //{
+            //    quit = true;
+            //    viewbox.SetValue(Canvas.BottomProperty, 0);
+            //    viewbox.SetValue(Canvas.TopProperty, viewbox.Height);
+            //}
+
+            //if (Canvas.GetTop(viewbox) > maxY)
+            //{
+            //    quit = true;
+            //    viewbox.SetValue(Canvas.TopProperty, maxY);
+            //    viewbox.SetValue(Canvas.BottomProperty, maxY - viewbox.Height);
+            //}
+
+            return quit;
+            
         }
 
         private void create_neuron0(object sender, MouseButtonEventArgs e)
@@ -443,6 +507,13 @@ namespace PracaMagisterska
                     }
                 }
             }
+
+            //void getPushValue<T>(T viewbox)
+            //{
+            //    //Viewbox viewbox = (Viewbox)element;
+            //    T neuron = viewbox;
+            //}
+
 
             foreach (KeyValuePair<object, double> element in whatToPush)
             {
