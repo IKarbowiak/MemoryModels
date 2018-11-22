@@ -19,15 +19,15 @@
         <Border Grid.Row="0" Grid.Column="0" Margin="10,40,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel x:Name="objectHandlerPanel" Background="#fff8f0" AllowDrop="True"  VerticalAlignment="Stretch">
                 <TextBlock TextAlignment="Center">Model 1</TextBlock>
-                <Viewbox StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron0">
+                <Viewbox x:Name="n0" StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
                     <local:Neuron0 Height="200" Width="450"/>
                 </Viewbox>
                 <TextBlock TextAlignment="Center">Model 2</TextBlock>
-                <Viewbox StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron1">
+                <Viewbox x:Name="n1" StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
                     <local:Neuron1 x:Name="neuron1a" Height="200" Width="450" AllowDrop="True"/>
                 </Viewbox>
                 <TextBlock TextAlignment="Center">Model 2</TextBlock>
-                <Viewbox StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron2">
+                <Viewbox x:Name="n2"  StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
                     <local:Neuron2 Height="200" Width="450"/>
                 </Viewbox>
             </StackPanel>

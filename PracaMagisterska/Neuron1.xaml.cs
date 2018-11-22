@@ -38,21 +38,21 @@ namespace PracaMagisterska
             InitializeComponent();
             dendrite = new Dendrite(false);
             dendrite.HorizontalAlignment = HorizontalAlignment.Left;
-            Grid.SetColumn(dendrite, 1);
-            Grid.SetRow(dendrite, 1);
+            //Grid.SetColumn(dendrite, 1);
+            //Grid.SetRow(dendrite, 1);
             neuronGrid.Children.Add(dendrite);
 
             axon = new Axon(false);
             axon.HorizontalAlignment = HorizontalAlignment.Right;
-            Grid.SetColumn(axon, 1);
-            Grid.SetRow(axon, 1);
+            //Grid.SetColumn(axon, 1);
+            //Grid.SetRow(axon, 1);
             neuronGrid.Children.Add(axon);
 
             soma = new Soma(false);
             soma.HorizontalAlignment = HorizontalAlignment.Center;
             soma.Margin = new System.Windows.Thickness(0, 0, 190, 0);
-            Grid.SetColumn(soma, 1);
-            Grid.SetRow(soma, 1);
+            //Grid.SetColumn(soma, 1);
+            //Grid.SetRow(soma, 1);
             neuronGrid.Children.Add(soma);
 
             this.outFlowVolume = 0;

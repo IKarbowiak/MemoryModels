@@ -69,6 +69,9 @@
     <Compile Include="Model3UC.xaml.cs">
       <DependentUpon>Model3UC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Neuron.xaml.cs">
+      <DependentUpon>Neuron.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Neuron0.xaml.cs">
       <DependentUpon>Neuron0.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Model3UC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Neuron.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

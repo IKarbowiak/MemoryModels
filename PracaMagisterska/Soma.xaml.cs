@@ -65,11 +65,27 @@ namespace PracaMagisterska
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
         {
 
+            void fillRowOrNot(double rowNum)
+            {
+                if (rowNum < 1 && this.collect_rows < 1)
+                {
+                    collect_rows += rowNum;
+                    rowNum = 0;
+                }
+                else if (rowNum > 1 || this.collect_rows > 1)
+                {
+                    collect_rows += rowNum;
+                    rowNum = (int)collect_rows;
+                    collect_rows = collect_rows - rowNum ;
+                }
+                if (rowNum > 0) this.fillRect((int)rowNum);
+            }
+
             bool push = false;
             Console.WriteLine("In new Soma " + volumeIncrease);
             double increase = this.liquidVolume + volumeIncrease;
-            int rowToFillin1s;
-            double volumeToPush = volumeIncrease;
+            double rowToFill;
+            double volumeToPush = 0;
             Console.WriteLine("volume" + volume + "    threshold: " + this.threshold + "       increase: " + increase);
             if (this.threshold < (increase))
             {
@@ -78,12 +94,10 @@ namespace PracaMagisterska
                 {
                     volumeToPush = increase - this.threshold;
                     this.liquidVolume += (volumeIncrease - volumeToPush);
-                    rowToFillin1s = (int)((double)somaRec.Width * (volumeIncrease - volumeToPush) / this.volume);
-                    Console.WriteLine("Row to fills" + rowToFillin1s);
-                    if (rowToFillin1s > 0)
-                    {
-                        this.fillRect(rowToFillin1s);
-                    }
+                    //rowToFill = ((double)somaRec.Height * (volumeIncrease - volumeToPush) / this.volume);
+                    rowToFill = (double)somaRec.Height * 0.5 - this.rowCounter;
+                    Console.WriteLine("Row to fills" + rowToFill);
+                    fillRowOrNot(rowToFill);
                     this.isFull = false;
                     push = true;
 
@@ -92,11 +106,8 @@ namespace PracaMagisterska
                 {
                     volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                     this.liquidVolume = this.volume;
-                    rowToFillin1s = (int)somaRec.Width - this.rowCounter;
-                    if (rowToFillin1s > 0 )
-                    {
-                        this.fillRect(rowToFillin1s);
-                    }
+                    rowToFill = (double)somaRec.Height - this.rowCounter;
+                    fillRowOrNot(rowToFill);
                     this.isFull = true;
                     push = true;
                 }
@@ -106,18 +117,8 @@ namespace PracaMagisterska
             else if (this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
-                double rowToFill = ((double)somaRec.Width * volumeIncrease / this.volume);
-                if (rowToFill < 1 && this.collect_rows < 1)
-                {
-                    collect_rows += rowToFill;
-                    rowToFill = 0;
-                }
-                else
-                {
-                    rowToFill = (int)collect_rows;
-                    collect_rows = 0;
-                }
-                if (rowToFill > 0) this.fillRect((int)rowToFill);
+                rowToFill = ((double)somaRec.Height * volumeIncrease / this.volume);
+                fillRowOrNot(rowToFill);
                 this.isFull = false;
             }
             Tuple<bool, double> result = new Tuple<bool, double>(push, volumeToPush);
@@ -126,7 +127,7 @@ namespace PracaMagisterska
 
         private void fillRect(int rowlToFill)
         {
-            Console.WriteLine("In soma fill REC");
+            Console.WriteLine("In soma fill REC !!! Row to fill: " + rowlToFill);
             int rowToFill = rowCounter - rowlToFill;
 
             if (rowToFill < 0)

@@ -20,28 +20,16 @@ namespace PracaMagisterska
     /// Interaction logic for Window1.xaml
     /// </summary>
     /// 
-    public static class ReflectionExt
-    {
-        public static object GetAttr(this object obj, string name)
-        {
-            Type type = obj.GetType();
-            BindingFlags flags = BindingFlags.Instance |
-                                     BindingFlags.Public |
-                                     BindingFlags.GetProperty;
-
-            return type.InvokeMember(name, flags, Type.DefaultBinder, obj, null);
-        }
-    }
 
     public partial class DragAndDropPanel : Window
     {
         private double maxX;
         private double maxY;
         private double[] startPosition;
-        private Dictionary<object, double[]> canvasElements;
+        private Dictionary<Viewbox, double[]> canvasElements;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
-        private List<List<object>> neuronQueue = new List<List<object>>();
+        private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
         private int counter = 0;
         //private List<object> elementsToCheck = new List<object>();
 
@@ -50,7 +38,7 @@ namespace PracaMagisterska
         public DragAndDropPanel()
         {
             InitializeComponent();
-            canvasElements = new Dictionary<object, double[]>();
+            canvasElements = new Dictionary<Viewbox, double[]>();
             timer = new System.Windows.Threading.DispatcherTimer();
             timer2 = new System.Windows.Threading.DispatcherTimer();
             //Dictionary<string, double[]> check = new Dictionary<string, double[]>();
@@ -84,7 +72,7 @@ namespace PracaMagisterska
             viewbox.CaptureMouse();
             Console.WriteLine("In Mouse Down");
             viewbox.MouseMove += neuron_MouseMove;
-            viewbox.MouseUp += neuron_MouseUp;
+            //viewbox.MouseUp += neuron_MouseUp;
         }
 
         private void neuron_MouseMove(object sender, MouseEventArgs e)
@@ -113,21 +101,15 @@ namespace PracaMagisterska
             int catchValue_rightleft = 30;
             int catchValue_updown = 10;
             int offset = 8;
-            string neuronType = viewbox.Child.GetType().ToString().Split('.')[1];
-            Console.WriteLine("In mouse up " + neuronType);
-            if (neuronType == "Neuron1")
-            {
-                Neuron1 neuron1 = (Neuron1)viewbox.Child;
-                //neuron1.flow((double)20, 8);
-            }
-            var neuron = viewbox.Child;
+            Neuron neuron = (Neuron)viewbox.Child;
+            Console.WriteLine("In mouse up " );
 
 
             viewbox.ReleaseMouseCapture();
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
-            void set_TopAndBottom_Property(KeyValuePair<Object, Double[]> element, bool condition)
+            void set_TopAndBottom_Property(KeyValuePair<Viewbox, Double[]> element, bool condition)
             {
                 if (condition)
                 {
@@ -156,9 +138,9 @@ namespace PracaMagisterska
 
                 if (this.neuronQueue.Count > 0)
                 {
-                    for (int i=0; i < this.neuronQueue.Count(); i++)
+                    for (int i = 0; i < this.neuronQueue.Count(); i++)
                     {
-                        for (int j=0; j < this.neuronQueue[i].Count(); j++)
+                        for (int j = 0; j < this.neuronQueue[i].Count(); j++)
                         {
                             if (this.neuronQueue[i][j] == element)
                             {
@@ -174,7 +156,7 @@ namespace PracaMagisterska
 
             bool linkNeuron()
             {
-                foreach (KeyValuePair<Object, Double[]> element in canvasElements)
+                foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
                 {
                     Console.WriteLine(element.Key == viewbox);
                     Console.WriteLine((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox))));
@@ -187,7 +169,7 @@ namespace PracaMagisterska
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
                             Viewbox elBox = (Viewbox)element.Key;
-                            set_TopAndBottom_Property(element, (elBox.Child.GetType().ToString().Split('.')[1] == "Neuron2"));
+                            set_TopAndBottom_Property(element, ((Neuron)elBox.Child).dendrites_list.Count() > 1);
 
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
@@ -210,7 +192,7 @@ namespace PracaMagisterska
                                 List<int> checkEl = neuronQueueContainsCheck(element.Key);
                                 if (this.neuronQueue.Count() == 0)
                                 {
-                                    List<object> elements = new List<object>();
+                                    List<Viewbox> elements = new List<Viewbox>();
                                     elements.Add(viewbox);
                                     elements.Add(elBox);
                                     this.neuronQueue.Add(elements);
@@ -220,7 +202,7 @@ namespace PracaMagisterska
                                 {
                                     if (checkEl[1] > 0)
                                     {
-                                        List<object> elements = new List<object>();
+                                        List<Viewbox> elements = new List<Viewbox>();
                                         elements.Add(viewbox);
                                         elements.Add(elBox);
                                         this.neuronQueue.Add(elements);
@@ -238,7 +220,7 @@ namespace PracaMagisterska
                         }
                         else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
                         {
-                            set_TopAndBottom_Property(element, (neuronType == "Neuron2"));
+                            set_TopAndBottom_Property(element, (neuron.dendrites_list.Count() > 1));
                             List<int> checkEl = neuronQueueContainsCheck(element.Key);
 
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
@@ -263,7 +245,7 @@ namespace PracaMagisterska
                                 Console.WriteLine("Not quit so LINK");
                                 if (this.neuronQueue.Count() == 0)
                                 {
-                                    List<object> elements = new List<object>();
+                                    List<Viewbox> elements = new List<Viewbox>();
                                     elements.Add(element.Key);
                                     elements.Add(viewbox);
                                     this.neuronQueue.Add(elements);
@@ -318,7 +300,7 @@ namespace PracaMagisterska
                 }
                 else
                 {
-                    for (int x = elInList; x > -1 ; x--)
+                    for (int x = elInList; x > -1; x--)
                     {
                         this.neuronQueue[list_num].RemoveAt(x);
                     }
@@ -329,8 +311,8 @@ namespace PracaMagisterska
 
             Console.WriteLine("List count " + this.neuronQueue.Count());
             double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-            canvasElements[sender] =  parameters;
-            Console.WriteLine(canvasElements[sender][0]);
+            canvasElements[(Viewbox)sender] = parameters;
+            Console.WriteLine(canvasElements[(Viewbox)sender][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
         }
 
@@ -389,30 +371,12 @@ namespace PracaMagisterska
             
         }
 
-        private void create_neuron0(object sender, MouseButtonEventArgs e)
+        private void create_neuron(object sender, MouseButtonEventArgs e)
         {
-            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250};
-            Neuron0 newNeuron = new Neuron0();
-            viewbox.Child = newNeuron;
-            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
-            dropCanvas.Children.Add(viewbox);
-        }
-
-        private void create_neuron1(object sender, MouseButtonEventArgs e)
-        {
+            Viewbox viewbox_sender = (Viewbox)sender;
+            int den_number = Int32.Parse(viewbox_sender.Name.Replace("n", ""));
             Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
-            Neuron1 newNeuron = new Neuron1();
-            int gridWidth = (int)newNeuron.neuronGrid.Width;
-            
-            viewbox.Child = newNeuron;
-            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
-            dropCanvas.Children.Add(viewbox);
-        }
-
-        private void create_neuron2(object sender, MouseButtonEventArgs e)
-        {
-            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250};
-            Neuron2 newNeuron = new Neuron2();
+            Neuron newNeuron = new Neuron(den_number);
             viewbox.Child = newNeuron;
             viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
             dropCanvas.Children.Add(viewbox);
@@ -445,13 +409,13 @@ namespace PracaMagisterska
 
         private void flow2(object sender, EventArgs e)
         {
-            Dictionary<object, double> whatToPush = new Dictionary<object, double>();
+            Dictionary<Neuron, double> whatToPush = new Dictionary<Neuron, double>();
 
             if (this.neuronQueue.Count() == 0 && this.canvasElements.Count > 0)
             {
-                foreach (KeyValuePair<object, double[]> element in this.canvasElements)
+                foreach (KeyValuePair<Viewbox, double[]> element in this.canvasElements)
                 {
-                    whatToPush[element.Key] = 8;
+                    whatToPush[(Neuron)(element.Key).Child] = 8;
                 }
 
             }
@@ -461,7 +425,7 @@ namespace PracaMagisterska
                 Console.WriteLine("In flow 2");
                 if (this.neuronQueue[i].Count() > 0)
                 {
-                    object first_el = this.neuronQueue[i][0];
+                    Neuron first_el = (Neuron)(this.neuronQueue[i][0]).Child;
                     if (!whatToPush.ContainsKey(first_el))
                     {
                         whatToPush.Add(first_el, 8);
@@ -472,28 +436,13 @@ namespace PracaMagisterska
                     for (int j = 1; j < this.neuronQueue[i].Count(); j++)
                     {
                         toPush = 0;
-                        object previous_el = this.neuronQueue[i][j - 1];
-                        Viewbox viewbox_prev = (Viewbox)previous_el;
-                        string neuronType = viewbox_prev.Child.GetType().Name;
-                        if (neuronType == "Neuron0")
-                        {
-                            Neuron0 neuron = (Neuron0)viewbox_prev.Child;
-                            toPush += neuron.volumeToPush;
-                        }
-                        else if (neuronType == "Neuron1")
-                        {
-                            Neuron1 neuron = (Neuron1)viewbox_prev.Child;
-                            toPush += neuron.volumeToPush;
-                        }
-                        else
-                        {
-                            Neuron2 neuron = (Neuron2)viewbox_prev.Child;
-                            toPush += neuron.volumeToPush;
-                        }
+                        Viewbox viewbox_prev = this.neuronQueue[i][j - 1];
+                        Neuron neuron = (Neuron)viewbox_prev.Child;
+                        toPush += neuron.volumeToPush;
 
                         if (toPush > 0)
                         {
-                            object nextEl = this.neuronQueue[i][j];
+                            Neuron nextEl = (Neuron)(this.neuronQueue[i][j]).Child;
                             if (whatToPush.ContainsKey(nextEl))
                             {
                                 whatToPush[nextEl] += toPush;
@@ -515,46 +464,24 @@ namespace PracaMagisterska
             //}
 
 
-            foreach (KeyValuePair<object, double> element in whatToPush)
+            foreach (KeyValuePair<Neuron, double> element in whatToPush)
             {
-                Viewbox viewbox_el = (Viewbox)element.Key;
-                string neuronType = viewbox_el.Child.GetType().Name;
                 //object neuron = viewbox_el.Child;
                 //bool isFlow = (bool)neuron.GetAttr("isFlow");
-
-                if (neuronType == "Neuron0")
+                Neuron neuron = element.Key;
+                int denNum = neuron.dendrites_list.Count();
+                if (denNum == 0)
                 {
-                    Neuron0 neuron = (Neuron0)viewbox_el.Child;
-                    neuron.flowVolume = element.Value;
-
                     if (!neuron.isFlow)
                     {
                         Console.WriteLine("N0 flow");
-                        neuron.flow(50);
+                        // TODO: funtion for flow in neuron 0
                     }
 
                 }
-                else if (neuronType == "Neuron1")
+                else if (denNum > 1)
                 {
-                    Neuron1 neuron = (Neuron1)viewbox_el.Child;
-                    neuron.flowVolume = element.Value;
-                    if (!neuron.isFlow)
-                    {
-                        Console.WriteLine("N1 flow");
-                        neuron.flow(50);
-                    }
-                }
-                else
-                {
-                    Neuron2 neuron = (Neuron2)viewbox_el.Child;
-                    neuron.flowVolume = element.Value;
-
-                    if (!neuron.isFlow)
-                    {
-                        Console.WriteLine("N2 flow");
-                        neuron.flow(50);
-                    }
-
+                    // TODO write function for flow in neuron1 and neuron 2
                 }
             }
             
@@ -568,63 +495,6 @@ namespace PracaMagisterska
             timer2.Stop();
             startButton.IsEnabled = true;
 
-            foreach (KeyValuePair<Object, Double[]> element in canvasElements)
-            {
-                Viewbox viewbox_el = (Viewbox)element.Key;
-                string neuronType = viewbox_el.Child.GetType().Name;
-
-                if (neuronType == "Neuron0")
-                {
-                    Neuron0 neuron = (Neuron0)viewbox_el.Child;
-                    if (neuron.isFlow)
-                    {
-                        if (fromTimer)
-                        {
-                            neuron.stopTimer();
-                        }
-                        else
-                        {
-                            neuron.stopFlow();
-                        }
-                        Console.WriteLine("Stop neuron!!!!!!!!!");
-                    }
-
-                }
-                else if (neuronType == "Neuron1")
-                {
-                    Neuron1 neuron = (Neuron1)viewbox_el.Child;
-                    if (neuron.isFlow)
-                    {
-                        if (fromTimer)
-                        {
-                            neuron.stopTimer();
-                        }
-                        else
-                        {
-                            neuron.stopFlow();
-                        }
-                        Console.WriteLine("Stop neuron!!!!!!!!!");
-                    }
-
-                }
-                else
-                {
-                    Neuron2 neuron = (Neuron2)viewbox_el.Child;
-                    if (neuron.isFlow)
-                    {
-                        if (fromTimer)
-                        {
-                            neuron.stopTimer();
-                        }
-                        else
-                        {
-                            neuron.stopFlow();
-                        }
-                        Console.WriteLine("Stop neuron!!!!!!!!!");
-                    }
-
-                }
-            }
         }
    
 

@@ -36,9 +36,9 @@ namespace PracaMagisterska
 
     public partial class MainWindow : Window
     {
-        private Neuron0 neuron0;
-        private Neuron1 neuron1;
-        private Neuron2 neuron2;
+        private Neuron neuron0;
+        private Neuron neuron1;
+        private Neuron neuron2;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         private DateTime TimerStart { get; set; }
@@ -56,17 +56,23 @@ namespace PracaMagisterska
             //Grid.SetRow(model1uc, 1);
             //gridModel1Main.Children.Add(model1uc);
 
-            neuron0 = new Neuron0();
+
+            neuron0 = new Neuron(0);
             Grid.SetColumn(neuron0, 1);
             Grid.SetRow(neuron0, 1);
             gridModel1Main.Children.Add(neuron0);
 
-            neuron1 = new Neuron1();
+            //neuron0 = new Neuron0();
+            //Grid.SetColumn(neuron0, 1);
+            //Grid.SetRow(neuron0, 1);
+            //gridModel1Main.Children.Add(neuron0);
+
+            neuron1 = new Neuron(1);
             Grid.SetColumn(neuron1, 1);
             Grid.SetRow(neuron1, 1);
             gridModel2Main.Children.Add(neuron1);
 
-            neuron2 = new Neuron2();
+            neuron2 = new Neuron(2);
             Grid.SetColumn(neuron2, 1);
             Grid.SetRow(neuron2, 1);
             gridModel3Main.Children.Add(neuron2);
@@ -89,9 +95,9 @@ namespace PracaMagisterska
                 timer.Start();
                 timer2.Start();
                 this.TimerStart = DateTime.Now.AddSeconds(-delay);
-                neuron0.continueFlow((int)newTime);
-                neuron1.continueFlow((int)newTime);
-                neuron2.continueFlow((int)newTime);
+                //neuron0.continueFlow((int)newTime);
+                //neuron1.continueFlow((int)newTime);
+                //neuron2.continueFlow((int)newTime);
             }
             else
             {
@@ -120,10 +126,12 @@ namespace PracaMagisterska
                     neuron1.neuronLength = neuronLength;
                     neuron1.denDiam = denDiam;
                     neuron1.axDiam = axDiam;
+                    neuron1.setParameters(neuronLength);
 
                     neuron2.neuronLength = neuronLength;
                     neuron2.denDiam = denDiam;
                     neuron2.axDiam = axDiam;
+                    neuron2.setParameters(neuronLength);
 
                     //neuron0.flow((double)time, flow);
                     //neuron1.flow((double)time, flow);
@@ -132,25 +140,38 @@ namespace PracaMagisterska
                     this.TimerStart = DateTime.Now;
                     timer2.Tick += (sender2, e2) =>
                     {
+                        double toPush = 0;
                         this.neuron0.axon.newFlow(sender2, e2, flow);
 
-                        Tuple<bool, double> dendriteRes = neuron1.dendrite.newFlow(sender, e, flow);
-                        Thread.Sleep(10);
-                        if (dendriteRes.Item1)
+                        foreach (Dendrite dendrite in this.neuron1.dendrites_list)
                         {
-                            Tuple<bool, double> somaRes = neuron1.soma.newFlow(sender, e, dendriteRes.Item2);
+                            Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
+                            if (dendriteRes.Item1) toPush += dendriteRes.Item2;
+
+                        }
+                        Thread.Sleep(10);
+                        if (toPush > 0)
+                        {
+                            Tuple<bool, double> somaRes = neuron1.soma.newFlow(sender, e, toPush);
                             if (somaRes.Item1)
                             {
                                 neuron1.axon.newFlow(sender, e, somaRes.Item2);
                             }
                         }
 
-                        Tuple<bool, double> dendriteRes1 = neuron2.dendrite1.newFlow(sender, e, flow);
-                        Tuple<bool, double> dendriteRes2 = neuron2.dendrite2.newFlow(sender, e, flow);
-                        Thread.Sleep(10);
-                        if (dendriteRes1.Item1 | dendriteRes2.Item1)
+                        toPush = 0;
+
+                        foreach (Dendrite dendrite in this.neuron2.dendrites_list)
                         {
-                            Tuple<bool, double> somaRes = neuron2.soma.newFlow(sender, e, dendriteRes1.Item2 + dendriteRes2.Item2);
+                            Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
+                            if (dendriteRes.Item1) toPush += dendriteRes.Item2;
+
+                        }
+
+                        Thread.Sleep(10);
+                        if (toPush > 0)
+                        {
+                            Tuple<bool, double> somaRes = neuron2.soma.newFlow(sender, e, toPush);
                             if (somaRes.Item1)
                             {
                                 neuron2.axon.newFlow(sender, e, somaRes.Item2);
@@ -232,9 +253,9 @@ namespace PracaMagisterska
             timeBox.Text = "";
             timerTextBlock.Text = "00:00";
 
-            neuron0.reset();
-            neuron1.reset();
-            neuron2.reset();
+            //neuron0.reset();
+            //neuron1.reset();
+            //neuron2.reset();
 
             this.newFlow = true;
         }
