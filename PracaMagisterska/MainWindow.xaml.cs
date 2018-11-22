@@ -140,43 +140,11 @@ namespace PracaMagisterska
                     this.TimerStart = DateTime.Now;
                     timer2.Tick += (sender2, e2) =>
                     {
-                        double toPush = 0;
                         this.neuron0.axon.newFlow(sender2, e2, flow);
 
-                        foreach (Dendrite dendrite in this.neuron1.dendrites_list)
-                        {
-                            Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
-                            if (dendriteRes.Item1) toPush += dendriteRes.Item2;
+                        this.flow_neuron(sender2, e2, this.neuron1, flow);
 
-                        }
-                        Thread.Sleep(10);
-                        if (toPush > 0)
-                        {
-                            Tuple<bool, double> somaRes = neuron1.soma.newFlow(sender, e, toPush);
-                            if (somaRes.Item1)
-                            {
-                                neuron1.axon.newFlow(sender, e, somaRes.Item2);
-                            }
-                        }
-
-                        toPush = 0;
-
-                        foreach (Dendrite dendrite in this.neuron2.dendrites_list)
-                        {
-                            Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
-                            if (dendriteRes.Item1) toPush += dendriteRes.Item2;
-
-                        }
-
-                        Thread.Sleep(10);
-                        if (toPush > 0)
-                        {
-                            Tuple<bool, double> somaRes = neuron2.soma.newFlow(sender, e, toPush);
-                            if (somaRes.Item1)
-                            {
-                                neuron2.axon.newFlow(sender, e, somaRes.Item2);
-                            }
-                        }
+                        this.flow_neuron(sender2, e2, this.neuron2, flow);
 
                         this.myTimerTick(sender2, e2);
                         
@@ -216,6 +184,26 @@ namespace PracaMagisterska
 
             }
 
+        }
+
+        public void flow_neuron(object sender, EventArgs e, Neuron neuron, double flow)
+        {
+            double toPush = 0;
+            foreach (Dendrite dendrite in neuron.dendrites_list)
+            {
+                Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
+                if (dendriteRes.Item1) toPush += dendriteRes.Item2;
+
+            }
+            Thread.Sleep(10);
+            if (toPush > 0)
+            {
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush);
+                if (somaRes.Item1)
+                {
+                    neuron.axon.newFlow(sender, e, somaRes.Item2);
+                }
+            }
         }
 
         private void myTimerTick(object sender, EventArgs e)

@@ -72,7 +72,7 @@ namespace PracaMagisterska
             viewbox.CaptureMouse();
             Console.WriteLine("In Mouse Down");
             viewbox.MouseMove += neuron_MouseMove;
-            //viewbox.MouseUp += neuron_MouseUp;
+            viewbox.MouseUp += neuron_MouseUp;
         }
 
         private void neuron_MouseMove(object sender, MouseEventArgs e)
