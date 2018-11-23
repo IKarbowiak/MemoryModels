@@ -59,6 +59,7 @@ namespace PracaMagisterska
                 this.volume = this.diameter * this.diameter;
             }
             this.threshold = (this.diameter / 2 - this.axonDiameter / 2) * this.volume /  (this.diameter);
+            Console.WriteLine("Calculate thrwshold " + this.threshold);
             this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }
 

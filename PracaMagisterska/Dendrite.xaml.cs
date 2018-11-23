@@ -30,11 +30,13 @@ namespace PracaMagisterska
         private Rectangle[][] recDenArray;
         private int columnsCounter = 0;
         private bool isFull = false;
+        public bool isBlocked {get; set;}
 
 
         public Dendrite(bool dim3d)
         {
             InitializeComponent();
+            this.isBlocked = false;
             this.length = 1.5;
             this.diameter = 0.4;
             this.dimension3D = dim3d;

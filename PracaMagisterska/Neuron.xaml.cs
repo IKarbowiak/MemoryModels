@@ -46,7 +46,6 @@ namespace PracaMagisterska
             }
             else if (dendrideNum > 0)
             {
-                Console.WriteLine("More den");
                 if (dendrideNum == 1)
                 {
                     Dendrite dendrite = new Dendrite(false);
@@ -60,6 +59,7 @@ namespace PracaMagisterska
                     for (int i = 0; i < dendrideNum; i++)
                     {
                         Dendrite dendrite = new Dendrite(false);
+                        dendrite.isBlocked = true;
                         dendrite.HorizontalAlignment = HorizontalAlignment.Left;
                         if (i % 2 == 0)
                         {
@@ -88,7 +88,7 @@ namespace PracaMagisterska
                 neuronGrid.Children.Add(soma);
 
                 this.model = "Model" + dendrideNum;
-                this.setParameters(this.neuronLength);
+                //this.setParameters(this.neuronLength); //
                 outFlowVolume = 0;
                 this.flowVolume = 0;
                 this.isFlow = false;
