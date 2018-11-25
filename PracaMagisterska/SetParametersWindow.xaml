@@ -62,10 +62,10 @@
                     <TextBox x:Name="maxSpeedM1" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
 
                     <TextBlock Grid.Column="0" Grid.Row="6" VerticalAlignment="Center" TextAlignment="Center">Blocke at the end?</TextBlock>
-                        <ComboBox Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Width="100">
-                            <ComboBoxItem Content="True"/>
-                            <ComboBoxItem Content="False" IsSelected="True"/>
-                        </ComboBox>
+                    <ComboBox x:Name="blockModel1" Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Width="100">
+                        <ComboBoxItem Content="True"/>
+                        <ComboBoxItem Content="False" IsSelected="True"/>
+                    </ComboBox>
                     </Grid>
                 </ScrollViewer>
 
@@ -146,7 +146,7 @@
                             <TextBox x:Name="axonDiamM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="axonLenM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="maxSpeedBoxM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
-                            <ComboBox Width="100" Height="20">
+                            <ComboBox x:Name="BlockModel3" Width="100" Height="20">
                                 <ComboBoxItem Content="True"/>
                                 <ComboBoxItem Content="False" IsSelected="True"/>
                             </ComboBox>

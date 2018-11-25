@@ -146,8 +146,9 @@ namespace PracaMagisterska
                 }
                 else if (side == "right")
                 {
-                    if (direction == "up") newDirection = "down";
-                    else if (direction == "down") newDirection = "up";
+                    newDirection = direction == "up" ? "down" : "up";
+                    //if (direction == "up") newDirection = "down";
+                    //else if (direction == "down") newDirection = "up";
                     // przydałaby się tutaj obsługa błędów
                     element.Name = newDirection;
                 }
@@ -183,7 +184,8 @@ namespace PracaMagisterska
                     Console.WriteLine((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox))));
                     Console.WriteLine((Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox))));
 
-                    if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) || (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
+                    if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
+                        (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
                     {
                         //List<object> el_list = new List<object> { element.Key };
 
@@ -208,7 +210,7 @@ namespace PracaMagisterska
                                 viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
                                 viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
                             }
-                            else if (!quit)
+                            else if (!quit) // outOfBorder
                             {
                                 List<int> checkEl = neuronQueueContainsCheck(element.Key);
                                 if (this.neuronQueue.Count() == 0)
@@ -223,7 +225,7 @@ namespace PracaMagisterska
                                 {
                                     if (checkEl[1] > 0)
                                     {
-                                        List<Viewbox> elements = new List<Viewbox>();
+                                        List<Viewbox> elements = new List<Viewbox>();   // fo pszerobienia
                                         elements.Add(viewbox);
                                         elements.Add(elBox);
                                         this.neuronQueue.Add(elements);
@@ -309,7 +311,7 @@ namespace PracaMagisterska
                 Console.WriteLine("Delete from List");
                 if (checkList.Count > 2)
                 {
-
+                    // czo!?
                 }
                 else if (elInList > this.neuronQueue[list_num].Count / 2)
                 {
@@ -341,7 +343,7 @@ namespace PracaMagisterska
             double newX = x - (viewbox.Width / 2);
             double newY = y - (viewbox.Height / 2);
 
-            Console.WriteLine(x + "  ; " + y + "  maxX" + maxX + "  maxY" + maxY + "get Left" + Canvas.GetLeft(viewbox) + " gwt Right " + Canvas.GetRight(viewbox));
+            Console.WriteLine(x + "  ; " + y + "  maxX" + maxX + "  maxY" + maxY + "get Left" + Canvas.GetLeft(viewbox) + " gwt Right " + Canvas.GetRight(viewbox));    // gwt?
 
             bool quit = false;
             if (newX < 0) { newX = 0; quit = true; }
