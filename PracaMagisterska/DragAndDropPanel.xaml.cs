@@ -32,6 +32,7 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer2;
         private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
         private int counter = 0;
+        public string currentConf { get; set; }
         //private List<object> elementsToCheck = new List<object>();
 
 
@@ -520,5 +521,26 @@ namespace PracaMagisterska
         {
             this.stop(false);
         }
+
+        private void parametersButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetParametersWindow setParamsWindow;
+            if (currentConf != null)
+            {
+                setParamsWindow = new SetParametersWindow(this.getConfParamsXML, this, this.currentConf);
+            }
+            else
+            {
+                setParamsWindow = new SetParametersWindow(this.getConfParamsXML, this);
+            }
+            setParamsWindow.ShowDialog();
+        }
+
+        private void getConfParamsXML(string path)
+        {
+            this.currentConf = path;
+            Console.WriteLine("In main Window" + path);
+        }
+
     }
 }

@@ -100,7 +100,7 @@ namespace PracaMagisterska
 
         }
 
-        public void setParameters(double neuronLen = 40)
+        public void setParams(double neuronLen = 40)
         {
             this.outFlowVolume = 0;
             foreach (Dendrite den in this.dendrites_list)

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
+using System.IO;
 
 namespace PracaMagisterska
 {
@@ -23,10 +24,21 @@ namespace PracaMagisterska
     {
         private TextBlock info;
         private TextBox parBox;
+        private string projectPath;
+        private Action<string> callback;
+        private object parentWindow; 
 
-        public SetParametersWindow()
+        public SetParametersWindow(Action<string> action, object window, string conf = "")
         {
             InitializeComponent();
+            if (conf != "")
+            {
+                this.load(conf);
+
+            }
+            this.projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
+            this.callback = action;
+            this.parentWindow = window;
 
             //string[] parameters = { "Neuron Length", "Denrite Diameter", "Axon Diameter", "Flow ", "Flow time", "Max speed" };
             //string[] parametersM1BoxNames = {"neuronLenBoxM1", "denDiamBoxM1", "axonDiamBox1", "flowBoxM1", "timeBoxM1", "maxSpeedM1" };
@@ -35,6 +47,13 @@ namespace PracaMagisterska
             //    info = new TextBlock() { Height=16};
             //}
 
+        }
+
+
+        private void changeCurrentConfInParentWindow(string path)
+        {
+            this.callback(path);
+            //((MainWindow)Application.Current.MainWindow).currentConf = path;
         }
 
         private void writeParametersToXML(object sender, RoutedEventArgs e)
@@ -52,16 +71,26 @@ namespace PracaMagisterska
             {
                 // Save document
                 string filename = dlg.FileName;
-                XElement xmlTree = new XElement("Configuration");
-                XElement xmlModel2 = new XElement("Model2");
-                XElement xmlModel3 = new XElement("Model3");
+                this.saveXML(filename);
 
-                xmlModel2 = addElementsToXElement(xmlModel2, Model2_params);
-                xmlModel3 = addElementsToXElement(xmlModel3, Model3_params);
-
-                xmlTree.Add(xmlModel2, xmlModel3);
-                xmlTree.Save(filename);
             }
+        }
+
+        private void saveXML(string filename)
+        {
+            XElement xmlTree = new XElement("Configuration");
+            XElement xmlGeneral = new XElement("General");
+            XElement xmlModel1 = new XElement("Model1");
+            XElement xmlModel2 = new XElement("Model2");
+            XElement xmlModel3 = new XElement("Model3");
+
+            xmlGeneral = addElementsToXElement(xmlGeneral, generalParams);
+            xmlModel1 = addElementsToXElement(xmlModel1, Model1_params);
+            xmlModel2 = addElementsToXElement(xmlModel2, Model2_params);
+            xmlModel3 = addElementsToXElement(xmlModel3, Model3_params);
+
+            xmlTree.Add(xmlGeneral, xmlModel1, xmlModel2, xmlModel3);
+            xmlTree.Save(filename);
         }
 
         private XElement addElementsToXElement(XElement xmlElement, StackPanel panel)
@@ -85,80 +114,85 @@ namespace PracaMagisterska
 
         }
 
-        //private void writeParametersToXML(object sender, RoutedEventArgs e)
-        //{
-        //    Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-        //    dlg.FileName = "paramsConf"; // Default file name
-        //    dlg.DefaultExt = ".xml"; // Default file extension
-        //    dlg.Filter = "XML documents (.xml)|*.xml"; // Filter files by extension
+        private void loadButton_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = ".xml";
+            dlg.Filter = "XML documents (.xml)|*.xml"; // Filter files by extension
+            Nullable<bool> result = dlg.ShowDialog();
 
-        //    // Show save file dialog box
-        //    Nullable<bool> result = dlg.ShowDialog();
-        //    // Process save file dialog box results
-        //    if (result == true)
-        //    {
-        //        // Save document
-        //        string filename = dlg.FileName;
-        //        Console.WriteLine(filename);
+            if (result == true)
+            {
+                string filename = dlg.FileName;
+                this.load(filename);
+                changeCurrentConfInParentWindow(filename);
+            }
+        }
 
-        //        XmlWriter xmlWriter = XmlWriter.Create(filename);
-        //        xmlWriter.WriteStartDocument();
-        //        xmlWriter.WriteStartElement("Conf");
-        //        xmlWriter.WriteStartElement("Model2");
+        private void load(string filename)
+        {
+            XElement xmlTree = XElement.Load(filename, LoadOptions.None);
+            //Console.WriteLine(xmlTree);
+            foreach (XElement element in xmlTree.Elements())
+            {
+                foreach (XElement childElement in element.Elements())
+                {
+                    Console.WriteLine(childElement.Name);
+                    string name = childElement.Name.ToString();
+                    object window_element = this.FindName(name);
+                    if (window_element.GetType() == typeof(ComboBox))
+                    {
+                        ComboBox comboBox = (ComboBox)window_element;
+                    }
+                    else if (window_element.GetType() == typeof(TextBox))
+                    {
+                        TextBox textbox = (TextBox)window_element;
+                        textbox.Text = childElement.Value;
+                    }
+                }
+            }
+        }
 
-        //        foreach (object obj in Model2_params.Children)
-        //        {
-        //            if (obj.GetType().Name == "ComboBox")
-        //            {
-        //                ComboBox combobox = (ComboBox)obj;
-        //                xmlWriter.WriteStartElement(combobox.Name);
-        //                xmlWriter.WriteString(combobox.SelectedItem.ToString().Split(':')[1]);
-        //                //xmlWriter.WriteString(combobox.Items[combobox.SelectedIndex].ToString().Split(':')[1]);
-        //                xmlWriter.WriteEndElement();
-        //            }
-        //            else
-        //            {
-        //                TextBox textbox = (TextBox)obj;
-        //                xmlWriter.WriteStartElement(textbox.Name);
-        //                xmlWriter.WriteString(textbox.Text);
-        //                xmlWriter.WriteEndElement();
+        private void setParamsValueToNeurons()
+        {
+            if (this.parentWindow.GetType() == typeof(MainWindow))
+            {
+                MainWindow mainWindow = (MainWindow)this.parentWindow;
+                // TODO: zapis wartoci do neuronow, mozna przykladowo zrobic funkcje w neuronie i tutaj podawac tylko odpowiednie parametry
+            }
+            else if (this.parentWindow.GetType() == typeof(DragAndDropPanel))
+            {
 
-        //            }
-        //        }
+            }
+        }
 
-        //        xmlWriter.WriteEndElement();
-        //        xmlWriter.WriteStartElement("Model3");
+        private void updateNeuronValues(Neuron neuron)
+        {
 
-        //        foreach (object obj in Model2_params.Children)
-        //        {
-        //            if (obj.GetType().Name == "ComboBox")
-        //            {
-        //                ComboBox combobox = (ComboBox)obj;
-        //                xmlWriter.WriteStartElement(combobox.Name);
-        //                xmlWriter.WriteString(combobox.SelectedItem.ToString().Split(':')[1]);
-        //                //xmlWriter.WriteString(combobox.Items[combobox.SelectedIndex].ToString().Split(':')[1]);
-        //                xmlWriter.WriteEndElement();
-        //            }
-        //            else if (obj.GetType().Name == "TextBox")
-        //            {
-        //                TextBox textbox = (TextBox)obj;
-        //                xmlWriter.WriteStartElement(textbox.Name);
-        //                xmlWriter.WriteString(textbox.Text);
-        //                xmlWriter.WriteEndElement();
-        //            }
-        //        }
+        }
 
-        //        xmlWriter.WriteEndElement();
+        private void defaultConf_Click(object sender, RoutedEventArgs e)
+        {
+            string path = this.projectPath + "\\defaultConf.xml";
+            load(path);
+            changeCurrentConfInParentWindow(path);
+        }
 
-        //        xmlWriter.WriteEndDocument();
-        //        xmlWriter.Close();
-        //        Console.WriteLine("Done");
-
-        //    }
+        private void updateDefault_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: zabklokowac mozliwosc updatu gdy pola sa puste!
+            saveXML(this.projectPath + "\\defaultConf.xml");
+        }
 
 
-        //}
-
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            string path = this.projectPath + "\\currentCong.XML";
+            saveXML(path);
+            this.callback(path);
+            changeCurrentConfInParentWindow(path);
+            Console.WriteLine("Current path: " + path);
+        }
     }
 
 

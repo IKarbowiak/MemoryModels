@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         ResizeMode="CanResize"
-        Title="MainWindow" Height="650" Width="1200">
+        Title="MainWindow" Height="500" Width="1000">
     <Grid x:Name="Start" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30*"/>
-            <ColumnDefinition Width="40*"/>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="30*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -19,11 +19,7 @@
             <RowDefinition Height="5*"/>
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="15">Timer</TextBlock>
-        <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20" BorderBrush="Gray" BorderThickness="1" >
-            <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
-        </Border>
-        <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Top" TextAlignment="Center" FontSize="30" Margin="10,10,0.8,0" Height="40"><Run Text="Simple Neuron Model"/></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" TextAlignment="Center" FontSize="30" Margin="10,10,0.8,0" Height="40"><Run Text="Simple Neuron Model"/></TextBlock>
         <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,140,0"/>
         <Button x:Name="stopButton" Grid.Row="0" Grid.Column="1" Content="Stop" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,0,0" Click="stopButton_Click" />
         <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,60,0,0" Click="resetButton_Click"/>
@@ -82,39 +78,20 @@
 
         <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="2*"/>
+
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
-            <Button x:Name="setParamButton" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="6" Height="20" Width="150" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="0,0,0,0" Background="Beige" Content="Set advance parameters" Click="setParamButton_Click"/>
-            <Button x:Name="defaultParButton" Grid.Column="0" Grid.Row="0" Height="20" Width="100" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" Background="Beige" Click="defaultParButton_Click" Content="Click for default"/>
-            <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/></TextBlock>
-            <TextBlock x:Name="infoNeuron" Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(length must be bigger than 30"/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-            <TextBox x:Name="neuronLenBox" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Height="18" Width="50"/>
-
-            <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Dendrites diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-            <TextBlock x:Name="denDiamInfo" Grid.Column="0" Grid.Row="2" Margin="0,0,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-            <TextBox x:Name="denDiamBox" Grid.Column="1" Grid.Row="2" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
-
-            <TextBlock Grid.Column="0" Grid.Row="3" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-            <TextBlock x:Name="axonDiamInfo" Grid.Column="0" Grid.Row="3" Margin="0,0,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-            <TextBox x:Name="axonDiamBox" Grid.Column="1" Grid.Row="3" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
-
-            <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" Grid.ColumnSpan="1" Margin="0,0,0, 0" Height="16"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
-            <TextBox x:Name="flowBox" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
-
-            <TextBlock Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center" Margin="0,5,0,0"><Run Text="Flow time [s]"/></TextBlock>
-            <TextBox x:Name="timeBox" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
-
+            <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,20" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
+            <Button x:Name="setParamButton" Grid.Column="0" Grid.Row="1" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
+            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,40" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
+            <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0" BorderBrush="Gray" BorderThickness="1" >
+                <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
+            </Border>
         </Grid>
         <Grid Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Grid.ColumnDefinitions>
@@ -123,7 +100,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,2,0.2,0" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Height="18" ><Run Text="Results"/></TextBlock>
@@ -137,7 +114,7 @@
                 <TextBlock x:Name="M1VolumeBlock" TextAlignment="Center" Height="16" />
             </Border>
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,15,0">
+        <Grid Grid.Column="2" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -148,7 +125,7 @@
                 <TextBlock x:Name="M2VolumeBlock" TextAlignment="Center" Height="16" />
             </Border>
         </Grid>
-        <Grid Grid.Column="2" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,15,0">
+        <Grid Grid.Column="2" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>

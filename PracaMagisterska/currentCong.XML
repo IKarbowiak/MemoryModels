@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <General>
+    <flowBox></flowBox>
+    <timeBox></timeBox>
+  </General>
+  <Model1>
+    <neuLenBoxM1></neuLenBoxM1>
+    <neuDiamBoxM1></neuDiamBoxM1>
+    <maxSpeedBoxM1></maxSpeedBoxM1>
+    <blockModel1> False</blockModel1>
+  </Model1>
+  <Model2>
+    <denLenBoxM2></denLenBoxM2>
+    <denDiamBoxM2></denDiamBoxM2>
+    <somaDiamBoxM2></somaDiamBoxM2>
+    <axonDiamM2></axonDiamM2>
+    <axonLenM2></axonLenM2>
+    <maxSpeedBoxM2></maxSpeedBoxM2>
+    <blockModel2> False</blockModel2>
+  </Model2>
+  <Model3>
+    <den1LenBoxM3></den1LenBoxM3>
+    <den1DiamBoxM3></den1DiamBoxM3>
+    <den2LenBoxM3></den2LenBoxM3>
+    <den2DiamBoxM3></den2DiamBoxM3>
+    <somaDiamBoxM3></somaDiamBoxM3>
+    <axonDiamM3></axonDiamM3>
+    <axonLenM3></axonLenM3>
+    <maxSpeedBoxM3></maxSpeedBoxM3>
+    <BlockModel3> False</BlockModel3>
+  </Model3>
+</Configuration>

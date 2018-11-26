@@ -36,18 +36,20 @@ namespace PracaMagisterska
 
     public partial class MainWindow : Window
     {
-        private Neuron neuron0;
-        private Neuron neuron1;
-        private Neuron neuron2;
+        public Neuron neuron0;
+        public Neuron neuron1;
+        public Neuron neuron2;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         private DateTime TimerStart { get; set; }
         private bool newFlow;
         private double time;
+        public string currentConf { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
+
             //Debug.Print("This is debug prin");
 
 
@@ -102,13 +104,13 @@ namespace PracaMagisterska
             else
             {
 
-                double[] validateRes = validate_boxes();
+                //double[] validateRes = validate_boxes();
 
-                double neuronLength = validateRes[0];
-                double denDiam = validateRes[1];
-                double axDiam = validateRes[2];
-                double flow = validateRes[3] / 10;
-                time = validateRes[4];
+                double neuronLength = 40;
+                double denDiam = 0.4;
+                double axDiam = 0.4;
+                double flow = 8 / 10;
+                time = 30;
 
                 timer.Interval = TimeSpan.FromSeconds(time);
                 timer2.Interval = TimeSpan.FromMilliseconds(100);
@@ -126,12 +128,12 @@ namespace PracaMagisterska
                     neuron1.neuronLength = neuronLength;
                     neuron1.denDiam = denDiam;
                     neuron1.axDiam = axDiam;
-                    neuron1.setParameters(neuronLength);
+                    neuron1.setParams(neuronLength);
 
                     neuron2.neuronLength = neuronLength;
                     neuron2.denDiam = denDiam;
                     neuron2.axDiam = axDiam;
-                    neuron2.setParameters(neuronLength);
+                    neuron2.setParams(neuronLength);
 
                     //neuron0.flow((double)time, flow);
                     //neuron1.flow((double)time, flow);
@@ -147,7 +149,7 @@ namespace PracaMagisterska
                         this.flow_neuron(sender2, e2, this.neuron2, flow);
 
                         this.myTimerTick(sender2, e2);
-                        
+
                     };
                     timer2.Start();
 
@@ -162,7 +164,7 @@ namespace PracaMagisterska
 
                     this.newFlow = false;
                 }
-           
+
 
 
                 //M1TimeBlock.Text = re1[0].ToString("0.##");
@@ -234,11 +236,6 @@ namespace PracaMagisterska
             M2VolumeBlock.Text = "";
             M3VolumeBlock.Text = "";
 
-            neuronLenBox.Text = "";
-            denDiamBox.Text = "";
-            axonDiamBox.Text = "";
-            flowBox.Text = "";
-            timeBox.Text = "";
             timerTextBlock.Text = "00:00";
 
             //neuron0.reset();
@@ -248,79 +245,79 @@ namespace PracaMagisterska
             this.newFlow = true;
         }
 
-        private double[] validate_boxes()
-        {
-            double neuronLength = 0;
-            double denDiam = 0;
-            double axDiam = 0;
-            double flow = 0;
-            double time = 0;
+        //private double[] validate_boxes()
+        //{
+        //    double neuronLength = 0;
+        //    double denDiam = 0;
+        //    double axDiam = 0;
+        //    double flow = 0;
+        //    double time = 0;
 
-            if (String.IsNullOrEmpty(neuronLenBox.Text) || denDiamBox.Text.Contains('.') || (Double.Parse(neuronLenBox.Text) < 30))
-            {
-                neuronLenBox.BorderBrush = System.Windows.Media.Brushes.Red;
-                //infoNeuron.Foreground = Brushes.Red;
-            }
+        //    if (String.IsNullOrEmpty(neuronLenBox.Text) || denDiamBox.Text.Contains('.') || (Double.Parse(neuronLenBox.Text) < 30))
+        //    {
+        //        neuronLenBox.BorderBrush = System.Windows.Media.Brushes.Red;
+        //        //infoNeuron.Foreground = Brushes.Red;
+        //    }
 
-            else
-            {
-                neuronLenBox.BorderBrush = System.Windows.Media.Brushes.Gray;
-                infoNeuron.Foreground = Brushes.Black;
-                neuronLength = Int32.Parse(neuronLenBox.Text);
-            }
-
-
-            TextBox[] boxes = { axonDiamBox, denDiamBox };
-            foreach (TextBox box in boxes)
-            {
-                if (String.IsNullOrEmpty(box.Text) || box.Text.Contains('.') || (0.3 > Double.Parse(box.Text)) || (Double.Parse(box.Text) > 0.5))
-                {
-                    box.BorderBrush = System.Windows.Media.Brushes.Red;
-                    box.Foreground = Brushes.Red;
-                }
-                else
-                {
-                    box.BorderBrush = System.Windows.Media.Brushes.Gray;
-                    box.Foreground = Brushes.Black;
-                    if (box == axonDiamBox)
-                    {
-                        axDiam = Double.Parse(axonDiamBox.Text);
-
-                    }
-                    else
-                    {
-                        denDiam = Double.Parse(axonDiamBox.Text);
-                    }
-                }
-            }
-
-            TextBox[] boxes2 = { flowBox, timeBox };
-            foreach (TextBox box in boxes2)
-            {
-
-                if (box.Text.Contains('.') || String.IsNullOrEmpty(box.Text) || (Double.Parse(box.Text) < 0))
-                {
-                    box.BorderBrush = System.Windows.Media.Brushes.Red;
-                }
-                else
-                {
-                    box.BorderBrush = System.Windows.Media.Brushes.Gray;
-                    if (box == flowBox)
-                    {
-                        flow = Double.Parse(flowBox.Text);
-                    }
-                    else
-                    {
-                        time = Double.Parse(timeBox.Text);
-                    }
-                }
-            }
+        //    else
+        //    {
+        //        neuronLenBox.BorderBrush = System.Windows.Media.Brushes.Gray;
+        //        infoNeuron.Foreground = Brushes.Black;
+        //        neuronLength = Int32.Parse(neuronLenBox.Text);
+        //    }
 
 
-            double[] res = { neuronLength, denDiam, axDiam, flow, time };
-            return res;
+        //    TextBox[] boxes = { axonDiamBox, denDiamBox };
+        //    foreach (TextBox box in boxes)
+        //    {
+        //        if (String.IsNullOrEmpty(box.Text) || box.Text.Contains('.') || (0.3 > Double.Parse(box.Text)) || (Double.Parse(box.Text) > 0.5))
+        //        {
+        //            box.BorderBrush = System.Windows.Media.Brushes.Red;
+        //            box.Foreground = Brushes.Red;
+        //        }
+        //        else
+        //        {
+        //            box.BorderBrush = System.Windows.Media.Brushes.Gray;
+        //            box.Foreground = Brushes.Black;
+        //            if (box == axonDiamBox)
+        //            {
+        //                axDiam = Double.Parse(axonDiamBox.Text);
 
-        }
+        //            }
+        //            else
+        //            {
+        //                denDiam = Double.Parse(axonDiamBox.Text);
+        //            }
+        //        }
+        //    }
+
+        //    TextBox[] boxes2 = { flowBox, timeBox };
+        //    foreach (TextBox box in boxes2)
+        //    {
+
+        //        if (box.Text.Contains('.') || String.IsNullOrEmpty(box.Text) || (Double.Parse(box.Text) < 0))
+        //        {
+        //            box.BorderBrush = System.Windows.Media.Brushes.Red;
+        //        }
+        //        else
+        //        {
+        //            box.BorderBrush = System.Windows.Media.Brushes.Gray;
+        //            if (box == flowBox)
+        //            {
+        //                flow = Double.Parse(flowBox.Text);
+        //            }
+        //            else
+        //            {
+        //                time = Double.Parse(timeBox.Text);
+        //            }
+        //        }
+        //    }
+
+
+        //    double[] res = { neuronLength, denDiam, axDiam, flow, time };
+        //    return res;
+
+        //}
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -333,14 +330,14 @@ namespace PracaMagisterska
 
 
 
-        private void defaultParButton_Click(object sender, RoutedEventArgs e)
-        {
-            neuronLenBox.Text = "40";
-            denDiamBox.Text = "0,4";
-            axonDiamBox.Text = "0,4";
-            flowBox.Text = "8";
-            timeBox.Text = "30";
-        }
+        //private void defaultParButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    neuronLenBox.Text = "40";
+        //    denDiamBox.Text = "0,4";
+        //    axonDiamBox.Text = "0,4";
+        //    flowBox.Text = "8";
+        //    timeBox.Text = "30";
+        //}
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
@@ -355,44 +352,58 @@ namespace PracaMagisterska
 
         private void setParamButton_Click(object sender, RoutedEventArgs e)
         {
-            SetParametersWindow myWindow = new SetParametersWindow();
-            int n;
-
-            myWindow.flowBoxM1.Text = this.flowBox.Text;
-            myWindow.flowBoxM2.Text = this.flowBox.Text;
-            myWindow.flowBoxM3.Text = this.flowBox.Text;
-
-            myWindow.timeBoxM1.Text = this.timeBox.Text;
-            myWindow.timeBoxM2.Text = this.timeBox.Text;
-            myWindow.timeBoxM3.Text = this.timeBox.Text;
-
-            myWindow.denDiamBoxM1.Text = this.denDiamBox.Text;
-            myWindow.denDiamBoxM2.Text = this.denDiamBox.Text;
-            myWindow.den1DiamBoxM3.Text = this.denDiamBox.Text;
-            myWindow.den2DiamBoxM3.Text = this.denDiamBox.Text;
-
-            myWindow.neuronLenBoxM1.Text = this.neuronLenBox.Text;
-
-            if (int.TryParse(this.neuronLenBox.Text, out n))
-            {
-                myWindow.denLenBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-                myWindow.den1LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-                myWindow.den2LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-
-                myWindow.axonLenM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
-                myWindow.axonLenM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
-
-                myWindow.somaDiamBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
-                myWindow.somaDiamBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
+            SetParametersWindow setParamsWindow;
+            if (currentConf != null) {
+                setParamsWindow = new SetParametersWindow(this.getConfParamsXML, this,  this.currentConf);
             }
+            else
+            {
+                setParamsWindow = new SetParametersWindow(this.getConfParamsXML, this);
+            }
+            setParamsWindow.ShowDialog();
 
-            myWindow.axonDiamBoxM1.Text = this.axonDiamBox.Text;
-            myWindow.axonDiamM2.Text = this.axonDiamBox.Text;
-            myWindow.axonDiamM3.Text = this.axonDiamBox.Text;
 
-            myWindow.ShowDialog();
+
+            //setParamsWindow.flowBoxM1.Text = this.flowBox.Text;
+            //setParamsWindow.flowBoxM2.Text = this.flowBox.Text;
+            //setParamsWindow.flowBoxM3.Text = this.flowBox.Text;
+
+            //setParamsWindow.timeBoxM1.Text = this.timeBox.Text;
+            //setParamsWindow.timeBoxM2.Text = this.timeBox.Text;
+            //setParamsWindow.timeBoxM3.Text = this.timeBox.Text;
+
+            //setParamsWindow.neuDiamBoxM1.Text = this.denDiamBox.Text;
+            //setParamsWindow.denDiamBoxM2.Text = this.denDiamBox.Text;
+            //setParamsWindow.den1DiamBoxM3.Text = this.denDiamBox.Text;
+            //setParamsWindow.den2DiamBoxM3.Text = this.denDiamBox.Text;
+
+            //setParamsWindow.neuLenBoxM1.Text = this.neuronLenBox.Text;
+
+            //if (int.TryParse(this.neuronLenBox.Text, out n))
+            //{
+            //    setParamsWindow.denLenBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+            //    setParamsWindow.den1LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+            //    setParamsWindow.den2LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
+
+            //    setParamsWindow.axonLenM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
+            //    setParamsWindow.axonLenM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
+
+            //    setParamsWindow.somaDiamBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
+            //    setParamsWindow.somaDiamBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
+            //}
+
+            //setParamsWindow.axonDiamM2.Text = this.axonDiamBox.Text;
+            //setParamsWindow.axonDiamM3.Text = this.axonDiamBox.Text;
 
         }
+
+    
+        private void getConfParamsXML(string path)
+        {
+            this.currentConf = path;
+            Console.WriteLine("In main Window" + path);
+        }
+
     }
 
 

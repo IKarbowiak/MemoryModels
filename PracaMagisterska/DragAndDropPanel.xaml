@@ -34,7 +34,7 @@
         </Border>
         <Border Grid.Row="1" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel Background="Ivory">
-                <Button Height="20" Width="90" Margin="0,5,0,5">Set parameters</Button>
+                <Button x:Name="parametersButton" Height="20" Width="90" Margin="0,5,0,5" RenderTransformOrigin="0.502,0.5" Click="parametersButton_Click">Set parameters</Button>
                 <Button x:Name="startButton" Height="20" Width="90" Margin="0,5,0,5" Click="startButton_Click">Start</Button>
                 <Button x:Name="stopButton" Height="20" Width="90" Margin="0,5,0,5" Click="stopButton_Click" >Stop</Button>
                 <Button x:Name="resetButton" Height="20" Width="90" Margin="0,5,0,5" RenderTransformOrigin="0.502,0.5" Click="resetButton_Click" >Reset</Button>
