@@ -171,6 +171,37 @@ namespace PracaMagisterska
 
         }
 
+        private bool validateFields()
+        {
+            XElement xmlTree = XElement.Load(this.projectPath + "\\defaultConf.xml", LoadOptions.None);
+            bool allFieldsFull = true;
+            foreach (XElement element in xmlTree.Elements())
+            {
+                foreach (XElement childElement in element.Elements())
+                {
+                    string name = childElement.Name.ToString();
+                    object window_element = this.FindName(name);
+                    if (window_element.GetType() == typeof(TextBox))
+                    {
+                        TextBox textbox = (TextBox)window_element;
+                        if (String.IsNullOrEmpty(textbox.Text) || textbox.Text.Contains('.'))
+                        {
+                            Console.WriteLine("Checking");
+                            textbox.BorderBrush = System.Windows.Media.Brushes.Red;
+                            textbox.Foreground = Brushes.Red;
+                            allFieldsFull = false;
+                        }
+                        else
+                        {
+                            textbox.BorderBrush = System.Windows.Media.Brushes.Gray;
+                            textbox.Foreground = Brushes.Black;
+                        }
+                    }
+                }
+            }
+            return allFieldsFull;
+        }
+
         private void defaultConf_Click(object sender, RoutedEventArgs e)
         {
             string path = this.projectPath + "\\defaultConf.xml";
@@ -181,7 +212,10 @@ namespace PracaMagisterska
         private void updateDefault_Click(object sender, RoutedEventArgs e)
         {
             // TODO: zabklokowac mozliwosc updatu gdy pola sa puste!
-            saveXML(this.projectPath + "\\defaultConf.xml");
+            if (validateFields())
+            {
+                saveXML(this.projectPath + "\\defaultConf.xml");
+            }
         }
 
 
