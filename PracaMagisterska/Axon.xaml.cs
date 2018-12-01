@@ -26,6 +26,7 @@ namespace PracaMagisterska
         public bool dimension3D;
         public double surface;
         public double flowedOutVolume { get; set; }
+        public bool blockTheEnd { get; set; }
         private double volume;
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
@@ -41,6 +42,7 @@ namespace PracaMagisterska
             this.dimension3D = dim3d;
             this.flowedOutVolume = 0;
             this.calculateParameters();
+            this.blockTheEnd = false;
             if (recWidth != 260 || recHeight != 11)
             {
                 changeRecSize(recWidth, recHeight);

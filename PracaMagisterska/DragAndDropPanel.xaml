@@ -12,35 +12,32 @@
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="25" Margin="0,6,0,0">Neuron Panel</TextBlock>
         <Border Grid.Row="0" Grid.Column="0" Margin="10,40,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
-            <StackPanel x:Name="objectHandlerPanel" Background="#fff8f0" AllowDrop="True"  VerticalAlignment="Stretch">
-                <TextBlock TextAlignment="Center">Model 1</TextBlock>
-                <Viewbox x:Name="n0" StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
-                    <local:Neuron0 Height="200" Width="450"/>
-                </Viewbox>
-                <TextBlock TextAlignment="Center">Model 2</TextBlock>
-                <Viewbox x:Name="n1" StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
-                    <local:Neuron1 x:Name="neuron1a" Height="200" Width="450" AllowDrop="True"/>
-                </Viewbox>
-                <TextBlock TextAlignment="Center">Model 2</TextBlock>
-                <Viewbox x:Name="n2"  StretchDirection="Both" Stretch="Uniform" MouseDown="create_neuron">
-                    <local:Neuron2 Height="200" Width="450"/>
-                </Viewbox>
+            <StackPanel x:Name="objectHandlerPanel" Background="LightGoldenrodYellow" AllowDrop="True"  VerticalAlignment="Stretch">
             </StackPanel>
         </Border>
-        <Border Grid.Row="1" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
+        <Border Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
+            <StackPanel Background="Honeydew">
+                <TextBlock VerticalAlignment="Center" Margin="0,5,0,0" HorizontalAlignment="Center" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
+                <Border VerticalAlignment="Center" HorizontalAlignment="Center"  BorderBrush="Gray" BorderThickness="1" >
+                    <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
+                </Border>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel Background="Ivory">
-                <Button x:Name="parametersButton" Height="20" Width="90" Margin="0,5,0,5" RenderTransformOrigin="0.502,0.5" Click="parametersButton_Click">Set parameters</Button>
+                <Button x:Name="parametersButton" Height="20" Width="90" Margin="0,10,0,5" Click="parametersButton_Click">Set parameters</Button>
                 <Button x:Name="startButton" Height="20" Width="90" Margin="0,5,0,5" Click="startButton_Click">Start</Button>
                 <Button x:Name="stopButton" Height="20" Width="90" Margin="0,5,0,5" Click="stopButton_Click" >Stop</Button>
-                <Button x:Name="resetButton" Height="20" Width="90" Margin="0,5,0,5" RenderTransformOrigin="0.502,0.5" Click="resetButton_Click" >Reset</Button>
+                <Button x:Name="resetButton" Height="20" Width="90" Margin="0,5,0,5"  Click="resetButton_Click" >Reset</Button>
             </StackPanel>
         </Border>
-        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="0,40,10,10" BorderBrush="Gray" BorderThickness="1">
+        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="0,40,10,10" BorderBrush="Gray" BorderThickness="1">
             <Canvas  x:Name="dropCanvas"   Grid.Column="1" Grid.Row="0" AllowDrop="True" >
             </Canvas>
         </Border>

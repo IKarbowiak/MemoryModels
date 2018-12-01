@@ -41,7 +41,7 @@ namespace PracaMagisterska
         public Neuron neuron2;
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
-        private DateTime TimerStart { get; set; }
+        private DateTime TimerStart;
         private bool newFlow;
         private double time;
         private double flow;
@@ -285,40 +285,6 @@ namespace PracaMagisterska
                 setParamsWindow = new SetParametersWindow(this.getConfParamsXML, this);
             }
             setParamsWindow.ShowDialog();
-
-
-
-            //setParamsWindow.flowBoxM1.Text = this.flowBox.Text;
-            //setParamsWindow.flowBoxM2.Text = this.flowBox.Text;
-            //setParamsWindow.flowBoxM3.Text = this.flowBox.Text;
-
-            //setParamsWindow.timeBoxM1.Text = this.timeBox.Text;
-            //setParamsWindow.timeBoxM2.Text = this.timeBox.Text;
-            //setParamsWindow.timeBoxM3.Text = this.timeBox.Text;
-
-            //setParamsWindow.neuDiamBoxM1.Text = this.denDiamBox.Text;
-            //setParamsWindow.denDiamBoxM2.Text = this.denDiamBox.Text;
-            //setParamsWindow.den1DiamBoxM3.Text = this.denDiamBox.Text;
-            //setParamsWindow.den2DiamBoxM3.Text = this.denDiamBox.Text;
-
-            //setParamsWindow.neuLenBoxM1.Text = this.neuronLenBox.Text;
-
-            //if (int.TryParse(this.neuronLenBox.Text, out n))
-            //{
-            //    setParamsWindow.denLenBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-            //    setParamsWindow.den1LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-            //    setParamsWindow.den2LenBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) / 26).ToString();
-
-            //    setParamsWindow.axonLenM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
-            //    setParamsWindow.axonLenM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 20 / 26).ToString();
-
-            //    setParamsWindow.somaDiamBoxM2.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
-            //    setParamsWindow.somaDiamBoxM3.Text = (Int32.Parse(this.neuronLenBox.Text) * 10 / 26).ToString();
-            //}
-
-            //setParamsWindow.axonDiamM2.Text = this.axonDiamBox.Text;
-            //setParamsWindow.axonDiamM3.Text = this.axonDiamBox.Text;
-
         }
 
     

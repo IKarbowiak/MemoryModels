@@ -128,7 +128,7 @@ namespace PracaMagisterska
             soma.calculateParameters();
         }
 
-        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen)
+        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon)
         {
             if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
             {
@@ -174,6 +174,7 @@ namespace PracaMagisterska
             Console.WriteLine("Change axon");
             this.axon.length = axonLen == 0 ? this.axonLength : axonLen;
             this.axon.diameter = axonDiam == 0 ? this.axDiam : axDiam;
+            this.axon.blockTheEnd = blockAxon;
             axon.calculateParameters();
 
             

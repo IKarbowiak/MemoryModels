@@ -61,26 +61,8 @@
     <Compile Include="Dendrite.xaml.cs">
       <DependentUpon>Dendrite.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model1UC.xaml.cs">
-      <DependentUpon>Model1UC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Model2UC.xaml.cs">
-      <DependentUpon>Model2UC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Model3UC.xaml.cs">
-      <DependentUpon>Model3UC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Neuron.xaml.cs">
       <DependentUpon>Neuron.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Neuron0.xaml.cs">
-      <DependentUpon>Neuron0.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Neuron1.xaml.cs">
-      <DependentUpon>Neuron1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Neuron2.xaml.cs">
-      <DependentUpon>Neuron2.xaml</DependentUpon>
     </Compile>
     <Compile Include="SetParametersWindow.xaml.cs">
       <DependentUpon>SetParametersWindow.xaml</DependentUpon>
@@ -112,31 +94,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Model1UC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Model2UC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Model3UC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Neuron.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Neuron0.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Neuron1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Neuron2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

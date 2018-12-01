@@ -56,10 +56,15 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow time [s]"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the of flow end?"/></TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" x:Name="generalParams">
                             <TextBox x:Name="flowBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="timeBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
+                            <ComboBox x:Name="blockFlow" Width="100" Height="20">
+                                <ComboBoxItem Content="True"/>
+                                <ComboBoxItem Content="False" IsSelected="True"/>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
@@ -75,46 +80,14 @@
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Neuron max speed"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the end?"/></TextBlock>
                         </StackPanel >
                         <StackPanel x:Name="Model1_params" Grid.Column="1" >
                             <TextBox x:Name="neuLenBoxM1" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="neuDiamBoxM1" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="maxSpeedBoxM1" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
-                            <ComboBox x:Name="blockModel1" Width="100" Height="20">
-                                <ComboBoxItem Content="True"/>
-                                <ComboBoxItem Content="False" IsSelected="True"/>
-                            </ComboBox>
                         </StackPanel>
-                        <!--<TextBlock Grid.Column="0" Grid.Row="0" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/></TextBlock>
-                    <TextBlock x:Name="infoNeuronM1" Grid.Column="0" Grid.Row="0" Margin="0,10,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(length must be bigger than 30"/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-                    <TextBox x:Name="neuronLenBoxM1" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Height="18" Width="50"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Dendrites diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-                    <TextBlock x:Name="denDiamInfoM1" Grid.Column="0" Grid.Row="1" Margin="0,10,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-                    <TextBox x:Name="denDiamBoxM1" Grid.Column="1" Grid.Row="1" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="0,13,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="16"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/></TextBlock>
-                    <TextBlock x:Name="axonDiamInfoM1" Grid.Column="0" Grid.Row="2" Margin="0,10,0,0" FontSize="9" VerticalAlignment="Center" TextAlignment="Center" Height="12"><Run Text="(value should be between 0,3 and 0,5 "/><Run Text="μ"/><Run Text="m)"/></TextBlock>
-                    <TextBox x:Name="axonDiamBoxM1" Grid.Column="1" Grid.Row="2" Width="50" Height="18" VerticalAlignment="Center" TextAlignment="Center"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" TextAlignment="Center" Grid.ColumnSpan="1" Margin="0,0,0, 0" Height="16"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
-                    <TextBox x:Name="flowBoxM1" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" TextAlignment="Center" Margin="0,5,0,0"><Run Text="Flow time [s]"/></TextBlock>
-                    <TextBox x:Name="timeBoxM1" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" TextAlignment="Center">Max speed</TextBlock>
-                    <TextBox x:Name="maxSpeedM1" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="50" Height="18" TextAlignment="Center"/>
-
-                    <TextBlock Grid.Column="0" Grid.Row="6" VerticalAlignment="Center" TextAlignment="Center">Blocke at the end?</TextBlock>
-                    <ComboBox x:Name="blockModel1" Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Width="100">
-                        <ComboBoxItem Content="True"/>
-                        <ComboBoxItem Content="False" IsSelected="True"/>
-                    </ComboBox>-->
                     </Grid>
                 </ScrollViewer>
-
             </TabItem>
             <TabItem Header="Model 2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -131,7 +104,6 @@
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Axon max speed"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Block at the end?"/></TextBlock>
                         </StackPanel>
                         <StackPanel x:Name="Model2_params" Grid.Column="1">
                             <TextBox x:Name="denLenBoxM2" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
@@ -140,10 +112,6 @@
                             <TextBox x:Name="axonDiamM2" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="axonLenM2" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="maxSpeedBoxM2" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
-                            <ComboBox x:Name="blockModel2" Width="100" Height="20" Margin="0,10,0, 10">
-                                <ComboBoxItem Content="True"/>
-                                <ComboBoxItem Content="False" IsSelected="True"/>
-                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
@@ -168,7 +136,6 @@
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon max speed"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the end?"/></TextBlock>
                         </StackPanel>
                         <StackPanel x:Name="Model3_params" Grid.Column="1">
                             <TextBlock Margin="0,0,0,5"/>
@@ -183,10 +150,6 @@
                             <TextBox x:Name="axonDiamM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="axonLenM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="maxSpeedBoxM3" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
-                            <ComboBox x:Name="BlockModel3" Width="100" Height="20">
-                                <ComboBoxItem Content="True"/>
-                                <ComboBoxItem Content="False" IsSelected="True"/>
-                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>

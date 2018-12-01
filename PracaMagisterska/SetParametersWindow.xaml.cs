@@ -137,7 +137,6 @@ namespace PracaMagisterska
             {
                 foreach (XElement childElement in element.Elements())
                 {
-                    Console.WriteLine(childElement.Name);
                     string name = childElement.Name.ToString();
                     object window_element = this.FindName(name);
                     if (window_element.GetType() == typeof(ComboBox))
@@ -159,16 +158,22 @@ namespace PracaMagisterska
             {
                 Tuple< double, double> denTuple;
                 List<Tuple<double, double>> denList;
+                bool blocked = false;
+                string selectedItem = blockFlow.SelectedItem.ToString().Split(':')[1];
+                if (selectedItem == "true")
+                {
+                    blocked = true;
+                }
                 MainWindow mainWindow = (MainWindow)this.parentWindow;
-                mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuLenBoxM1.Text), double.Parse(neuDiamBoxM1.Text));
+                mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuDiamBoxM1.Text), double.Parse(neuLenBoxM1.Text), blocked);
 
-                denTuple = new Tuple<double, double>(double.Parse(denLenBoxM2.Text), double.Parse(denDiamBoxM2.Text));
+                denTuple = new Tuple<double, double>(double.Parse(denDiamBoxM2.Text), double.Parse(denLenBoxM2.Text));
                 denList = new List<Tuple<double, double>> { denTuple };
-                mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text));
+                mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text), blocked);
 
-                denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1LenBoxM3.Text), double.Parse(den1DiamBoxM3.Text)),
-                    new Tuple<double, double>(double.Parse(den2LenBoxM3.Text), double.Parse(den2DiamBoxM3.Text)) };
-                mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text));
+                denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1DiamBoxM3.Text), double.Parse(den1LenBoxM3.Text)),
+                    new Tuple<double, double>(double.Parse(den2DiamBoxM3.Text), double.Parse(den2LenBoxM3.Text)) };
+                mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text), blocked);
             }
             else if (this.parentWindow.GetType() == typeof(DragAndDropPanel))
             {

@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Xml.Linq;
+
 
 namespace PracaMagisterska
 {
@@ -32,7 +34,11 @@ namespace PracaMagisterska
         private System.Windows.Threading.DispatcherTimer timer2;
         private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
         private int counter = 0;
-        public string currentConf { get; set; }
+        private string currentConf;
+        private double flowVolume;
+        private double flowTime;
+        private bool blockTheEnd = false;
+        private DateTime TimerStart;
         //private List<object> elementsToCheck = new List<object>();
 
 
@@ -43,11 +49,28 @@ namespace PracaMagisterska
             canvasElements = new Dictionary<Viewbox, double[]>();
             timer = new System.Windows.Threading.DispatcherTimer();
             timer2 = new System.Windows.Threading.DispatcherTimer();
-            //Dictionary<string, double[]> check = new Dictionary<string, double[]>();
-            //check.Add("a", new double[] {2.0, 3.0, 4.0});
-            //Console.WriteLine(check["a"]);
-            //bool res = this.checkDictValue(check.Values.ToArray());
-            //Console.WriteLine(res);
+            this.flowTime = 40;
+            this.flowVolume = 12;
+            this.createVieboxWithNeuron(0);
+            this.createVieboxWithNeuron(1);
+            this.createVieboxWithNeuron(2);
+
+        }
+
+        private void createVieboxWithNeuron(int dendNumber)
+        {
+            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + dendNumber };
+            objectHandlerPanel.Children.Add(modelName);
+
+            Viewbox viewbox = new Viewbox() {Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform};
+            Neuron newNeuron = new Neuron(dendNumber);
+            newNeuron.Height = 200;
+            newNeuron.Width = 450;
+            viewbox.Child = newNeuron;
+            viewbox.MouseDown += new MouseButtonEventHandler(this.create_neuron);
+
+            objectHandlerPanel.Children.Add(viewbox);
+
         }
 
         private bool checkDictValue(double[][] values, double[] compareArray)
@@ -368,17 +391,33 @@ namespace PracaMagisterska
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            double flowVolume = (double)8 / (double)10;
+            Console.WriteLine("Current path: " + this.currentConf);
+            if (this.currentConf != null)
+            {
+                Console.WriteLine("Current path exists");
+                this.loadParams();
+            }
+            Console.WriteLine(this.flowVolume);
+
+            double flowVolume = this.flowVolume / (double)10;
             Console.WriteLine(flowVolume);
             if (canvasElements.Count() > 0)
             {
                 timer.Interval = TimeSpan.FromMilliseconds(100);
-                timer2.Interval = TimeSpan.FromSeconds(60);
+                timer2.Interval = TimeSpan.FromSeconds(this.flowTime);
 
+                int tickCounter = 0;
+                this.TimerStart = DateTime.Now;
                 timer.Tick += (sender1, e1) =>
                 {
                     flow(sender1, e1, flowVolume);
-                    Console.WriteLine("In timer 1");
+                    myTimerTick(sender1, e1);
+
+                    tickCounter++;
+                    if (tickCounter == 10)
+                    {
+                        tickCounter = 0;
+                    }
                 };
                 timer.Start();
 
@@ -391,6 +430,88 @@ namespace PracaMagisterska
 
                 startButton.IsEnabled = false;
             }
+        }
+
+        private void loadParams()
+        {
+            List<double> neuron0_params = new List<double>();
+            List<double> neuron1_params = new List<double>();
+            List<double> neuron2_params = new List<double>();
+            Console.WriteLine("In load");
+            XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
+            foreach (XElement element in xmlTree.Elements())
+            {
+                string element_name = element.Name.ToString();
+                if (element_name == "General")
+                {
+                    List<XElement> values_list = element.Elements().ToList();
+                    this.flowVolume =  double.Parse(values_list[0].Value.ToString());
+                    this.flowTime = double.Parse(values_list[1].Value.ToString());
+                    this.blockTheEnd = values_list[2].Value.ToString() == "true" ? true : false;
+                }
+                else if (element_name == "Model1")
+                {
+                    neuron0_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                }
+                else if (element_name == "Model2")
+                {
+                    neuron1_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                }
+                else if (element_name == "Model3")
+                {
+                    neuron2_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                }
+            }
+
+            foreach (Viewbox element in canvasElements.Keys)
+            {
+                Neuron neuron = (Neuron)element.Child;
+                if (neuron.dendrites_list.Count() == 0)
+                {
+                    this.setNeuronParams(neuron, neuron0_params);
+                }
+                else if (neuron.dendrites_list.Count() == 1)
+                {
+                    this.setNeuronParams(neuron, neuron1_params);
+                }
+                else if (neuron.dendrites_list.Count() == 2)
+                {
+                    this.setNeuronParams(neuron, neuron2_params);
+                }
+            }
+
+            if (blockTheEnd)
+            {
+                foreach (List<Viewbox> viewbox_list in this.neuronQueue)
+                {
+                    ((Neuron)viewbox_list[-1].Child).axon.blockTheEnd = true;
+                }
+            }
+
+
+
+        }
+
+        private void setNeuronParams(Neuron neuron, List<double> params_list)
+        {
+            List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
+            int params_length = params_list.Count();
+            if (neuron.dendrites_list.Count() == 0)
+            {
+                Console.WriteLine("set params in neuron 0 ");
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false);
+            }
+            else if (neuron.dendrites_list.Count() > 0)
+            {
+                Console.WriteLine("set params in neuron 1 or 2 ");
+                for (int i = 0; i < params_length - 4; i += 2)
+                {
+                    Tuple<double, double>  denTuple = new Tuple<double, double>(params_list[i+1], params_list[i]);
+                    denList.Add(denTuple);
+                }
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
+            }
+
         }
 
         private void flow(object sender, EventArgs e, double flow)
@@ -497,6 +618,12 @@ namespace PracaMagisterska
             viewbox.Child = newNeuron;
             viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
             dropCanvas.Children.Add(viewbox);
+        }
+
+        private void myTimerTick(object sender, EventArgs e)
+        {
+            TimeSpan currentValue = DateTime.Now - this.TimerStart;
+            this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
         }
 
 
