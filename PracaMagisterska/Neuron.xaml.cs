@@ -25,7 +25,10 @@ namespace PracaMagisterska
         public Axon axon { get; set; }
         public double neuronLength { get; set; }
         public double denDiam { get; set; }
+        public double dendriteLength { get; set; }
+        private double somaDiam;
         public double axDiam { get; set; }
+        public double axonLength { get; set; }
         public double outFlowVolume { get; set; }
         public double volumeToPush { get; set; }
         public double flowVolume { get; set; }
@@ -35,6 +38,12 @@ namespace PracaMagisterska
         public Neuron(int dendrideNum)
         {
             InitializeComponent();
+            this.denDiam = 0.4;
+            this.dendriteLength = 1.5;
+            this.axDiam = 0.4;
+            this.axonLength = 25;
+            this.somaDiam = 13.5;
+            
             this.dendrites_list = new List<Dendrite>();
             if (dendrideNum == 0)
             {
@@ -64,12 +73,12 @@ namespace PracaMagisterska
                         if (i % 2 == 0)
                         {
                             dendrite.VerticalAlignment = VerticalAlignment.Top;
-                            dendrite.Margin = new System.Windows.Thickness(0, 12, 0, 0);
+                            dendrite.Margin = new System.Windows.Thickness(0, 7, 0, 0);
                         }
                         else
                         {
                             dendrite.VerticalAlignment = VerticalAlignment.Bottom;
-                            dendrite.Margin = new System.Windows.Thickness(0, 0, 0, 12);
+                            dendrite.Margin = new System.Windows.Thickness(0, 0, 0, 7);
                         }
 
                         neuronGrid.Children.Add(dendrite);
@@ -117,6 +126,57 @@ namespace PracaMagisterska
             soma.diameter = this.neuronLength * 10 / 26;
             soma.axonDiameter = this.axDiam;
             soma.calculateParameters();
+        }
+
+        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen)
+        {
+            if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
+            {
+                Console.WriteLine("Change den params");
+                for (int i = 0; i < this.dendrites_list.Count(); i++)
+                {
+                    //newDirection = direction == "up" ? "down" : "up";
+                    Dendrite den = this.dendrites_list[i];
+                    den.diameter = dendriteLenAndDiam_List[i].Item1 == 0 ? this.denDiam : dendriteLenAndDiam_List[i].Item1;
+                    den.length = dendriteLenAndDiam_List[i].Item2 == 0 ? this.dendriteLength : dendriteLenAndDiam_List[i].Item2;
+                    den.calculateParameters();
+
+                }
+            }
+            else if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == 1)
+            {
+                Console.WriteLine("Change den params");
+                foreach (Dendrite den in this.dendrites_list)
+                {
+                    den.diameter = dendriteLenAndDiam_List[0].Item1 == 0 ? this.denDiam : dendriteLenAndDiam_List[0].Item1;
+                    den.length = dendriteLenAndDiam_List[0].Item2 == 0 ? this.dendriteLength : dendriteLenAndDiam_List[0].Item2;
+                    den.calculateParameters();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Change den params");
+                foreach (Dendrite den in this.dendrites_list)
+                {
+                    den.diameter = this.denDiam;
+                    den.length = this.dendriteLength;
+                    den.calculateParameters();
+                }
+            }
+
+            if (soma != null)
+            {
+                Console.WriteLine("change som");
+                this.soma.diameter = somaDiam == 0 ? this.somaDiam : somaDiam;
+                this.soma.axonDiameter = axonDiam == 0 ? this.axDiam : axonDiam;
+                this.soma.calculateParameters();
+            }
+            Console.WriteLine("Change axon");
+            this.axon.length = axonLen == 0 ? this.axonLength : axonLen;
+            this.axon.diameter = axonDiam == 0 ? this.axDiam : axDiam;
+            axon.calculateParameters();
+
+            
         }
     }
 

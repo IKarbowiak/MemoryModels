@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="60">
     <Grid Width="60" Height="50">
-        <Rectangle x:Name="somaRec" Width="60" Height="50" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
+        <Rectangle x:Name="somaRec" Width="60" Height="50" Fill="#CCF4F4F5" Stroke="Black"></Rectangle>
         <Grid x:Name="somaGrid" Width="60" Height="50"/>
     </Grid>
 </UserControl>

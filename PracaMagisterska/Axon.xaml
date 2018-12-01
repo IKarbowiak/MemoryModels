@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PracaMagisterska"
              mc:Ignorable="d" 
-             d:DesignHeight="11" d:DesignWidth="400">
-    <Grid x:Name="mainGrid" Width="260" Height="11">
-        <Rectangle x:Name="axonRec" Width="260" Height="11" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
-        <Grid x:Name="axonGrid" Width="260" Height="11"></Grid>
+             d:DesignHeight="11" d:DesignWidth="256">
+    <Grid x:Name="mainGrid" Width="256" Height="11">
+        <Rectangle x:Name="axonRec" Width="256" Height="11" Fill="#FFF4F4F5" Stroke="Black"></Rectangle>
+        <Grid x:Name="axonGrid" Width="256" Height="11"></Grid>
     </Grid>
 </UserControl>

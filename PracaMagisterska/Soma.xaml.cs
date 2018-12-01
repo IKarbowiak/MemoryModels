@@ -44,6 +44,7 @@ namespace PracaMagisterska
             this.calculateParameters();
             recSomaArray = this.splitRecModel(somaRec, somaGrid);
             this.rowCounter = recSomaArray.Length - 1;
+
         }
 
         public void calculateParameters()
@@ -68,17 +69,21 @@ namespace PracaMagisterska
 
             void fillRowOrNot(double rowNum)
             {
+                Console.WriteLine("Row num 1 !!!" + rowNum);
+                Console.WriteLine(collect_rows);
                 if (rowNum < 1 && this.collect_rows < 1)
                 {
                     collect_rows += rowNum;
                     rowNum = 0;
                 }
-                else if (rowNum > 1 || this.collect_rows > 1)
+                else if (rowNum >= 1 || this.collect_rows >= 1)
                 {
                     collect_rows += rowNum;
+                    Console.WriteLine(collect_rows);
                     rowNum = (int)collect_rows;
-                    collect_rows = collect_rows - rowNum ;
+                    collect_rows = (double)collect_rows - (double)rowNum;
                 }
+                Console.WriteLine("Row num!!!" + rowNum);
                 if (rowNum > 0) this.fillRect((int)rowNum);
             }
 

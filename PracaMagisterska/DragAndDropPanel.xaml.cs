@@ -27,7 +27,7 @@ namespace PracaMagisterska
         private double maxX;
         private double maxY;
         private double[] startPosition;
-        private Dictionary<Viewbox, double[]> canvasElements;
+        public Dictionary<Viewbox, double[]> canvasElements { get; set; }
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer timer2;
         private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
@@ -101,8 +101,8 @@ namespace PracaMagisterska
         {
             Viewbox viewbox = (Viewbox)sender;
             int catchValue_rightleft = 30;
-            int catchValue_updown = 10;
-            int offset = 8;
+            int catchValue_updown = 15;
+            double offset = 11.5;
             Neuron neuron = (Neuron)viewbox.Child;
             Console.WriteLine("In mouse up " );
 
@@ -460,7 +460,7 @@ namespace PracaMagisterska
             Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
-                Console.WriteLine("Neurn 0");
+                Console.WriteLine("Neuron 0");
                 volumeToPushNext = neuron.axon.newFlow(sender, e, flow);
                 neuron.volumeToPush = volumeToPushNext;
                 return volumeToPushNext;
@@ -536,7 +536,7 @@ namespace PracaMagisterska
             setParamsWindow.ShowDialog();
         }
 
-        private void getConfParamsXML(string path)
+        private void getConfParamsXML(string path, double time, double flow)
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);

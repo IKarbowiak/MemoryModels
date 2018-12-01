@@ -25,10 +25,10 @@ namespace PracaMagisterska
         private TextBlock info;
         private TextBox parBox;
         private string projectPath;
-        private Action<string> callback;
+        private Action<string, double, double> callback;
         private object parentWindow; 
 
-        public SetParametersWindow(Action<string> action, object window, string conf = "")
+        public SetParametersWindow(Action<string, double, double> action, object window, string conf = "")
         {
             InitializeComponent();
             if (conf != "")
@@ -52,7 +52,7 @@ namespace PracaMagisterska
 
         private void changeCurrentConfInParentWindow(string path)
         {
-            this.callback(path);
+            this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text));
             //((MainWindow)Application.Current.MainWindow).currentConf = path;
         }
 
@@ -157,11 +157,24 @@ namespace PracaMagisterska
         {
             if (this.parentWindow.GetType() == typeof(MainWindow))
             {
+                Tuple< double, double> denTuple;
+                List<Tuple<double, double>> denList;
                 MainWindow mainWindow = (MainWindow)this.parentWindow;
-                // TODO: zapis wartoci do neuronow, mozna przykladowo zrobic funkcje w neuronie i tutaj podawac tylko odpowiednie parametry
+                mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuLenBoxM1.Text), double.Parse(neuDiamBoxM1.Text));
+
+                denTuple = new Tuple<double, double>(double.Parse(denLenBoxM2.Text), double.Parse(denDiamBoxM2.Text));
+                denList = new List<Tuple<double, double>> { denTuple };
+                mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text));
+
+                denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1LenBoxM3.Text), double.Parse(den1DiamBoxM3.Text)),
+                    new Tuple<double, double>(double.Parse(den2LenBoxM3.Text), double.Parse(den2DiamBoxM3.Text)) };
+                mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text));
             }
             else if (this.parentWindow.GetType() == typeof(DragAndDropPanel))
             {
+                DragAndDropPanel dragAndDropWindow = (DragAndDropPanel)this.parentWindow;
+                foreach (KeyValuePair<Viewbox, Double[]> elemnt in dragAndDropWindow.canvasElements) ;
+                // TODO: zapis wartoci do neuronow, mozna przykladowo zrobic funkcje w neuronie i tutaj podawac tylko odpowiednie parametry
 
             }
         }
@@ -211,7 +224,6 @@ namespace PracaMagisterska
 
         private void updateDefault_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: zabklokowac mozliwosc updatu gdy pola sa puste!
             if (validateFields())
             {
                 saveXML(this.projectPath + "\\defaultConf.xml");
@@ -223,7 +235,8 @@ namespace PracaMagisterska
         {
             string path = this.projectPath + "\\currentCong.XML";
             saveXML(path);
-            this.callback(path);
+            setParamsValueToNeurons();
+            this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text));
             changeCurrentConfInParentWindow(path);
             Console.WriteLine("Current path: " + path);
         }
