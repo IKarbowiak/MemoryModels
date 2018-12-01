@@ -233,7 +233,7 @@ namespace PracaMagisterska
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            string path = this.projectPath + "\\currentCong.XML";
+            string path = this.projectPath + "\\currentConf.xml";
             saveXML(path);
             setParamsValueToNeurons();
             this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text));
