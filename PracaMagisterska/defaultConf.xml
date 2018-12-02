@@ -3,7 +3,7 @@
   <General>
     <flowBox>8</flowBox>
     <timeBox>30</timeBox>
-    <blockFlow> False</blockFlow>
+    <blockFlow>False</blockFlow>
   </General>
   <Model1>
     <neuLenBoxM1>40</neuLenBoxM1>

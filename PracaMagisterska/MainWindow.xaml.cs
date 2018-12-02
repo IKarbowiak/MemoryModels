@@ -157,7 +157,8 @@ namespace PracaMagisterska
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("Neuron 0");
-                volumeToPushNext = neuron.axon.newFlow(sender, e, flow);
+                Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow);
+                volumeToPushNext = axRes.Item2;
                 neuron.volumeToPush = volumeToPushNext;
                 return volumeToPushNext;
             }
@@ -174,11 +175,19 @@ namespace PracaMagisterska
             Thread.Sleep(10);
             if (toPush > 0)
             {
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush);
-                if (somaRes.Item1)
+                bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
+                Console.WriteLine("Axon is full : " + axonFull);
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull);
+                if (somaRes.Item1 && !axonFull)
                 {
-                    volumeToPushNext = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    volumeToPushNext = axonRes.Item2;
                     neuron.volumeToPush = volumeToPushNext;
+                }
+                else if (somaRes.Item1 && axonFull)
+                {
+                    neuron.isFull = true;
+                    neuron.volumeToPush = somaRes.Item2;
                 }
             }
             return volumeToPushNext;
@@ -196,7 +205,7 @@ namespace PracaMagisterska
             Thread.Sleep(10);
             if (toPush > 0)
             {
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush);
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, false);
                 if (somaRes.Item1)
                 {
                     neuron.axon.newFlow(sender, e, somaRes.Item2);
@@ -214,6 +223,10 @@ namespace PracaMagisterska
         {
             timer.Stop();
             timer2.Stop();
+            neuron0.unload();
+            neuron1.unload();
+            neuron2.unload();
+
             M1VolumeBlock.Text = neuron0.outFlowVolume.ToString();
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString();
             M3VolumeBlock.Text = neuron2.outFlowVolume.ToString();
@@ -251,17 +264,6 @@ namespace PracaMagisterska
 
             //MessageBox.Show(myWindow.tbReturn.Text);
         }
-
-
-
-        //private void defaultParButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    neuronLenBox.Text = "40";
-        //    denDiamBox.Text = "0,4";
-        //    axonDiamBox.Text = "0,4";
-        //    flowBox.Text = "8";
-        //    timeBox.Text = "30";
-        //}
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {

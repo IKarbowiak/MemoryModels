@@ -100,9 +100,7 @@ namespace PracaMagisterska
                 if (obj.GetType().Name == "ComboBox")
                 {
                     ComboBox combobox = (ComboBox)obj;
-                    string selectedItem = combobox.SelectedItem.ToString().Split(':')[1];
-                    string cname =  combobox.Name;
-                    xmlElement.Add(new XElement(combobox.Name, combobox.SelectedItem.ToString().Split(':')[1]));
+                    xmlElement.Add(new XElement(combobox.Name, combobox.Text));
                 }
                 else if (obj.GetType().Name == "TextBox")
                 {
@@ -142,6 +140,8 @@ namespace PracaMagisterska
                     if (window_element.GetType() == typeof(ComboBox))
                     {
                         ComboBox comboBox = (ComboBox)window_element;
+                        Console.WriteLine("Selected value combo box! " + childElement.Value);
+                        comboBox.SelectedItem = childElement.Value == "True" ? trueItem : falseItem;
                     }
                     else if (window_element.GetType() == typeof(TextBox))
                     {
@@ -159,9 +159,11 @@ namespace PracaMagisterska
                 Tuple< double, double> denTuple;
                 List<Tuple<double, double>> denList;
                 bool blocked = false;
-                string selectedItem = blockFlow.SelectedItem.ToString().Split(':')[1];
-                if (selectedItem == "true")
+                string selectedItem = blockFlow.Text;
+                Console.WriteLine("Block flow set params"  + blockFlow.Text);
+                if (selectedItem == "True")
                 {
+                    Console.WriteLine("Block");
                     blocked = true;
                 }
                 MainWindow mainWindow = (MainWindow)this.parentWindow;
@@ -174,13 +176,6 @@ namespace PracaMagisterska
                 denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1DiamBoxM3.Text), double.Parse(den1LenBoxM3.Text)),
                     new Tuple<double, double>(double.Parse(den2DiamBoxM3.Text), double.Parse(den2LenBoxM3.Text)) };
                 mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text), blocked);
-            }
-            else if (this.parentWindow.GetType() == typeof(DragAndDropPanel))
-            {
-                DragAndDropPanel dragAndDropWindow = (DragAndDropPanel)this.parentWindow;
-                foreach (KeyValuePair<Viewbox, Double[]> elemnt in dragAndDropWindow.canvasElements) ;
-                // TODO: zapis wartoci do neuronow, mozna przykladowo zrobic funkcje w neuronie i tutaj podawac tylko odpowiednie parametry
-
             }
         }
 
@@ -232,6 +227,7 @@ namespace PracaMagisterska
             if (validateFields())
             {
                 saveXML(this.projectPath + "\\defaultConf.xml");
+                Console.WriteLine("DefaultConf updated");
             }
         }
 

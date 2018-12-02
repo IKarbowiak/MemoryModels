@@ -65,11 +65,11 @@ namespace PracaMagisterska
             if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
-                int colToFill = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
+                int colLevelToFill = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
-                if (colToFill > 0 && this.columnsCounter < this.recDenArray[0].Length - 1)
+                if (colLevelToFill > 0 && this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    this.fillRect(colToFill, this.columnsCounter + colToFill);
+                    this.fillRect(colLevelToFill);
                 }
                 this.isFull = false;
             }
@@ -77,11 +77,11 @@ namespace PracaMagisterska
             {
                 volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
-                int colToFillin1s = (int)denrdriteRec.Width - this.columnsCounter;
+                int colToFillin1s = (int)denrdriteRec.Width;
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
                 if (this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    this.fillRect(colToFillin1s, this.columnsCounter + colToFillin1s);
+                    this.fillRect(colToFillin1s);
                 }
 
                 this.isFull = true;
@@ -92,16 +92,16 @@ namespace PracaMagisterska
             return result;
         }
 
-        private void fillRect(int collToFill, int colToFinish)
+        private void fillRect(int numberOfCol)
         {
-            int colToFill = this.columnsCounter + collToFill;
+            int colLevel = this.columnsCounter + numberOfCol;
 
-            if (colToFill > recDenArray[0].Length)
+            if (colLevel > recDenArray[0].Length)
             {
-                colToFill = recDenArray[0].Length;
+                colLevel = recDenArray[0].Length;
             }
 
-            for (int i = this.columnsCounter; i < (colToFill); i++)
+            for (int i = this.columnsCounter; i < (colLevel); i++)
             {
                 for (int j = 0; j < recDenArray.Length; j++)
                 {
@@ -110,9 +110,9 @@ namespace PracaMagisterska
                 }
             }
 
-            this.columnsCounter += collToFill;
+            this.columnsCounter = colLevel;
 
-            if (this.columnsCounter >= colToFinish ||  this.columnsCounter >= recDenArray[0].Length)
+            if (this.columnsCounter >= recDenArray[0].Length)
             {
                 Console.WriteLine("In stop dend");
                 isFull = true;

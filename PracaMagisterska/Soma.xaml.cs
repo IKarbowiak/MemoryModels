@@ -64,9 +64,8 @@ namespace PracaMagisterska
             this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }
 
-        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull)
         {
-
             void fillRowOrNot(double rowNum)
             {
                 Console.WriteLine("Row num 1 !!!" + rowNum);
@@ -93,7 +92,7 @@ namespace PracaMagisterska
             double rowToFill;
             double volumeToPush = 0;
             Console.WriteLine("volume" + volume + "    threshold: " + this.threshold + "       increase: " + increase);
-            if (this.threshold < (increase))
+            if (this.threshold < (increase) && !axonIsFull)
             {
                 Console.WriteLine("Reach treshold");
                 if (this.liquidVolume < this.volume && this.volume >= (increase))
@@ -110,7 +109,7 @@ namespace PracaMagisterska
                 }
                 else
                 {
-                    volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
+                    volumeToPush = increase - this.volume;
                     this.liquidVolume = this.volume;
                     rowToFill = (double)somaRec.Height - this.rowCounter;
                     fillRowOrNot(rowToFill);
@@ -119,6 +118,26 @@ namespace PracaMagisterska
                 }
                 
                 //axon.newFlow(volumeToPush);
+            }
+            else if (axonIsFull)
+            {
+                Console.WriteLine("In full soma axon");
+                if (increase > this.volume)
+                {
+                    volumeToPush = increase - this.volume;
+                    this.liquidVolume = this.volume;
+                    rowToFill = (double)somaRec.Height - this.rowCounter;
+                    fillRowOrNot(rowToFill);
+                    this.isFull = true;
+                    push = true;
+                }
+                else
+                {
+                    this.liquidVolume += volumeIncrease;
+                    rowToFill = ((double)somaRec.Height * volumeIncrease / this.volume);
+                    fillRowOrNot(rowToFill);
+                    this.isFull = false;
+                }
             }
             else if (this.volume >= (this.liquidVolume + volumeIncrease))
             {

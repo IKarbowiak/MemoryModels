@@ -34,10 +34,12 @@ namespace PracaMagisterska
         public double flowVolume { get; set; }
         public bool isFlow { get; set; }
         public string model { get; set;  }
+        public bool isFull { get; set; }
 
         public Neuron(int dendrideNum)
         {
             InitializeComponent();
+            this.isFull = false;
             this.denDiam = 0.4;
             this.dendriteLength = 1.5;
             this.axDiam = 0.4;
@@ -126,6 +128,16 @@ namespace PracaMagisterska
             soma.diameter = this.neuronLength * 10 / 26;
             soma.axonDiameter = this.axDiam;
             soma.calculateParameters();
+        }
+
+        public void unload()
+        {
+            this.axon.unloadFunc();
+            if (this.soma != null) this.soma.unloadFunc();
+            foreach (Dendrite den in this.dendrites_list)
+            {
+                den.unloadFunc();
+            }
         }
 
         public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon)

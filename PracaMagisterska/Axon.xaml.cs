@@ -31,7 +31,7 @@ namespace PracaMagisterska
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
         private int columnsCounter = 0;
-        private bool isFull = false;
+        public bool isFull { get; set; }
 
         public Axon(bool dim3d = false, int recWidth = 260, int recHeight = 11)
         {
@@ -43,6 +43,7 @@ namespace PracaMagisterska
             this.flowedOutVolume = 0;
             this.calculateParameters();
             this.blockTheEnd = false;
+            this.isFull = false;
             if (recWidth != 260 || recHeight != 11)
             {
                 changeRecSize(recWidth, recHeight);
@@ -78,53 +79,58 @@ namespace PracaMagisterska
             //this.recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
-        public double newFlow(object sender, EventArgs e, double volumeIncrease)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
         {
             double volumeToPush = 0;
-            if (this.liquidVolume < this.volume && this.volume <= (this.liquidVolume + volumeIncrease))
+            if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
             {
                 this.liquidVolume += volumeIncrease;
-                int colToFillin1s = (int)((double)axonRec.Width * volumeIncrease / this.volume);
-                if (colToFillin1s == 0)
+                int colLevelToFill = (int)((double)axonRec.Width * volumeIncrease / this.volume);
+                Console.WriteLine("Poniżej max");
+                if (colLevelToFill == 0)
                 {
-                    colToFillin1s = 1;
+                    colLevelToFill = 1;
                 }
                 if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                 {
-                    this.fillRect(colToFillin1s, colToFillin1s);
+                    this.fillRect(colLevelToFill);
                 }
                 //this.fillRect(sender, e, colToFillin1s);
             }
             else
             {
+                Console.WriteLine("Powyżej!");
                 volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
-                int colToFillin1s = (int)axonRec.Width - this.columnsCounter;
-                if (colToFillin1s > 0)
+                int colLevelToFill = (int)axonRec.Width;
+                if (colLevelToFill > 0)
                 {
                     if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                     {
-                        this.fillRect(colToFillin1s, this.columnsCounter + colToFillin1s);
+                        this.fillRect(colLevelToFill);
                     }
                     //this.fillRect(sender, e, colToFillin1s);
                 }
+                this.isFull = true;
+                Console.WriteLine("Is full exon in powyzej: " + this.isFull);
+                Console.WriteLine("Axon is block ath the ende: " + this.blockTheEnd);
                 this.flowedOutVolume += volumeToPush;
 
             }
-            return volumeToPush;
+            return new Tuple<bool, double>(this.isFull, volumeToPush);
         }
 
-        private void fillRect(int collToFill, int colTofinish)
+        private void fillRect(int numberOfCol)
         {
-            Console.WriteLine("In fill ax");
-            int colToFill = this.columnsCounter + collToFill;
+            Console.WriteLine("In fill ax " + numberOfCol);
+            int colLevel = this.columnsCounter + numberOfCol;
 
-            if (colToFill > recAxonArray[0].Length)
+            if (colLevel > recAxonArray[0].Length)
             {
-                colToFill = recAxonArray[0].Length;
+                colLevel = recAxonArray[0].Length;
             }
 
-            for (int i = this.columnsCounter; i < (colToFill); i++)
+            for (int i = this.columnsCounter; i < (colLevel); i++)
             {
                 for (int j = 0; j < recAxonArray.Length; j++)
                 {
@@ -133,12 +139,13 @@ namespace PracaMagisterska
                 }
             }
 
-            this.columnsCounter += collToFill;
+            this.columnsCounter = colLevel;
 
-            if (this.columnsCounter >= colTofinish || this.columnsCounter >= recAxonArray[0].Length)
+            if (this.columnsCounter >= recAxonArray[0].Length)
             {
                 Console.WriteLine("In stop AXON");
-                isFull = true;
+                Console.WriteLine("block the end" + blockTheEnd);
+                isFull = this.blockTheEnd == true ? true : false;
                 this.columnsCounter = recAxonArray[0].Length - 1;
 
             }

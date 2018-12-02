@@ -245,13 +245,11 @@ namespace PracaMagisterska
                                     this.neuronQueue.Add(elements);
                                 }
                                 else if (checkEl.Count() > 0)
-                                //else if (this.neuronQueue.Contains(el_list))
                                 {
                                     if (checkEl[1] > 0)
                                     {
-                                        List<Viewbox> elements = new List<Viewbox>();   // fo pszerobienia
-                                        elements.Add(viewbox);
-                                        elements.Add(elBox);
+                                        List<Viewbox> elements = this.neuronQueue[checkEl[0]].GetRange(checkEl[1], this.neuronQueue[checkEl[0]].Count - 1);
+                                        elements.Insert(0, viewbox);
                                         this.neuronQueue.Add(elements);
                                     }
                                     else
@@ -360,6 +358,15 @@ namespace PracaMagisterska
             canvasElements[(Viewbox)sender] = parameters;
             Console.WriteLine(canvasElements[(Viewbox)sender][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
+
+            // Check to remove 
+            counter = 0;
+            foreach (List<Viewbox> el in this.neuronQueue)
+            {
+                Console.WriteLine("List " + counter);
+                Console.WriteLine(el.Count());
+                counter++;
+            }
         }
 
         private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
@@ -398,6 +405,7 @@ namespace PracaMagisterska
                 this.loadParams();
             }
             Console.WriteLine(this.flowVolume);
+            this.blockViewboxMoving();
 
             double flowVolume = this.flowVolume / (double)10;
             Console.WriteLine(flowVolume);
@@ -447,7 +455,7 @@ namespace PracaMagisterska
                     List<XElement> values_list = element.Elements().ToList();
                     this.flowVolume =  double.Parse(values_list[0].Value.ToString());
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
-                    this.blockTheEnd = values_list[2].Value.ToString() == "true" ? true : false;
+                    this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
                 {
@@ -480,11 +488,13 @@ namespace PracaMagisterska
                 }
             }
 
+            Console.WriteLine("Drag and drop " + this.blockTheEnd);
             if (blockTheEnd)
             {
                 foreach (List<Viewbox> viewbox_list in this.neuronQueue)
                 {
-                    ((Neuron)viewbox_list[-1].Child).axon.blockTheEnd = true;
+                    ((Neuron)viewbox_list[viewbox_list.Count - 1].Child).axon.blockTheEnd = true;
+                    Console.WriteLine("set axon to block");
                 }
             }
 
@@ -512,6 +522,22 @@ namespace PracaMagisterska
                 neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
             }
 
+        }
+
+        private void blockViewboxMoving()
+        {
+            foreach (Viewbox element in this.canvasElements.Keys)
+            {
+                element.MouseDown -= new MouseButtonEventHandler(this.neuron_MouseDown);
+            }
+        }
+
+        private void enableViewboxMoving()
+        {
+            foreach (Viewbox element in this.canvasElements.Keys)
+            {
+                element.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+            }
         }
 
         private void flow(object sender, EventArgs e, double flow)
@@ -544,25 +570,41 @@ namespace PracaMagisterska
                     }
 
                     double toPush = 0;
-
+                    Console.WriteLine("I interation" + i);
                     for (int j = 1; j < this.neuronQueue[i].Count(); j++)
                     {
+                        Console.WriteLine("J iteration " + j);
+                        //Viewbox viewbox_next;
+                        //Neuron nextNeuron;
                         toPush = 0;
                         Viewbox viewbox_prev = this.neuronQueue[i][j - 1];
-                        Neuron neuron = (Neuron)viewbox_prev.Child;
-                        toPush += neuron.volumeToPush;
+                        Neuron prevNeuron = (Neuron)viewbox_prev.Child;
+                        Neuron currentNeuron = (Neuron)(this.neuronQueue[i][j]).Child;
 
-                        if (toPush > 0)
+                        toPush += prevNeuron.volumeToPush;
+
+                        if (currentNeuron.isFull)
                         {
-                            Neuron nextEl = (Neuron)(this.neuronQueue[i][j]).Child;
+                            toPush += currentNeuron.volumeToPush;
+                            currentNeuron.volumeToPush = 0;
+                            if (whatToPush.ContainsKey(prevNeuron)) whatToPush[prevNeuron] += toPush;
+                            else whatToPush.Add(prevNeuron, toPush);
+                            prevNeuron.axon.blockTheEnd = true;
+                            Console.WriteLine("Brake loop!!!!! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                            break;
+                        }
 
-                            if (whatToPush.ContainsKey(nextEl)) whatToPush[nextEl] += toPush; 
-                            else whatToPush.Add(nextEl, toPush);
+                        else if (toPush > 0)
+                        {
+                            if (whatToPush.ContainsKey(currentNeuron)) whatToPush[currentNeuron] += toPush; 
+                            else whatToPush.Add(currentNeuron, toPush);
 
                             Console.WriteLine(viewbox_prev.Name);
-                            if (viewbox_prev.Name == "up") ((Dendrite)nextEl.dendrites_list[0]).isBlocked = false;
-                            else if (viewbox_prev.Name == "down") ((Dendrite)nextEl.dendrites_list[1]).isBlocked = false;
+                            if (viewbox_prev.Name == "up") ((Dendrite)currentNeuron.dendrites_list[0]).isBlocked = false;
+                            else if (viewbox_prev.Name == "down") ((Dendrite)currentNeuron.dendrites_list[1]).isBlocked = false;
                         }
+                        Console.WriteLine("After break @@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
                     }
                 }
             }
@@ -581,13 +623,12 @@ namespace PracaMagisterska
             Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
-                Console.WriteLine("Neuron 0");
-                volumeToPushNext = neuron.axon.newFlow(sender, e, flow);
+                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow);
+                volumeToPushNext = axonRes.Item2;
                 neuron.volumeToPush = volumeToPushNext;
                 return volumeToPushNext;
             }
 
-            Console.WriteLine("Multiply neuron");
             foreach (Dendrite dendrite in neuron.dendrites_list)
             {
                 if (!dendrite.isBlocked)
@@ -599,11 +640,19 @@ namespace PracaMagisterska
             Thread.Sleep(10);
             if (toPush > 0)
             {
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush);
-                if (somaRes.Item1)
+                bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
+                Console.WriteLine("Axon is full : " + axonFull);
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull);
+                if (somaRes.Item1 && !axonFull)
                 {
-                    volumeToPushNext = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    volumeToPushNext = axonRes.Item2;
                     neuron.volumeToPush = volumeToPushNext;
+                }
+                else if (somaRes.Item1 && axonFull)
+                {
+                    neuron.isFull = true;
+                    neuron.volumeToPush = somaRes.Item2;
                 }
             }
             return volumeToPushNext;
@@ -632,7 +681,26 @@ namespace PracaMagisterska
             Console.WriteLine("In stop!!!!!!!!!!!");
             timer.Stop();
             timer2.Stop();
+            this.enableViewboxMoving();
             startButton.IsEnabled = true;
+
+            if (fromTimer)
+            {
+                List<Viewbox> visited = new List<Viewbox>();
+                foreach (List<Viewbox> elList in this.neuronQueue)
+                {
+                    for (int i = elList.Count - 1; i >=0; i--)
+                    {
+                        if (!visited.Contains(elList[i]))
+                        {
+                            Neuron neuron = (Neuron)elList[i].Child;
+                            neuron.unload();
+                            Thread.Sleep(100);
+                            visited.Add(elList[i]);
+                        }
+                    }
+                }
+            }
 
         }
    
@@ -642,6 +710,7 @@ namespace PracaMagisterska
             this.dropCanvas.Children.Clear();
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
+            timerTextBlock.Text = "00:00";
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
