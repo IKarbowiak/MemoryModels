@@ -22,8 +22,6 @@ namespace PracaMagisterska
     /// </summary>
     public partial class SetParametersWindow : Window
     {
-        private TextBlock info;
-        private TextBox parBox;
         private string projectPath;
         private Action<string, double, double> callback;
         private object parentWindow; 
@@ -167,16 +165,32 @@ namespace PracaMagisterska
                     blocked = true;
                 }
                 MainWindow mainWindow = (MainWindow)this.parentWindow;
-                mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuDiamBoxM1.Text), double.Parse(neuLenBoxM1.Text), blocked);
+                if (validateField(neuDiamBoxM1) && validateField(neuLenBoxM1))
+                    mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuDiamBoxM1.Text), double.Parse(neuLenBoxM1.Text), blocked);
 
-                denTuple = new Tuple<double, double>(double.Parse(denDiamBoxM2.Text), double.Parse(denLenBoxM2.Text));
-                denList = new List<Tuple<double, double>> { denTuple };
-                mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text), blocked);
+                if (validateField(denDiamBoxM2) && validateField(denLenBoxM2) && validateField(somaDiamBoxM2) && validateField(axonDiamM2) && validateField(axonLenM2))
+                {
+                    denTuple = new Tuple<double, double>(double.Parse(denDiamBoxM2.Text), double.Parse(denLenBoxM2.Text));
+                    denList = new List<Tuple<double, double>> { denTuple };
+                    mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text), blocked);
+                }
 
-                denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1DiamBoxM3.Text), double.Parse(den1LenBoxM3.Text)),
-                    new Tuple<double, double>(double.Parse(den2DiamBoxM3.Text), double.Parse(den2LenBoxM3.Text)) };
-                mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text), blocked);
+                if (validateField(den1DiamBoxM3) && validateField(den1LenBoxM3) && validateField(den2DiamBoxM3) && validateField(den2LenBoxM3) && validateField(somaDiamBoxM3)
+                    && validateField(axonDiamM3) && validateField(axonLenM3))
+                {
+                    denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1DiamBoxM3.Text), double.Parse(den1LenBoxM3.Text)),
+                        new Tuple<double, double>(double.Parse(den2DiamBoxM3.Text), double.Parse(den2LenBoxM3.Text)) };
+                    mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text), blocked);
+                }
             }
+        }
+
+        private bool validateField(TextBox textbox)
+        {
+            double i = 0;
+            if (String.IsNullOrEmpty(textbox.Text) || textbox.Text.Contains('.') || !double.TryParse(textbox.Text, out i))
+                return false;
+            return true;
         }
 
         private void updateNeuronValues(Neuron neuron)
@@ -184,9 +198,9 @@ namespace PracaMagisterska
 
         }
 
-        private bool validateFields()
+        private bool validateXmlFields(string file)
         {
-            XElement xmlTree = XElement.Load(this.projectPath + "\\defaultConf.xml", LoadOptions.None);
+            XElement xmlTree = XElement.Load(this.projectPath + file, LoadOptions.None);
             bool allFieldsFull = true;
             foreach (XElement element in xmlTree.Elements())
             {
@@ -224,7 +238,7 @@ namespace PracaMagisterska
 
         private void updateDefault_Click(object sender, RoutedEventArgs e)
         {
-            if (validateFields())
+            if (validateXmlFields("\\defaultConf.xml"))
             {
                 saveXML(this.projectPath + "\\defaultConf.xml");
                 Console.WriteLine("DefaultConf updated");
@@ -237,8 +251,8 @@ namespace PracaMagisterska
             string path = this.projectPath + "\\currentConf.xml";
             saveXML(path);
             setParamsValueToNeurons();
-            this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text));
-            changeCurrentConfInParentWindow(path);
+            if (validateField(timeBox) && validateField(flowBox))
+                changeCurrentConfInParentWindow(path);
             Console.WriteLine("Current path: " + path);
         }
     }

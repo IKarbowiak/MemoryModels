@@ -39,6 +39,9 @@ namespace PracaMagisterska
         private double flowTime;
         private bool blockTheEnd = false;
         private DateTime TimerStart;
+        private bool pauseFlow = false;
+        private TimeSpan timeOffset;
+
         //private List<object> elementsToCheck = new List<object>();
 
 
@@ -64,7 +67,7 @@ namespace PracaMagisterska
 
             Viewbox viewbox = new Viewbox() {Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform};
             Neuron newNeuron = new Neuron(dendNumber);
-            newNeuron.Height = 200;
+            newNeuron.Height = 150;
             newNeuron.Width = 450;
             viewbox.Child = newNeuron;
             viewbox.MouseDown += new MouseButtonEventHandler(this.create_neuron);
@@ -398,6 +401,20 @@ namespace PracaMagisterska
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
+            if (this.pauseFlow)
+            {
+                TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
+                TimeSpan currentValue = DateTime.Now - this.TimerStart;
+                this.timeOffset = currentValue - delay;
+                timer.Start();
+                Console.WriteLine("******************************************************************");
+                Console.WriteLine(this.flowTime - delay.Seconds);
+                timer2.Interval = TimeSpan.FromSeconds(this.flowTime - delay.Seconds);
+                timer2.Start();
+                startButton.IsEnabled = false;
+                return;
+            }
+
             Console.WriteLine("Current path: " + this.currentConf);
             if (this.currentConf != null)
             {
@@ -414,18 +431,11 @@ namespace PracaMagisterska
                 timer.Interval = TimeSpan.FromMilliseconds(100);
                 timer2.Interval = TimeSpan.FromSeconds(this.flowTime);
 
-                int tickCounter = 0;
                 this.TimerStart = DateTime.Now;
                 timer.Tick += (sender1, e1) =>
                 {
                     flow(sender1, e1, flowVolume);
                     myTimerTick(sender1, e1);
-
-                    tickCounter++;
-                    if (tickCounter == 10)
-                    {
-                        tickCounter = 0;
-                    }
                 };
                 timer.Start();
 
@@ -618,6 +628,7 @@ namespace PracaMagisterska
 
         private double neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
+
             double toPush = 0;
             double volumeToPushNext = 0;
             Console.WriteLine("In neuron flow");
@@ -671,7 +682,11 @@ namespace PracaMagisterska
 
         private void myTimerTick(object sender, EventArgs e)
         {
-            TimeSpan currentValue = DateTime.Now - this.TimerStart;
+            Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            Console.WriteLine(this.timeOffset);
+            Console.WriteLine(DateTime.Now - this.TimerStart);
+            Console.WriteLine(DateTime.Now - this.TimerStart - this.timeOffset);
+            TimeSpan currentValue = DateTime.Now - this.TimerStart - this.timeOffset;
             this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
         }
 
@@ -683,6 +698,9 @@ namespace PracaMagisterska
             timer2.Stop();
             this.enableViewboxMoving();
             startButton.IsEnabled = true;
+            this.timeOffset = TimeSpan.Parse("00:00:00");
+            this.pauseFlow = false;
+
 
             if (fromTimer)
             {
@@ -716,6 +734,7 @@ namespace PracaMagisterska
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
+            this.timeOffset = TimeSpan.Parse("00:00:00");
         }
 
         private void parametersButton_Click(object sender, RoutedEventArgs e)
@@ -736,6 +755,19 @@ namespace PracaMagisterska
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);
+        }
+
+        private void pauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            timer.Stop();
+            timer2.Stop();
+            this.pauseFlow = true;
+            startButton.IsEnabled = true;
+        }
+
+        private void resetFlowButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }

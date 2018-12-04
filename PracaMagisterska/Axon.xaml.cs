@@ -176,6 +176,7 @@ namespace PracaMagisterska
         {
             this.columnsCounter = 0;
             this.flowedOutVolume = 0;
+            this.isFull = false;
             this.liquidVolume = 0;
             for (int i = 0; i < this.recAxonArray[0].Length; i++)
             {

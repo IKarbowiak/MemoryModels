@@ -143,6 +143,7 @@ namespace PracaMagisterska
         public void reset()
         {
             this.columnsCounter = 0;
+            this.isFull = false;
             this.liquidVolume = 0;
             for (int i = 0; i < this.recDenArray[0].Length; i++)
             {

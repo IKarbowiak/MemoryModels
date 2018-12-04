@@ -181,7 +181,8 @@ namespace PracaMagisterska
 
         public void unloadFunc()
         {
-            this.liquidVolume = this.threshold;
+            if (this.liquidVolume > this.threshold)
+                this.liquidVolume = this.threshold;
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
             for (int j = this.rowCounter; j < this.rowToReachTeshold + 2; j++)
@@ -199,6 +200,7 @@ namespace PracaMagisterska
         public void reset()
         {
             this.liquidVolume = 0;
+            this.isFull = false;
             this.rowCounter = recSomaArray.Length - 1;
             for (int i = 0; i < this.recSomaArray[0].Length; i++)
             {

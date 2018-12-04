@@ -51,24 +51,10 @@ namespace PracaMagisterska
         {
             InitializeComponent();
 
-            //Debug.Print("This is debug prin");
-
-
-            //model1uc = new Model1UC();
-            //Grid.SetColumn(model1uc, 1);
-            //Grid.SetRow(model1uc, 1);
-            //gridModel1Main.Children.Add(model1uc);
-
-
             neuron0 = new Neuron(0);
             Grid.SetColumn(neuron0, 1);
             Grid.SetRow(neuron0, 1);
             gridModel1Main.Children.Add(neuron0);
-
-            //neuron0 = new Neuron0();
-            //Grid.SetColumn(neuron0, 1);
-            //Grid.SetRow(neuron0, 1);
-            //gridModel1Main.Children.Add(neuron0);
 
             neuron1 = new Neuron(1);
             Grid.SetColumn(neuron1, 1);
@@ -91,6 +77,11 @@ namespace PracaMagisterska
         {
             double newTime;
             int delay;
+
+            neuron0.outFlowVolume = 0;
+            neuron1.outFlowVolume = 0;
+            neuron2.outFlowVolume = 0;
+
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
                 Console.WriteLine("In bad place");
@@ -114,20 +105,17 @@ namespace PracaMagisterska
                 timer2.Interval = TimeSpan.FromMilliseconds(100);
 
 
-                if ((flow > 0) && (time > 0))
+                if ((this.flow > 0) && (time > 0))
                 {
                     Console.WriteLine("Deeper");
                     startButton.IsEnabled = false;
-                    M1VolumeBlock.Text = "0";
-                    M2VolumeBlock.Text = "0";
-                    M3VolumeBlock.Text = "0";
 
                     this.TimerStart = DateTime.Now;
                     timer2.Tick += (sender2, e2) =>
                     {
-                        this.neuronFlow(sender2, e2, this.neuron0, flow);
-                        this.neuronFlow(sender2, e2, this.neuron1, flow);
-                        this.neuronFlow(sender2, e2, this.neuron2, flow);
+                        this.neuronFlow(sender2, e2, this.neuron0, this.flow);
+                        this.neuronFlow(sender2, e2, this.neuron1, this.flow);
+                        this.neuronFlow(sender2, e2, this.neuron2, this.flow);
                         this.myTimerTick(sender2, e2);
 
                     };
@@ -149,18 +137,21 @@ namespace PracaMagisterska
         }
 
 
-        private double neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
+        private void neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
             double toPush = 0;
-            double volumeToPushNext = 0;
+            Console.WriteLine("Flow !" + flow);
+            bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
             Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("Neuron 0");
                 Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow);
-                volumeToPushNext = axRes.Item2;
-                neuron.volumeToPush = volumeToPushNext;
-                return volumeToPushNext;
+                axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
+                neuron.volumeToPush = axRes.Item2;
+                if (!axonFull)
+                    neuron.outFlowVolume +=  axRes.Item2;
+                return;
             }
 
             Console.WriteLine("Multiply neuron");
@@ -169,46 +160,25 @@ namespace PracaMagisterska
                 if (!dendrite.isBlocked)
                 {
                     Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
-                    if (dendriteRes.Item1) toPush += dendriteRes.Item2;
+                    if (dendriteRes.Item1)
+                        toPush += dendriteRes.Item2;
                 }
             }
             Thread.Sleep(10);
             if (toPush > 0)
             {
-                bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 Console.WriteLine("Axon is full : " + axonFull);
                 Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull);
                 if (somaRes.Item1 && !axonFull)
                 {
                     Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
-                    volumeToPushNext = axonRes.Item2;
-                    neuron.volumeToPush = volumeToPushNext;
+                    axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
+                    if (!axonFull)
+                        neuron.outFlowVolume += axonRes.Item2;
                 }
                 else if (somaRes.Item1 && axonFull)
                 {
-                    neuron.isFull = true;
-                    neuron.volumeToPush = somaRes.Item2;
-                }
-            }
-            return volumeToPushNext;
-        }
-
-        public void flow_neuron(object sender, EventArgs e, Neuron neuron, double flow)
-        {
-            double toPush = 0;
-            foreach (Dendrite dendrite in neuron.dendrites_list)
-            {
-                Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
-                if (dendriteRes.Item1) toPush += dendriteRes.Item2;
-
-            }
-            Thread.Sleep(10);
-            if (toPush > 0)
-            {
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, false);
-                if (somaRes.Item1)
-                {
-                    neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    neuron.soma.newFlow(sender, e, somaRes.Item2, axonFull);
                 }
             }
         }
@@ -227,9 +197,15 @@ namespace PracaMagisterska
             neuron1.unload();
             neuron2.unload();
 
-            M1VolumeBlock.Text = neuron0.outFlowVolume.ToString();
-            M2VolumeBlock.Text = neuron1.outFlowVolume.ToString();
-            M3VolumeBlock.Text = neuron2.outFlowVolume.ToString();
+            M1VolumeBlock.Text = neuron0.outFlowVolume.ToString("0.00");
+            M2VolumeBlock.Text = neuron1.outFlowVolume.ToString("0.00");
+            M3VolumeBlock.Text = neuron2.outFlowVolume.ToString("0.00");
+
+            M1VolumeTotalBlock.Text = (neuron0.outFlowVolume + Double.Parse(M1VolumeTotalBlock.Text)).ToString("0.00");
+            M2VolumeTotalBlock.Text = (neuron1.outFlowVolume + Double.Parse(M2VolumeTotalBlock.Text)).ToString("0.00");
+            M3VolumeTotalBlock.Text = (neuron2.outFlowVolume + Double.Parse(M3VolumeTotalBlock.Text)).ToString("0.00");
+
+
             startButton.IsEnabled = true;
             this.newFlow = true;
 
@@ -237,19 +213,19 @@ namespace PracaMagisterska
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
-            //M1TimeBlock.Text = "";
-            //M2TimeBlock.Text = "";
-            //M3TimeBlock.Text = "";
+            M1VolumeBlock.Text = "0";
+            M2VolumeBlock.Text = "0";
+            M3VolumeBlock.Text = "0";
 
-            M1VolumeBlock.Text = "";
-            M2VolumeBlock.Text = "";
-            M3VolumeBlock.Text = "";
+            M1VolumeTotalBlock.Text = "0";
+            M2VolumeTotalBlock.Text = "0";
+            M3VolumeTotalBlock.Text = "0";
 
             timerTextBlock.Text = "00:00";
 
-            //neuron0.reset();
-            //neuron1.reset();
-            //neuron2.reset();
+            neuron0.reset();
+            neuron1.reset();
+            neuron2.reset();
 
             this.newFlow = true;
         }
@@ -269,9 +245,6 @@ namespace PracaMagisterska
         {
             timer.Stop();
             timer2.Stop();
-            //neuron0.stopFlow();
-            //neuron1.stopFlow();
-            //neuron2.stopFlow();
             startButton.IsEnabled = true;
             this.newFlow = false;
         }

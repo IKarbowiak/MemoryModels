@@ -191,6 +191,15 @@ namespace PracaMagisterska
 
             
         }
+
+        public void reset()
+        {
+            this.axon.reset();
+            if (this.soma != null)
+                this.soma.reset();
+            foreach (Dendrite den in this.dendrites_list)
+                den.reset();
+        }
     }
 
 }
