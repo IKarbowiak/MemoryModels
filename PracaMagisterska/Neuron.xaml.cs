@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace PracaMagisterska
 {
@@ -30,8 +31,8 @@ namespace PracaMagisterska
         public double axDiam { get; set; }
         public double axonLength { get; set; }
         public double outFlowVolume { get; set; }
+        public double totalOutFlowVolume { get; set; }
         public double volumeToPush { get; set; }
-        public double flowVolume { get; set; }
         public bool isFlow { get; set; }
         public string model { get; set;  }
         public bool isFull { get; set; }
@@ -100,8 +101,8 @@ namespace PracaMagisterska
 
                 this.model = "Model" + dendrideNum;
                 //this.setParameters(this.neuronLength); //
-                outFlowVolume = 0;
-                this.flowVolume = 0;
+                this.outFlowVolume = 0;
+                this.totalOutFlowVolume = 0;
                 this.isFlow = false;
             }
             else
@@ -111,33 +112,47 @@ namespace PracaMagisterska
 
         }
 
-        public void setParams(double neuronLen = 40)
-        {
-            this.outFlowVolume = 0;
-            foreach (Dendrite den in this.dendrites_list)
-            {
-                den.length = this.neuronLength / 26;
-                den.diameter = denDiam;
-                den.calculateParameters();
-            }
+        //public void setParams(double neuronLen = 40)
+        //{
+        //    this.outFlowVolume = 0;
+        //    this.totalOutFlowVolume = 0;
+        //    foreach (Dendrite den in this.dendrites_list)
+        //    {
+        //        den.length = this.neuronLength / 26;
+        //        den.diameter = denDiam;
+        //        den.calculateParameters();
+        //    }
+        //    }
 
-            axon.length = this.neuronLength * 20 / 26;
-            axon.diameter = this.axDiam;
-            axon.calculateParameters();
+        //    axon.length = this.neuronLength * 20 / 26;
+        //    axon.diameter = this.axDiam;
+        //    axon.calculateParameters();
 
-            soma.diameter = this.neuronLength * 10 / 26;
-            soma.axonDiameter = this.axDiam;
-            soma.calculateParameters();
-        }
+        //    soma.diameter = this.neuronLength * 10 / 26;
+        //    soma.axonDiameter = this.axDiam;
+        //    soma.calculateParameters();
+        //}
 
         public void unload()
         {
             this.axon.unloadFunc();
-            if (this.soma != null) this.soma.unloadFunc();
+            if (this.soma != null)
+            {
+                Console.WriteLine("Soma unload");
+                this.soma.unloadFunc();
+
+            }
             foreach (Dendrite den in this.dendrites_list)
             {
                 den.unloadFunc();
             }
+            Console.WriteLine("In neuron onload");
+            Console.WriteLine(this.outFlowVolume);
+            Console.WriteLine(this.totalOutFlowVolume);
+            Thread.Sleep(100);
+            double value = this.totalOutFlowVolume + this.outFlowVolume;
+            this.totalOutFlowVolume = value;
+            Console.WriteLine("After" + this.totalOutFlowVolume);
         }
 
         public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon)
@@ -195,8 +210,13 @@ namespace PracaMagisterska
         public void reset()
         {
             this.axon.reset();
+            this.isFull = false;
+            this.volumeToPush = 0;
             if (this.soma != null)
+            {
+                Console.WriteLine("Reset soma");
                 this.soma.reset();
+            }
             foreach (Dendrite den in this.dendrites_list)
                 den.reset();
         }

@@ -181,8 +181,7 @@ namespace PracaMagisterska
 
         public void unloadFunc()
         {
-            if (this.liquidVolume > this.threshold)
-                this.liquidVolume = this.threshold;
+
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
             for (int j = this.rowCounter; j < this.rowToReachTeshold + 2; j++)
@@ -194,6 +193,11 @@ namespace PracaMagisterska
                 }
             }
 
+            if (this.liquidVolume > this.threshold)
+            {
+                this.liquidVolume = this.threshold;
+                this.rowCounter = this.rowToReachTeshold + 2;
+            }
 
         }
 

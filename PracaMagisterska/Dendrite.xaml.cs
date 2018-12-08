@@ -136,15 +136,12 @@ namespace PracaMagisterska
                 }
             }
 
-            this.columnsCounter = 0;
-
+            this.resetParams();
         }
 
         public void reset()
         {
-            this.columnsCounter = 0;
-            this.isFull = false;
-            this.liquidVolume = 0;
+            this.resetParams();
             for (int i = 0; i < this.recDenArray[0].Length; i++)
             {
                 for (int j = 0; j < recDenArray.Length; j++)
@@ -153,6 +150,13 @@ namespace PracaMagisterska
                 }
             }
 
+        }
+
+        public void resetParams()
+        {
+            this.columnsCounter = 0;
+            this.isFull = false;
+            this.liquidVolume = 0;
         }
 
 

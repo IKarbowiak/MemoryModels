@@ -46,12 +46,19 @@ namespace PracaMagisterska
         private double time;
         private double flow;
         public string currentConf { get; set; }
+        private int counter = 0;
+        private int tickThreshold;
+        private int timerTimeSpan;
+
 
         public MainWindow()
         {
             InitializeComponent();
+            // It have to be divider of 1000
+            this.timerTimeSpan = 500;
 
             neuron0 = new Neuron(0);
+
             Grid.SetColumn(neuron0, 1);
             Grid.SetRow(neuron0, 1);
             gridModel1Main.Children.Add(neuron0);
@@ -67,10 +74,36 @@ namespace PracaMagisterska
             Grid.SetColumn(neuron2, 1);
             Grid.SetRow(neuron2, 1);
             gridModel3Main.Children.Add(neuron2);
+            this.adjustTimer();
+            this.newFlow = true;
+        }
+
+        private void adjustTimer()
+        {
 
             timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Tick += (sender2, e1) =>
+            {
+                Console.WriteLine("In tick");
+                showResults(sender2, e1);
+            };
+
             timer2 = new System.Windows.Threading.DispatcherTimer();
-            this.newFlow = true;
+            timer2.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+
+            timer2.Tick += (sender2, e2) =>
+            {
+                this.myTimerTick(sender2, e2);
+                this.neuronFlow(sender2, e2, this.neuron0, this.flow);
+                this.neuronFlow(sender2, e2, this.neuron1, this.flow);
+                this.neuronFlow(sender2, e2, this.neuron2, this.flow);
+                counter += 1;
+                if (counter >= this.tickThreshold)
+                {
+                    this.showResults(sender2, e2);
+                }
+
+            };
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
@@ -81,6 +114,8 @@ namespace PracaMagisterska
             neuron0.outFlowVolume = 0;
             neuron1.outFlowVolume = 0;
             neuron2.outFlowVolume = 0;
+            
+            counter = 0;
 
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
@@ -92,43 +127,21 @@ namespace PracaMagisterska
                 timer.Start();
                 timer2.Start();
                 this.TimerStart = DateTime.Now.AddSeconds(-delay);
-                //neuron0.continueFlow((int)newTime);
-                //neuron1.continueFlow((int)newTime);
-                //neuron2.continueFlow((int)newTime);
             }
             else
             {
                 Console.WriteLine("In good place");
-
-
+                this.tickThreshold = (int)(this.time * 1000 / this.timerTimeSpan);
                 timer.Interval = TimeSpan.FromSeconds(time);
-                timer2.Interval = TimeSpan.FromMilliseconds(100);
-
 
                 if ((this.flow > 0) && (time > 0))
                 {
                     Console.WriteLine("Deeper");
                     startButton.IsEnabled = false;
-
                     this.TimerStart = DateTime.Now;
-                    timer2.Tick += (sender2, e2) =>
-                    {
-                        this.neuronFlow(sender2, e2, this.neuron0, this.flow);
-                        this.neuronFlow(sender2, e2, this.neuron1, this.flow);
-                        this.neuronFlow(sender2, e2, this.neuron2, this.flow);
-                        this.myTimerTick(sender2, e2);
+                    //timer.Start();
 
-                    };
                     timer2.Start();
-
-
-                    timer.Tick += (sender2, e1) =>
-                    {
-                        Console.WriteLine("In tick");
-                        showResults(sender2, e);
-                    };
-                    timer.Start();
-
 
                     this.newFlow = false;
                 }
@@ -139,6 +152,14 @@ namespace PracaMagisterska
 
         private void neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
+            Console.WriteLine("Tick treshold" + this.tickThreshold);
+            //if (counter >= this.tickThreshold)
+            //{
+            //    Console.WriteLine("Stop tick. Counter: " + counter);
+            //    timer2.Stop();
+            //    this.showResults(sender, e);
+            //    return;
+            //}
             double toPush = 0;
             Console.WriteLine("Flow !" + flow);
             bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
@@ -150,7 +171,9 @@ namespace PracaMagisterska
                 axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 neuron.volumeToPush = axRes.Item2;
                 if (!axonFull)
+                    Console.WriteLine("Out flow Volume" + neuron.outFlowVolume);
                     neuron.outFlowVolume +=  axRes.Item2;
+                    Console.WriteLine("AXON $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + axRes.Item2);
                 return;
             }
 
@@ -164,7 +187,6 @@ namespace PracaMagisterska
                         toPush += dendriteRes.Item2;
                 }
             }
-            Thread.Sleep(10);
             if (toPush > 0)
             {
                 Console.WriteLine("Axon is full : " + axonFull);
@@ -174,6 +196,7 @@ namespace PracaMagisterska
                     Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
                     axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                     if (!axonFull)
+                        Console.WriteLine("AXON ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + axonRes.Item2);
                         neuron.outFlowVolume += axonRes.Item2;
                 }
                 else if (somaRes.Item1 && axonFull)
@@ -185,11 +208,14 @@ namespace PracaMagisterska
 
         private void myTimerTick(object sender, EventArgs e)
         {
-            TimeSpan currentValue = DateTime.Now - this.TimerStart;
-            this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
+            if (counter < this.tickThreshold)
+            {
+                TimeSpan currentValue = DateTime.Now - this.TimerStart;
+                this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
+            }
         }
 
-        private void showResults(object sender, RoutedEventArgs e)
+        private void showResults(object sender, EventArgs e)
         {
             timer.Stop();
             timer2.Stop();
@@ -201,13 +227,19 @@ namespace PracaMagisterska
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString("0.00");
             M3VolumeBlock.Text = neuron2.outFlowVolume.ToString("0.00");
 
-            M1VolumeTotalBlock.Text = (neuron0.outFlowVolume + Double.Parse(M1VolumeTotalBlock.Text)).ToString("0.00");
-            M2VolumeTotalBlock.Text = (neuron1.outFlowVolume + Double.Parse(M2VolumeTotalBlock.Text)).ToString("0.00");
-            M3VolumeTotalBlock.Text = (neuron2.outFlowVolume + Double.Parse(M3VolumeTotalBlock.Text)).ToString("0.00");
+            Console.WriteLine("In show results");
+            Console.WriteLine(neuron1.outFlowVolume);
+            Console.WriteLine(neuron1.totalOutFlowVolume);
+            Console.WriteLine(neuron1.outFlowVolume + Double.Parse(M2VolumeTotalBlock.Text));
 
+            M1VolumeTotalBlock.Text = (neuron0.totalOutFlowVolume).ToString("0.00");
+            M2VolumeTotalBlock.Text = (neuron1.totalOutFlowVolume).ToString("0.00");
+            M3VolumeTotalBlock.Text = (neuron2.totalOutFlowVolume).ToString("0.00");
 
             startButton.IsEnabled = true;
             this.newFlow = true;
+
+            Console.WriteLine(counter);
 
         }
 
@@ -267,7 +299,8 @@ namespace PracaMagisterska
         {
             this.currentConf = path;
             this.time = time;
-            this.flow = flow / 10;
+            double divider = ((double)1000 / (double)this.timerTimeSpan);
+            this.flow = flow / divider;
             Console.WriteLine("In main Window" + path);
         }
 

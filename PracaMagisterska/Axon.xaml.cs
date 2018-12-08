@@ -124,6 +124,7 @@ namespace PracaMagisterska
         {
             Console.WriteLine("In fill ax " + numberOfCol);
             int colLevel = this.columnsCounter + numberOfCol;
+            Console.WriteLine("In fill ax col Level " + colLevel);
 
             if (colLevel > recAxonArray[0].Length)
             {
@@ -157,7 +158,6 @@ namespace PracaMagisterska
             Console.WriteLine("Axon unload");
             Console.WriteLine(this.columnsCounter);
 
-
             for (int i = this.recAxonArray[0].Length - 1; i >= 0; i--)
             {
                 for (int j = 0; j < recAxonArray.Length; j++)
@@ -167,17 +167,14 @@ namespace PracaMagisterska
                  }
              }
 
-            this.columnsCounter = 0;
+            this.resetParameters();
 
         }
 
 
         public void reset()
         {
-            this.columnsCounter = 0;
-            this.flowedOutVolume = 0;
-            this.isFull = false;
-            this.liquidVolume = 0;
+            this.resetParameters();
             for (int i = 0; i < this.recAxonArray[0].Length; i++)
             {
                 for (int j = 0; j < recAxonArray.Length; j++)
@@ -186,6 +183,15 @@ namespace PracaMagisterska
                 }
             }
 
+        }
+
+        public void resetParameters()
+        {
+            Console.WriteLine("Reset axon parms");
+            this.columnsCounter = 0;
+            this.isFull = false;
+            this.liquidVolume = 0;
+            this.flowedOutVolume = 0;
         }
 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
