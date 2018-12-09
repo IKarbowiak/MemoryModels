@@ -50,7 +50,7 @@ namespace PracaMagisterska
         public DragAndDropPanel()
         {
             InitializeComponent();
-            this.timerTimeSpan = 100;
+            this.timerTimeSpan = 500;
             canvasElements = new Dictionary<Viewbox, double[]>();
             //timer = new System.Windows.Threading.DispatcherTimer();
             //timer2 = new System.Windows.Threading.DispatcherTimer();
@@ -451,7 +451,7 @@ namespace PracaMagisterska
             Console.WriteLine("Flow Volume!!! Drag nad Drop!!!!" + this.flowVolume);
             if (canvasElements.Count() > 0)
             {
-                this.tickThreshold = (int)(this.flowTime * 1000 / 100);
+                this.tickThreshold = (int)(this.flowTime * 1000 / this.timerTimeSpan);
                 this.TimerStart = DateTime.Now;
                 timer.Start();
                 startButton.IsEnabled = false;
