@@ -112,26 +112,6 @@ namespace PracaMagisterska
 
         }
 
-        //public void setParams(double neuronLen = 40)
-        //{
-        //    this.outFlowVolume = 0;
-        //    this.totalOutFlowVolume = 0;
-        //    foreach (Dendrite den in this.dendrites_list)
-        //    {
-        //        den.length = this.neuronLength / 26;
-        //        den.diameter = denDiam;
-        //        den.calculateParameters();
-        //    }
-        //    }
-
-        //    axon.length = this.neuronLength * 20 / 26;
-        //    axon.diameter = this.axDiam;
-        //    axon.calculateParameters();
-
-        //    soma.diameter = this.neuronLength * 10 / 26;
-        //    soma.axonDiameter = this.axDiam;
-        //    soma.calculateParameters();
-        //}
 
         public void unload()
         {

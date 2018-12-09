@@ -130,7 +130,7 @@ namespace PracaMagisterska
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
                     recSomaArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
-                    recSomaArray[j][i].Refresh();
+                    //recSomaArray[j][i].Refresh();
                 }
             }
 
@@ -175,6 +175,7 @@ namespace PracaMagisterska
 
         public void new_unloadFunc(bool unload, double toEmpty = 0)
         {
+            toEmpty = toEmpty < 0 ? 0 : toEmpty;
             int toReach = unload == true ? this.rowToReachTeshold : (int)(somaRec.Height - toEmpty);
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)

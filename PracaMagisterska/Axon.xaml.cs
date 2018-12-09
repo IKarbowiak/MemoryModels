@@ -171,6 +171,7 @@ namespace PracaMagisterska
 
         }
 
+
         public void reset()
         {
             this.resetParameters();

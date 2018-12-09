@@ -131,7 +131,7 @@ namespace PracaMagisterska
                 for (int j = 0; j < recDenArray.Length; j++)
                 {
                     recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-                    recDenArray[j][i].Refresh();
+                    //recDenArray[j][i].Refresh();
 
                 }
             }

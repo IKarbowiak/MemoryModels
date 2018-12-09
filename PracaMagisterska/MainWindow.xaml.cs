@@ -21,17 +21,17 @@ namespace PracaMagisterska
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public static class ExtensionMethods
-    {
-        private static Action EmptyDelegate = delegate () { };
+    //public static class ExtensionMethods
+    //{
+    //    private static Action EmptyDelegate = delegate () { };
 
 
-        public static void Refresh(this UIElement uiElement)
+    //    public static void Refresh(this UIElement uiElement)
 
-        {
-            uiElement.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, EmptyDelegate);
-        }
-    }
+    //    {
+    //        uiElement.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Render, EmptyDelegate);
+    //    }
+    //}
 
 
     public partial class MainWindow : Window

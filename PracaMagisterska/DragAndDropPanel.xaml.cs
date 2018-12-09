@@ -30,6 +30,7 @@ namespace PracaMagisterska
         private double[] startPosition;
         public Dictionary<Viewbox, double[]> canvasElements { get; set; }
         private System.Windows.Threading.DispatcherTimer timer;
+        private System.Windows.Threading.DispatcherTimer drainingTimer;
         private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
         private int counter = 0;
         private string currentConf;
@@ -42,7 +43,7 @@ namespace PracaMagisterska
         private int tickThreshold;
         private int timerTimeSpan;
         private List<Neuron> neuronsToCloseDendrites = new List<Neuron>();
-        private double drainingSpeed;
+        private double drainingVolume;
 
         //private List<object> elementsToCheck = new List<object>();
 
@@ -53,8 +54,6 @@ namespace PracaMagisterska
             InitializeComponent();
             this.timerTimeSpan = 200;
             canvasElements = new Dictionary<Viewbox, double[]>();
-            //timer = new System.Windows.Threading.DispatcherTimer();
-            //timer2 = new System.Windows.Threading.DispatcherTimer();
             this.adjustTimer();
             this.flowTime = 40;
             this.flowVolume = 12;
@@ -80,6 +79,24 @@ namespace PracaMagisterska
                     this.stop(true);
                 }
 
+            };
+
+            drainingTimer = new System.Windows.Threading.DispatcherTimer();
+            drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+            drainingTimer.Tick += (sender2, e1) =>
+            {
+                List<bool> emptyResults = new List<bool>();
+                foreach (Viewbox viewbox in this.canvasElements.Keys)
+                {
+                    Neuron neuron = (Neuron)viewbox.Child;
+                    bool empty = neuron.draining(this.drainingVolume);
+                    emptyResults.Add(empty);
+                }
+                if (!emptyResults.Contains(false))
+                {
+                    Console.WriteLine("Stop draining timer");
+                    drainingTimer.Stop();
+                }
             };
         }
 
@@ -197,8 +214,6 @@ namespace PracaMagisterska
                 else if (side == "right")
                 {
                     newDirection = direction == "up" ? "down" : "up";
-                    //if (direction == "up") newDirection = "down";
-                    //else if (direction == "down") newDirection = "up";
                     // przydałaby się tutaj obsługa błędów
                     element.Name = newDirection;
                 }
@@ -237,7 +252,6 @@ namespace PracaMagisterska
                     if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
                         (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
                     {
-                        //List<object> el_list = new List<object> { element.Key };
 
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
@@ -417,7 +431,6 @@ namespace PracaMagisterska
                 viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
             }
 
-
             return quit;
 
         }
@@ -431,7 +444,6 @@ namespace PracaMagisterska
                 this.timeOffset = currentValue - delay;
                 Console.WriteLine("******************************************************************");
                 Console.WriteLine(this.flowTime - delay.Seconds);
-                //this.timer.Interval = TimeSpan.FromSeconds(this.flowTime - delay.Seconds);
                 this.timer.Start();
                 startButton.IsEnabled = false;
                 return;
@@ -474,7 +486,7 @@ namespace PracaMagisterska
                     List<XElement> values_list = element.Elements().ToList();
                     this.flowVolume = double.Parse(values_list[0].Value.ToString());
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
-                    this.drainingSpeed = double.Parse(values_list[2].Value.ToString());
+                    this.drainingVolume = double.Parse(values_list[2].Value.ToString());
                     this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
@@ -603,8 +615,6 @@ namespace PracaMagisterska
                     for (int j = 1; j < this.neuronQueue[i].Count(); j++)
                     {
                         Console.WriteLine("J iteration " + j);
-                        //Viewbox viewbox_next;
-                        //Neuron nextNeuron;
                         toPush = 0;
                         Viewbox viewbox_prev = this.neuronQueue[i][j - 1];
                         Neuron prevNeuron = (Neuron)viewbox_prev.Child;
@@ -763,6 +773,8 @@ namespace PracaMagisterska
                     }
                 }
 
+                this.drainingTimer.Start();
+
                 // Block dendrite of neurons
                 Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();
@@ -791,12 +803,14 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             timerTextBlock.Text = "00:00";
+            this.drainingTimer.Stop();
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
             this.timeOffset = TimeSpan.Parse("00:00:00");
+            this.drainingTimer.Stop();
         }
 
         private void parametersButton_Click(object sender, RoutedEventArgs e)
@@ -839,6 +853,7 @@ namespace PracaMagisterska
             timerTextBlock.Text = "00:00";
             this.blockNeuronsDendrites();
             this.pauseFlow = false;
+            this.drainingTimer.Stop();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
