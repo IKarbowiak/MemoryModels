@@ -139,7 +139,7 @@ namespace PracaMagisterska
             if (this.soma != null)
             {
                 Console.WriteLine("Soma unload");
-                this.soma.unloadFunc();
+                this.soma.new_unloadFunc(true);
 
             }
             foreach (Dendrite den in this.dendrites_list)
@@ -220,6 +220,19 @@ namespace PracaMagisterska
             foreach (Dendrite den in this.dendrites_list)
                 den.reset();
         }
+
+        public bool draining(double volumeToEmpty)
+        {
+            Console.WriteLine("In Neron draining " + volumeToEmpty);
+            bool empty = true;
+            if (this.soma != null)
+            {
+                empty = this.soma.partialEmpty(volumeToEmpty);
+            }
+            Console.WriteLine("Neron draining return: " + empty);
+            return empty;
+        }
+
     }
 
 }

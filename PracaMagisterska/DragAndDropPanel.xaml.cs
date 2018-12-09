@@ -41,7 +41,8 @@ namespace PracaMagisterska
         private TimeSpan timeOffset;
         private int tickThreshold;
         private int timerTimeSpan;
-        private List<Neuron> neuronsToCloseDendrites = new List<Neuron>(); 
+        private List<Neuron> neuronsToCloseDendrites = new List<Neuron>();
+        private double drainingSpeed;
 
         //private List<object> elementsToCheck = new List<object>();
 
@@ -50,7 +51,7 @@ namespace PracaMagisterska
         public DragAndDropPanel()
         {
             InitializeComponent();
-            this.timerTimeSpan = 500;
+            this.timerTimeSpan = 200;
             canvasElements = new Dictionary<Viewbox, double[]>();
             //timer = new System.Windows.Threading.DispatcherTimer();
             //timer2 = new System.Windows.Threading.DispatcherTimer();
@@ -87,7 +88,7 @@ namespace PracaMagisterska
             TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + dendNumber };
             objectHandlerPanel.Children.Add(modelName);
 
-            Viewbox viewbox = new Viewbox() {Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform};
+            Viewbox viewbox = new Viewbox() { Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform };
             Neuron newNeuron = new Neuron(dendNumber);
             newNeuron.Height = 150;
             newNeuron.Width = 450;
@@ -110,7 +111,7 @@ namespace PracaMagisterska
             return false;
         }
 
-      
+
         private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
@@ -152,7 +153,7 @@ namespace PracaMagisterska
             int catchValue_updown = 15;
             double offset = 11.5;
             Neuron neuron = (Neuron)viewbox.Child;
-            Console.WriteLine("In mouse up " );
+            Console.WriteLine("In mouse up ");
 
 
             viewbox.ReleaseMouseCapture();
@@ -418,7 +419,7 @@ namespace PracaMagisterska
 
 
             return quit;
-            
+
         }
 
         private void startButton_Click(object sender, RoutedEventArgs e)
@@ -471,9 +472,10 @@ namespace PracaMagisterska
                 if (element_name == "General")
                 {
                     List<XElement> values_list = element.Elements().ToList();
-                    this.flowVolume =  double.Parse(values_list[0].Value.ToString());
+                    this.flowVolume = double.Parse(values_list[0].Value.ToString());
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
-                    this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
+                    this.drainingSpeed = double.Parse(values_list[2].Value.ToString());
+                    this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
                 {
@@ -534,7 +536,7 @@ namespace PracaMagisterska
                 Console.WriteLine("set params in neuron 1 or 2 ");
                 for (int i = 0; i < params_length - 4; i += 2)
                 {
-                    Tuple<double, double>  denTuple = new Tuple<double, double>(params_list[i+1], params_list[i]);
+                    Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
                     denList.Add(denTuple);
                 }
                 neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
@@ -624,7 +626,7 @@ namespace PracaMagisterska
                         else if (toPush > 0)
                         {
                             if (whatToPush.ContainsKey(currentNeuron))
-                                whatToPush[currentNeuron] += toPush; 
+                                whatToPush[currentNeuron] += toPush;
                             else
                                 whatToPush.Add(currentNeuron, toPush);
 
@@ -747,7 +749,7 @@ namespace PracaMagisterska
                 List<Viewbox> visited = new List<Viewbox>();
                 foreach (List<Viewbox> elList in this.neuronQueue)
                 {
-                    for (int i = elList.Count - 1; i >=0; i--)
+                    for (int i = elList.Count - 1; i >= 0; i--)
                     {
                         if (!visited.Contains(elList[i]))
                         {
@@ -780,7 +782,7 @@ namespace PracaMagisterska
 
             }
         }
-   
+
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
@@ -811,7 +813,7 @@ namespace PracaMagisterska
             setParamsWindow.ShowDialog();
         }
 
-        private void getConfParamsXML(string path, double time, double flow)
+        private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);
@@ -839,5 +841,10 @@ namespace PracaMagisterska
             this.pauseFlow = false;
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.timer.Stop();
+
+        }
     }
 }

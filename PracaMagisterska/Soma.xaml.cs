@@ -32,7 +32,6 @@ namespace PracaMagisterska
         private Rectangle[][] recSomaArray;
         private int rowCounter;
         private bool isFull = false;
-        private double collect_rows = 0;
         //public bool IsEnabled { get; set; }
 
         public Soma(bool dim3d)
@@ -139,6 +138,21 @@ namespace PracaMagisterska
 
         }
 
+        public bool partialEmpty(double volumeToEmpty)
+        {
+            bool empty = false;
+            this.liquidVolume -= volumeToEmpty;
+            double rowToEmpty = ((double)somaRec.Height * this.liquidVolume / this.volume);
+            new_unloadFunc(false, rowToEmpty);
+            if (this.liquidVolume <= 0)
+            {
+                this.resetParams();
+                empty = true;
+            }
+            return empty;
+
+        }
+
         public void unloadFunc()
         {
 
@@ -157,15 +171,46 @@ namespace PracaMagisterska
                 this.liquidVolume = this.threshold;
                 this.rowCounter = this.rowToReachTeshold;
             }
-            collect_rows = 0;
         }
 
-        public void reset()
+        public void new_unloadFunc(bool unload, double toEmpty = 0)
+        {
+            int toReach = unload == true ? this.rowToReachTeshold : (int)(somaRec.Height - toEmpty);
+
+            //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
+            for (int j = this.rowCounter; j < toReach; j++)
+            {
+                for (int i = 0; i < recSomaArray[0].Length; i++)
+                {
+                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
+
+                }
+            }
+
+            if (unload)
+            {
+                if (this.liquidVolume > this.threshold)
+                {
+                    this.liquidVolume = this.threshold;
+                    this.rowCounter = this.rowToReachTeshold;
+                }
+                return;
+            }
+
+            rowCounter = toReach;
+
+        }
+
+        private void resetParams()
         {
             this.liquidVolume = 0;
             this.isFull = false;
             this.rowCounter = recSomaArray.Length - 1;
-            this.collect_rows = 0;
+        }
+
+        public void reset()
+        {
+            this.resetParams();
             for (int i = 0; i < this.recSomaArray[0].Length; i++)
             {
                 for (int j = 0; j < recSomaArray.Length; j++)

@@ -56,11 +56,13 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow time [s]"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Draining speed "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the of flow end?"/></TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" x:Name="generalParams">
                             <TextBox x:Name="flowBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <TextBox x:Name="timeBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
+                            <TextBox x:Name="drainingBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                             <ComboBox x:Name="blockFlow" Width="100" Height="20">
                                 <ComboBoxItem x:Name="trueItem" Content="True"/>
                                 <ComboBoxItem x:Name="falseItem" Content="False" IsSelected="True"/>

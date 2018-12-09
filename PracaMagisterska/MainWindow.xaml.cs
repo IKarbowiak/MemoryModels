@@ -39,8 +39,8 @@ namespace PracaMagisterska
         public Neuron neuron0;
         public Neuron neuron1;
         public Neuron neuron2;
+        private System.Windows.Threading.DispatcherTimer drainingTimer;
         private System.Windows.Threading.DispatcherTimer timer;
-        private System.Windows.Threading.DispatcherTimer timer2;
         private DateTime TimerStart;
         private bool newFlow;
         private double time;
@@ -49,6 +49,7 @@ namespace PracaMagisterska
         private int counter = 0;
         private int tickThreshold;
         private int timerTimeSpan;
+        private double drainingVolume;
 
 
         public MainWindow()
@@ -81,17 +82,24 @@ namespace PracaMagisterska
         private void adjustTimer()
         {
 
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Tick += (sender2, e1) =>
+            drainingTimer = new System.Windows.Threading.DispatcherTimer();
+            drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+            drainingTimer.Tick += (sender2, e1) =>
             {
-                Console.WriteLine("In tick");
-                showResults(sender2, e1);
+                bool empty1 = neuron0.draining(this.drainingVolume);
+                bool empty2 = neuron1.draining(this.drainingVolume);
+                bool empty3 = neuron2.draining(this.drainingVolume);
+                if (empty1 && empty2 && empty3)
+                {
+                    Console.WriteLine("Stop draining timer");
+                    drainingTimer.Stop();
+                }
             };
 
-            timer2 = new System.Windows.Threading.DispatcherTimer();
-            timer2.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+            timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
 
-            timer2.Tick += (sender2, e2) =>
+            timer.Tick += (sender2, e2) =>
             {
                 this.myTimerTick(sender2, e2);
                 this.neuronFlow(sender2, e2, this.neuron0, this.flow);
@@ -123,25 +131,21 @@ namespace PracaMagisterska
                 string[] seconds = timerTextBlock.Text.Split(':');
                 delay = Int32.Parse(seconds[1].Trim(new Char[] { '0', }));
                 newTime = time - delay;
-                timer.Interval = TimeSpan.FromSeconds(newTime + 1);
                 timer.Start();
-                timer2.Start();
                 this.TimerStart = DateTime.Now.AddSeconds(-delay);
             }
             else
             {
                 Console.WriteLine("In good place");
                 this.tickThreshold = (int)(this.time * 1000 / this.timerTimeSpan);
-                timer.Interval = TimeSpan.FromSeconds(time);
 
                 if ((this.flow > 0) && (time > 0))
                 {
                     Console.WriteLine("Deeper");
                     startButton.IsEnabled = false;
                     this.TimerStart = DateTime.Now;
-                    //timer.Start();
 
-                    timer2.Start();
+                    timer.Start();
 
                     this.newFlow = false;
                 }
@@ -153,13 +157,6 @@ namespace PracaMagisterska
         private void neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
             Console.WriteLine("Tick treshold" + this.tickThreshold);
-            //if (counter >= this.tickThreshold)
-            //{
-            //    Console.WriteLine("Stop tick. Counter: " + counter);
-            //    timer2.Stop();
-            //    this.showResults(sender, e);
-            //    return;
-            //}
             double toPush = 0;
             Console.WriteLine("Flow !" + flow);
             bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
@@ -218,7 +215,6 @@ namespace PracaMagisterska
         private void showResults(object sender, EventArgs e)
         {
             timer.Stop();
-            timer2.Stop();
             neuron0.unload();
             neuron1.unload();
             neuron2.unload();
@@ -238,6 +234,7 @@ namespace PracaMagisterska
 
             startButton.IsEnabled = true;
             this.newFlow = true;
+            drainingTimer.Start();
 
             Console.WriteLine(counter);
 
@@ -260,6 +257,7 @@ namespace PracaMagisterska
             neuron2.reset();
 
             this.newFlow = true;
+
         }
 
         
@@ -270,13 +268,12 @@ namespace PracaMagisterska
 
             myWindow.ShowDialog();
 
-            //MessageBox.Show(myWindow.tbReturn.Text);
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
+            drainingTimer.Stop();
             timer.Stop();
-            timer2.Stop();
             startButton.IsEnabled = true;
             this.newFlow = false;
         }
@@ -295,12 +292,13 @@ namespace PracaMagisterska
         }
 
     
-        private void getConfParamsXML(string path, double time, double flow)
+        private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
         {
             this.currentConf = path;
             this.time = time;
             double divider = ((double)1000 / (double)this.timerTimeSpan);
             this.flow = flow / divider;
+            this.drainingVolume = drainingSpeed / divider;
             Console.WriteLine("In main Window" + path);
         }
 

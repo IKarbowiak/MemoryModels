@@ -23,10 +23,10 @@ namespace PracaMagisterska
     public partial class SetParametersWindow : Window
     {
         private string projectPath;
-        private Action<string, double, double> callback;
+        private Action<string, double, double, double> callback;
         private object parentWindow; 
 
-        public SetParametersWindow(Action<string, double, double> action, object window, string conf = "")
+        public SetParametersWindow(Action<string, double, double, double> action, object window, string conf = "")
         {
             InitializeComponent();
             if (conf != "")
@@ -50,7 +50,7 @@ namespace PracaMagisterska
 
         private void changeCurrentConfInParentWindow(string path)
         {
-            this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text));
+            this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text), double.Parse(drainingBox.Text));
             //((MainWindow)Application.Current.MainWindow).currentConf = path;
         }
 
