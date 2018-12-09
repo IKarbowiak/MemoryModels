@@ -66,91 +66,51 @@ namespace PracaMagisterska
 
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull)
         {
-            //void fillRowOrNot(double rowNum)
-            //{
-            //    Console.WriteLine("Row num 1 !!!" + rowNum);
-            //    Console.WriteLine(collect_rows);
-            //    if (rowNum < 1 && this.collect_rows < 1)
-            //    {
-            //        collect_rows += rowNum;
-            //        rowNum = 0;
-            //    }
-            //    else if (rowNum >= 1 || this.collect_rows >= 1)
-            //    {
-            //        collect_rows += rowNum;
-            //        Console.WriteLine(collect_rows);
-            //        rowNum = (int)collect_rows;
-            //        collect_rows = (double)collect_rows - (double)rowNum;
-            //    }
-            //    Console.WriteLine("Row num!!!" + rowNum);
-            //    if (rowNum > 0)
-            //        this.fillRect((int)rowNum);
-            //}
-
             bool push = false;
             Console.WriteLine("In new Soma " + volumeIncrease);
             double increase = this.liquidVolume + volumeIncrease;
             double rowToFill;
             double volumeToPush = 0;
             Console.WriteLine("volume" + volume + "    threshold: " + this.threshold + "       increase: " + increase);
-            if (this.threshold < (increase) && !axonIsFull)
+
+            if (this.isFull)
+            {
+                push = true;
+                Tuple<bool, double> res = new Tuple<bool, double>(push, volumeToPush);
+                return res;
+            }
+
+            if (increase > this.threshold && this.volume >= increase && !axonIsFull)
             {
                 Console.WriteLine("Reach treshold");
-                if (this.liquidVolume < this.volume && this.volume >= (increase))
-                {
-                    volumeToPush = increase - this.threshold;
-                    this.liquidVolume += (volumeIncrease - volumeToPush);
-                    //rowToFill = ((double)somaRec.Height * (volumeIncrease - volumeToPush) / this.volume);
-                    rowToFill = this.rowToReachTeshold;
-                    Console.WriteLine("Row to fills" + rowToFill);
-                    this.fillRect(rowToFill);
-                    //fillRowOrNot(rowToFill);
-                    this.isFull = false;
-                    push = true;
 
-                }
-                else
-                {
-                    volumeToPush = increase - this.volume;
-                    this.liquidVolume = this.volume;
-                    rowToFill = (double)somaRec.Height;
-                    this.fillRect(rowToFill);
-                    //fillRowOrNot(rowToFill);
-                    this.isFull = true;
-                    push = true;
-                }
+                volumeToPush = increase - this.threshold;
+                this.liquidVolume += (volumeIncrease - volumeToPush);
+                rowToFill = this.rowToReachTeshold;
+                Console.WriteLine("Row to fills" + rowToFill);
+                this.fillRect(rowToFill);
+                this.isFull = false;
+                push = true;
                 
-                //axon.newFlow(volumeToPush);
             }
-            else if (axonIsFull)
+
+            else if (increase > this.volume)
             {
                 Console.WriteLine("In full soma axon");
-                if (increase > this.volume)
-                {
-                    volumeToPush = increase - this.volume;
-                    this.liquidVolume = this.volume;
-                    rowToFill = (double)somaRec.Height;
-                    this.fillRect(rowToFill);
-                    //fillRowOrNot(rowToFill);
-                    this.isFull = true;
-                    push = true;
-                }
-                else
-                {
-                    this.liquidVolume += volumeIncrease;
-                    rowToFill = ((double)somaRec.Height * this.liquidVolume / this.volume);
-                    this.fillRect(rowToFill);
-                    //fillRowOrNot(rowToFill);
-                    this.isFull = false;
-                    push = false;
-                }
+
+                volumeToPush = increase - this.volume;
+                this.liquidVolume = this.volume;
+                rowToFill = (double)somaRec.Height;
+                this.fillRect(rowToFill);
+                this.isFull = true;
+                push = true;
             }
-            else if (this.volume >= (this.liquidVolume + volumeIncrease))
+
+            else if (this.volume >= increase)
             {
                 this.liquidVolume += volumeIncrease;
                 rowToFill = ((double)somaRec.Height * this.liquidVolume / this.volume);
                 this.fillRect(rowToFill);
-                //fillRowOrNot(rowToFill);
                 this.isFull = false;
                 push = false;
             }
@@ -161,36 +121,26 @@ namespace PracaMagisterska
         private void fillRect(double rowLevel)
         {
             Console.WriteLine("In soma fill REC !!! Row to fill: " + rowLevel);
-            //int rowToFill = rowCounter - rowsToFill;
             int rowToFill = (int)(somaRec.Height - rowLevel);
 
             if (rowToFill < 0)
-            {
                 rowToFill = 0;
-            }
+
             for (int j = rowCounter; j > (rowToFill); j--)
             {
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
                     recSomaArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
                     recSomaArray[j][i].Refresh();
-
                 }
             }
 
-            if (rowToFill > 0)
-            {
-                rowCounter = rowToFill;
-            }
-            else
-            {
-                rowCounter =  0;
-            }
+            rowCounter = rowToFill > 0 ? rowToFill : 0; 
+
         }
 
         public void unloadFunc()
         {
-
 
             //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
             for (int j = this.rowCounter; j < this.rowToReachTeshold; j++)
