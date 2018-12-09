@@ -79,7 +79,7 @@ namespace PracaMagisterska
             //this.recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
-        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, System.Windows.Media.SolidColorBrush color)
         {
             double volumeToPush = 0;
             if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
@@ -93,7 +93,7 @@ namespace PracaMagisterska
                 }
                 if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                 {
-                    this.fillRect(colLevelToFill);
+                    this.fillRect(colLevelToFill, color);
                 }
                 //this.fillRect(sender, e, colToFillin1s);
             }
@@ -107,7 +107,7 @@ namespace PracaMagisterska
                 {
                     if (this.columnsCounter < this.recAxonArray[0].Length - 1)
                     {
-                        this.fillRect(colLevelToFill);
+                        this.fillRect(colLevelToFill, color);
                     }
                     //this.fillRect(sender, e, colToFillin1s);
                 }
@@ -120,7 +120,7 @@ namespace PracaMagisterska
             return new Tuple<bool, double>(this.isFull, volumeToPush);
         }
 
-        private void fillRect(int numberOfCol)
+        private void fillRect(int numberOfCol, System.Windows.Media.SolidColorBrush color)
         {
             Console.WriteLine("In fill ax " + numberOfCol);
             int colLevel = this.columnsCounter + numberOfCol;
@@ -135,7 +135,7 @@ namespace PracaMagisterska
             {
                 for (int j = 0; j < recAxonArray.Length; j++)
                 {
-                    recAxonArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
+                    recAxonArray[j][i].Fill = color;
 
                 }
             }

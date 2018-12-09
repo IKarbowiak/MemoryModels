@@ -13,9 +13,10 @@
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="7*"/>
+            <RowDefinition Height="6*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <TextBlock VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0" TextAlignment="Center" FontSize="25" Margin="0,6,0,0">Neuron Panel</TextBlock>
         <Border Grid.Row="0" Grid.Column="0" Margin="10,40,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
@@ -30,7 +31,7 @@
                 </Border>
             </StackPanel>
         </Border>
-        <Border Grid.Row="2" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
+        <Border Grid.Row="2" Grid.Column="0" Margin="10,0,0,0" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel Background="Ivory">
                 <Button x:Name="parametersButton" Height="20" Width="90" Margin="0,8,0,5" Click="parametersButton_Click">Set parameters</Button>
                 <Button x:Name="startButton" Height="20" Width="90" Margin="0,5,0,5" Click="startButton_Click">Start</Button>
@@ -40,7 +41,13 @@
                 <Button x:Name="resetButton" Height="20" Width="90" Margin="0,5,0,5"  Click="resetButton_Click" >Reset</Button>
             </StackPanel>
         </Border>
-        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="0,40,10,10" BorderBrush="Gray" BorderThickness="1">
+        <Border Grid.Row="4" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
+            <StackPanel Background="Honeydew">
+                <Button x:Name="reminderButon" Width="90" Height="20" Margin="0,5,0,0" IsEnabled="False" Click="reminderButon_Click">Reminder</Button>
+                <Button x:Name="resultButton" Width="90" Height="20" Margin="0,5,0,5" IsEnabled="False" Click="resultButton_Click">Results</Button>
+            </StackPanel>
+        </Border>
+        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Margin="0,40,10,10" BorderBrush="Gray" BorderThickness="1">
             <Canvas  x:Name="dropCanvas"   Grid.Column="1" Grid.Row="0" AllowDrop="True" >
             </Canvas>
         </Border>

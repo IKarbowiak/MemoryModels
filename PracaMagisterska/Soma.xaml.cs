@@ -63,7 +63,7 @@ namespace PracaMagisterska
             this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }
 
-        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull, System.Windows.Media.SolidColorBrush color)
         {
             bool push = false;
             Console.WriteLine("In new Soma " + volumeIncrease);
@@ -87,7 +87,7 @@ namespace PracaMagisterska
                 this.liquidVolume += (volumeIncrease - volumeToPush);
                 rowToFill = this.rowToReachTeshold;
                 Console.WriteLine("Row to fills" + rowToFill);
-                this.fillRect(rowToFill);
+                this.fillRect(rowToFill, color);
                 this.isFull = false;
                 push = true;
                 
@@ -100,7 +100,7 @@ namespace PracaMagisterska
                 volumeToPush = increase - this.volume;
                 this.liquidVolume = this.volume;
                 rowToFill = (double)somaRec.Height;
-                this.fillRect(rowToFill);
+                this.fillRect(rowToFill, color);
                 this.isFull = true;
                 push = true;
             }
@@ -109,7 +109,7 @@ namespace PracaMagisterska
             {
                 this.liquidVolume += volumeIncrease;
                 rowToFill = ((double)somaRec.Height * this.liquidVolume / this.volume);
-                this.fillRect(rowToFill);
+                this.fillRect(rowToFill, color);
                 this.isFull = false;
                 push = false;
             }
@@ -117,7 +117,7 @@ namespace PracaMagisterska
             return result;
         }
 
-        private void fillRect(double rowLevel)
+        private void fillRect(double rowLevel, System.Windows.Media.SolidColorBrush color)
         {
             Console.WriteLine("In soma fill REC !!! Row to fill: " + rowLevel);
             int rowToFill = (int)(somaRec.Height - rowLevel);
@@ -129,7 +129,7 @@ namespace PracaMagisterska
             {
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
-                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
+                    recSomaArray[j][i].Fill = color;
                     //recSomaArray[j][i].Refresh();
                 }
             }

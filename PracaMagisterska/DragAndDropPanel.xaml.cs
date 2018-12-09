@@ -44,6 +44,8 @@ namespace PracaMagisterska
         private int timerTimeSpan;
         private List<Neuron> neuronsToCloseDendrites = new List<Neuron>();
         private double drainingVolume;
+        private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
+        private bool remindStarted = false;
 
         //private List<object> elementsToCheck = new List<object>();
 
@@ -437,6 +439,8 @@ namespace PracaMagisterska
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
+            reminderButon.IsEnabled = false;
+            resultButton.IsEnabled = false;
             if (this.pauseFlow)
             {
                 TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
@@ -461,6 +465,8 @@ namespace PracaMagisterska
             counter = 0;
             double divider = ((double)1000 / (double)this.timerTimeSpan);
             this.flowVolume = this.flowVolume / divider;
+            this.drainingVolume = this.drainingVolume / divider;
+
             Console.WriteLine("Flow Volume!!! Drag nad Drop!!!!" + this.flowVolume);
             if (canvasElements.Count() > 0)
             {
@@ -683,7 +689,7 @@ namespace PracaMagisterska
             Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
-                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow);
+                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow, color);
                 volumeToPushNext = axonRes.Item2;
                 neuron.volumeToPush = volumeToPushNext;
                 return volumeToPushNext;
@@ -693,7 +699,7 @@ namespace PracaMagisterska
             {
                 if (!dendrite.isBlocked)
                 {
-                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
+                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow, color);
                     if (dendriteRes.Item1)
                         toPush += dendriteRes.Item2;
                 }
@@ -703,10 +709,10 @@ namespace PracaMagisterska
             {
                 bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 Console.WriteLine("Axon is full : " + axonFull);
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull);
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
                 if (somaRes.Item1 && !axonFull)
                 {
-                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
                     volumeToPushNext = axonRes.Item2;
                     neuron.volumeToPush = volumeToPushNext;
                 }
@@ -756,6 +762,9 @@ namespace PracaMagisterska
             if (fromTimer)
             {
                 // Unload all neurons
+                reminderButon.IsEnabled = true;
+                resultButton.IsEnabled = true;
+
                 List<Viewbox> visited = new List<Viewbox>();
                 foreach (List<Viewbox> elList in this.neuronQueue)
                 {
@@ -772,13 +781,17 @@ namespace PracaMagisterska
                         }
                     }
                 }
-
-                this.drainingTimer.Start();
-
+  
                 // Block dendrite of neurons
                 Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();
             }
+
+            if (!remindStarted)
+                this.drainingTimer.Start();
+
+            this.remindStarted = false;
+            this.color = System.Windows.Media.Brushes.DodgerBlue;
 
         }
 
@@ -859,6 +872,26 @@ namespace PracaMagisterska
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.timer.Stop();
+
+        }
+
+        private void reminderButon_Click(object sender, RoutedEventArgs e)
+        {
+            this.drainingTimer.Stop();
+            this.blockTheEnd = false;
+            this.counter = 0;
+            this.color = System.Windows.Media.Brushes.Maroon;
+            this.timerTextBlock.Text = "00:00";
+            this.TimerStart = DateTime.Now;
+            this.timer.Start();
+            this.remindStarted = true;
+            this.reminderButon.IsEnabled = false;
+            this.startButton.IsEnabled = false;
+
+        }
+
+        private void resultButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }

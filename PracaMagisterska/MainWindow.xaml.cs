@@ -50,6 +50,7 @@ namespace PracaMagisterska
         private int tickThreshold;
         private int timerTimeSpan;
         private double drainingVolume;
+        private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
 
 
         public MainWindow()
@@ -164,7 +165,7 @@ namespace PracaMagisterska
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("Neuron 0");
-                Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow);
+                Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow, color);
                 axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 neuron.volumeToPush = axRes.Item2;
                 if (!axonFull)
@@ -179,7 +180,7 @@ namespace PracaMagisterska
             {
                 if (!dendrite.isBlocked)
                 {
-                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow);
+                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flow, color);
                     if (dendriteRes.Item1)
                         toPush += dendriteRes.Item2;
                 }
@@ -187,10 +188,10 @@ namespace PracaMagisterska
             if (toPush > 0)
             {
                 Console.WriteLine("Axon is full : " + axonFull);
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull);
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
                 if (somaRes.Item1 && !axonFull)
                 {
-                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2);
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
                     axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                     if (!axonFull)
                         Console.WriteLine("AXON ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + axonRes.Item2);
@@ -198,7 +199,7 @@ namespace PracaMagisterska
                 }
                 else if (somaRes.Item1 && axonFull)
                 {
-                    neuron.soma.newFlow(sender, e, somaRes.Item2, axonFull);
+                    neuron.soma.newFlow(sender, e, somaRes.Item2, axonFull, color);
                 }
             }
         }

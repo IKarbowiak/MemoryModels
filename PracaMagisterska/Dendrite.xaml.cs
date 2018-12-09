@@ -59,7 +59,7 @@ namespace PracaMagisterska
         }
 
 
-        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease)
+        public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, System.Windows.Media.SolidColorBrush color)
         {
             double volumeToPush = 0;
             if (this.liquidVolume < this.volume && this.volume >= (this.liquidVolume + volumeIncrease))
@@ -69,7 +69,7 @@ namespace PracaMagisterska
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
                 if (colLevelToFill > 0 && this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    this.fillRect(colLevelToFill);
+                    this.fillRect(colLevelToFill, color);
                 }
                 this.isFull = false;
             }
@@ -81,7 +81,7 @@ namespace PracaMagisterska
                 Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
                 if (this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
-                    this.fillRect(colToFillin1s);
+                    this.fillRect(colToFillin1s, color);
                 }
 
                 this.isFull = true;
@@ -92,7 +92,7 @@ namespace PracaMagisterska
             return result;
         }
 
-        private void fillRect(int numberOfCol)
+        private void fillRect(int numberOfCol, System.Windows.Media.SolidColorBrush color)
         {
             int colLevel = this.columnsCounter + numberOfCol;
 
@@ -105,7 +105,7 @@ namespace PracaMagisterska
             {
                 for (int j = 0; j < recDenArray.Length; j++)
                 {
-                    recDenArray[j][i].Fill = System.Windows.Media.Brushes.DodgerBlue;
+                    recDenArray[j][i].Fill = color;
 
                 }
             }
