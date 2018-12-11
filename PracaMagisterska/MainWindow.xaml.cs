@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Timers;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace PracaMagisterska
 {
@@ -51,6 +52,8 @@ namespace PracaMagisterska
         private int timerTimeSpan;
         private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
+        private bool remindStarted = false;
+        private bool blockTheEnd;
 
 
         public MainWindow()
@@ -116,15 +119,17 @@ namespace PracaMagisterska
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
-        {
+        { 
             double newTime;
             int delay;
-
+            this.color = System.Windows.Media.Brushes.DodgerBlue;
             neuron0.outFlowVolume = 0;
             neuron1.outFlowVolume = 0;
             neuron2.outFlowVolume = 0;
-            
+           
+            reminderButton.IsEnabled = false;
             counter = 0;
+            this.loadParams();
 
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
@@ -168,10 +173,13 @@ namespace PracaMagisterska
                 Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow, color);
                 axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 neuron.volumeToPush = axRes.Item2;
-                if (!axonFull)
+                if (!axonFull && !remindStarted)
+                {
                     Console.WriteLine("Out flow Volume" + neuron.outFlowVolume);
-                    neuron.outFlowVolume +=  axRes.Item2;
+                    neuron.outFlowVolume += axRes.Item2;
                     Console.WriteLine("AXON $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + axRes.Item2);
+                }
+
                 return;
             }
 
@@ -193,14 +201,17 @@ namespace PracaMagisterska
                 {
                     Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
                     axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
-                    if (!axonFull)
+                    if (!axonFull && !remindStarted)
+                    {
                         Console.WriteLine("AXON ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + axonRes.Item2);
                         neuron.outFlowVolume += axonRes.Item2;
+                    }
                 }
                 else if (somaRes.Item1 && axonFull)
                 {
                     neuron.soma.newFlow(sender, e, somaRes.Item2, axonFull, color);
                 }
+                
             }
         }
 
@@ -216,9 +227,9 @@ namespace PracaMagisterska
         private void showResults(object sender, EventArgs e)
         {
             timer.Stop();
-            neuron0.unload();
-            neuron1.unload();
-            neuron2.unload();
+            neuron0.unload(this.remindStarted);
+            neuron1.unload(this.remindStarted);
+            neuron2.unload(this.remindStarted);
 
             M1VolumeBlock.Text = neuron0.outFlowVolume.ToString("0.00");
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString("0.00");
@@ -235,7 +246,10 @@ namespace PracaMagisterska
 
             startButton.IsEnabled = true;
             this.newFlow = true;
-            drainingTimer.Start();
+            if (!remindStarted)
+                drainingTimer.Start();
+
+            this.remindStarted = false;
 
             Console.WriteLine(counter);
 
@@ -258,12 +272,13 @@ namespace PracaMagisterska
             neuron2.reset();
 
             this.newFlow = true;
-
+            this.remindStarted = false;
+            this.reminderButton.IsEnabled = true;
         }
 
         
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void DragAndDropButton_Click(object sender, RoutedEventArgs e)
         {
             DragAndDropPanel myWindow = new DragAndDropPanel();
 
@@ -277,6 +292,8 @@ namespace PracaMagisterska
             timer.Stop();
             startButton.IsEnabled = true;
             this.newFlow = false;
+            this.remindStarted = false;
+            this.reminderButton.IsEnabled = true;
         }
 
         private void setParamButton_Click(object sender, RoutedEventArgs e)
@@ -301,6 +318,84 @@ namespace PracaMagisterska
             this.flow = flow / divider;
             this.drainingVolume = drainingSpeed / divider;
             Console.WriteLine("In main Window" + path);
+        }
+
+        private void loadParams()
+        {
+            List<double> neuron_params = new List<double>();
+            Console.WriteLine("In load");
+            XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
+            foreach (XElement element in xmlTree.Elements())
+            {
+                string element_name = element.Name.ToString();
+                if (element_name == "General")
+                {
+                    List<XElement> values_list = element.Elements().ToList();
+                    this.flow = double.Parse(values_list[0].Value.ToString());
+                    this.time = double.Parse(values_list[1].Value.ToString());
+                    this.drainingVolume = double.Parse(values_list[2].Value.ToString());
+                    this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
+                }
+                else if (element_name == "Model1")
+                {
+                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron0, neuron_params);
+                }
+                else if (element_name == "Model2")
+                {
+                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron1, neuron_params);
+                }
+                else if (element_name == "Model3")
+                {
+                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron2, neuron_params);
+                }
+            }
+
+            Console.WriteLine("Main Window" + this.blockTheEnd);
+            if (blockTheEnd)
+            {
+                neuron0.axon.blockTheEnd = true;
+                neuron1.axon.blockTheEnd = true;
+                neuron2.axon.blockTheEnd = true;
+            }
+        }
+
+        private void setNeuronParams(Neuron neuron, List<double> params_list)
+        {
+            List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
+            int params_length = params_list.Count();
+            if (neuron.dendrites_list.Count() == 0)
+            {
+                Console.WriteLine("set params in neuron 0 ");
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false);
+            }
+            else if (neuron.dendrites_list.Count() > 0)
+            {
+                Console.WriteLine("set params in neuron 1 or 2 ");
+                for (int i = 0; i < params_length - 4; i += 2)
+                {
+                    Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
+                    denList.Add(denTuple);
+                }
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
+            }
+
+        }
+
+        private void reminderButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.drainingTimer.Stop();
+            this.blockTheEnd = false;
+            this.counter = 0;
+            this.color = System.Windows.Media.Brushes.Maroon;
+            this.timerTextBlock.Text = "00:00";
+            this.TimerStart = DateTime.Now;
+            this.timer.Start();
+            this.remindStarted = true;
+            this.reminderButton.IsEnabled = false;
+            this.startButton.IsEnabled = false;
         }
 
     }

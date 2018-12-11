@@ -25,6 +25,19 @@
         <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,60,0,0" Click="resetButton_Click"/>
         <TextBlock Grid.Column="2" Grid.Row="0" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center" FontSize="14" Height="18" >
                 <Run Text="Results"/></TextBlock>
+        <StackPanel Grid.Row="1" Grid.RowSpan="3" Grid.Column="0">
+            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
+            <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" BorderBrush="Gray" BorderThickness="1" >
+                <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
+            </Border>
+            <TextBlock Margin="0,30,0,0" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
+
+            <Button x:Name="setParamButton" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
+            <Button Width="120" Height="20" Margin="0,60,0,10" VerticalAlignment="Bottom" Click="DragAndDropButton_Click" Content="Drag and drop panel"/>
+            <Button x:Name="reminderButton" Grid.Row="2" Grid.Column="0"  Width="120" Height="20" VerticalAlignment="Center" Click="reminderButton_Click" Margin="0,10,0,10"  Content="Reminder"/>
+            <Button Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,10,0,10" Content="Results"/>
+        </StackPanel>
+        
         <Grid x:Name="gridModel1Main" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"/>
@@ -77,7 +90,7 @@
 
         </Grid>
 
-        <Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="3">
+        <!--<Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -87,14 +100,16 @@
                 <RowDefinition Height="3*"/>
 
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,20" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
-            <Button x:Name="setParamButton" Grid.Column="0" Grid.Row="1" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
-            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,40" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
             <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0" BorderBrush="Gray" BorderThickness="1" >
                 <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
             </Border>
-            <Button Grid.Row="3" Grid.Column="2" Width="120" Height="20" Click="Button_Click" Content="Drag and drop panel"/>
-        </Grid>
+            <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,10,0,20" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
+            <Button x:Name="setParamButton" Grid.Column="0" Grid.Row="1" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
+            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,40" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
+            <Button Grid.Row="1" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Bottom" Click="DragAndDropButton_Click" Content="Drag and drop panel"/>
+            <Button Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,0,0,35"  Content="Reminder"/>
+            <Button Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,35,0,0" Content="Results"/>
+        </Grid>-->
         <Grid Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

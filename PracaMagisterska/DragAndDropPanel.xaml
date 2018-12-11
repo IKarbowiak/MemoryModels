@@ -43,8 +43,8 @@
         </Border>
         <Border Grid.Row="4" Grid.Column="0" Margin="10,0,0,10" BorderBrush="Gray" BorderThickness="1" VerticalAlignment="Stretch">
             <StackPanel Background="Honeydew">
-                <Button x:Name="reminderButon" Width="90" Height="20" Margin="0,5,0,0" IsEnabled="False" Click="reminderButon_Click">Reminder</Button>
-                <Button x:Name="resultButton" Width="90" Height="20" Margin="0,5,0,5" IsEnabled="False" Click="resultButton_Click">Results</Button>
+                <Button x:Name="reminderButton" Width="90" Height="20" Margin="0,5,0,0" IsEnabled="False" Click="reminderButon_Click">Reminder</Button>
+                <Button x:Name="resultButton" Width="90" Height="20" Margin="0,5,0,5" IsEnabled="True" Click="resultButton_Click">Results</Button>
             </StackPanel>
         </Border>
         <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Margin="0,40,10,10" BorderBrush="Gray" BorderThickness="1">

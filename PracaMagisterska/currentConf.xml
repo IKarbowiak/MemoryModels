@@ -4,7 +4,7 @@
     <flowBox>25</flowBox>
     <timeBox>10</timeBox>
     <drainingBox>10</drainingBox>
-    <blockFlow>False</blockFlow>
+    <blockFlow>True</blockFlow>
   </General>
   <Model1>
     <neuLenBoxM1>40</neuLenBoxM1>

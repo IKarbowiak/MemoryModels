@@ -150,41 +150,6 @@ namespace PracaMagisterska
             }
         }
 
-        private void setParamsValueToNeurons()
-        {
-            if (this.parentWindow.GetType() == typeof(MainWindow))
-            {
-                Tuple< double, double> denTuple;
-                List<Tuple<double, double>> denList;
-                bool blocked = false;
-                string selectedItem = blockFlow.Text;
-                Console.WriteLine("Block flow set params"  + blockFlow.Text);
-                if (selectedItem == "True")
-                {
-                    Console.WriteLine("Block");
-                    blocked = true;
-                }
-                MainWindow mainWindow = (MainWindow)this.parentWindow;
-                if (validateField(neuDiamBoxM1) && validateField(neuLenBoxM1))
-                    mainWindow.neuron0.SetParameters(new List<Tuple<double, double>>(), 0, double.Parse(neuDiamBoxM1.Text), double.Parse(neuLenBoxM1.Text), blocked);
-
-                if (validateField(denDiamBoxM2) && validateField(denLenBoxM2) && validateField(somaDiamBoxM2) && validateField(axonDiamM2) && validateField(axonLenM2))
-                {
-                    denTuple = new Tuple<double, double>(double.Parse(denDiamBoxM2.Text), double.Parse(denLenBoxM2.Text));
-                    denList = new List<Tuple<double, double>> { denTuple };
-                    mainWindow.neuron1.SetParameters(denList, double.Parse(somaDiamBoxM2.Text), double.Parse(axonDiamM2.Text), double.Parse(axonLenM2.Text), blocked);
-                }
-
-                if (validateField(den1DiamBoxM3) && validateField(den1LenBoxM3) && validateField(den2DiamBoxM3) && validateField(den2LenBoxM3) && validateField(somaDiamBoxM3)
-                    && validateField(axonDiamM3) && validateField(axonLenM3))
-                {
-                    denList = new List<Tuple<double, double>> { new Tuple<double, double>(double.Parse(den1DiamBoxM3.Text), double.Parse(den1LenBoxM3.Text)),
-                        new Tuple<double, double>(double.Parse(den2DiamBoxM3.Text), double.Parse(den2LenBoxM3.Text)) };
-                    mainWindow.neuron2.SetParameters(denList, double.Parse(somaDiamBoxM3.Text), double.Parse(axonDiamM3.Text), double.Parse(axonLenM3.Text), blocked);
-                }
-            }
-        }
-
         private bool validateField(TextBox textbox)
         {
             double i = 0;
@@ -250,7 +215,6 @@ namespace PracaMagisterska
         {
             string path = this.projectPath + "\\currentConf.xml";
             saveXML(path);
-            setParamsValueToNeurons();
             if (validateField(timeBox) && validateField(flowBox))
                 changeCurrentConfInParentWindow(path);
             Console.WriteLine("Current path: " + path);

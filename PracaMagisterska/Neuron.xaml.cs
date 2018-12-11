@@ -113,13 +113,13 @@ namespace PracaMagisterska
         }
 
 
-        public void unload()
+        public void unload(bool reminder)
         {
             this.axon.unloadFunc();
             if (this.soma != null)
             {
                 Console.WriteLine("Soma unload");
-                this.soma.new_unloadFunc(true);
+                this.soma.unloadFunc(true);
 
             }
             foreach (Dendrite den in this.dendrites_list)
@@ -130,8 +130,11 @@ namespace PracaMagisterska
             Console.WriteLine(this.outFlowVolume);
             Console.WriteLine(this.totalOutFlowVolume);
             Thread.Sleep(100);
-            double value = this.totalOutFlowVolume + this.outFlowVolume;
-            this.totalOutFlowVolume = value;
+            if (!reminder)
+            {
+                double value = this.totalOutFlowVolume + this.outFlowVolume;
+                this.totalOutFlowVolume = value;
+            }
             Console.WriteLine("After" + this.totalOutFlowVolume);
         }
 

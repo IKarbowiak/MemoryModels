@@ -143,7 +143,7 @@ namespace PracaMagisterska
             bool empty = false;
             this.liquidVolume -= volumeToEmpty;
             double rowToEmpty = ((double)somaRec.Height * this.liquidVolume / this.volume);
-            new_unloadFunc(false, rowToEmpty);
+            unloadFunc(false, rowToEmpty);
             if (this.liquidVolume <= 0)
             {
                 this.resetParams();
@@ -153,28 +153,10 @@ namespace PracaMagisterska
 
         }
 
-        public void unloadFunc()
+
+        public void unloadFunc(bool unload, double toEmpty = 0)
         {
-
-            //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
-            for (int j = this.rowCounter; j < this.rowToReachTeshold; j++)
-            {
-                for (int i = 0; i < recSomaArray[0].Length; i++)
-                {
-                    recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-
-                }
-            }
-
-            if (this.liquidVolume > this.threshold)
-            {
-                this.liquidVolume = this.threshold;
-                this.rowCounter = this.rowToReachTeshold;
-            }
-        }
-
-        public void new_unloadFunc(bool unload, double toEmpty = 0)
-        {
+            isFull = false;
             toEmpty = toEmpty < 0 ? 0 : toEmpty;
             int toReach = unload == true ? this.rowToReachTeshold : (int)(somaRec.Height - toEmpty);
 
@@ -184,7 +166,6 @@ namespace PracaMagisterska
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
                     recSomaArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-
                 }
             }
 

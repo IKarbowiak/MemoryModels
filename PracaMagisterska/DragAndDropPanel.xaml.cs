@@ -50,7 +50,6 @@ namespace PracaMagisterska
         //private List<object> elementsToCheck = new List<object>();
 
 
-
         public DragAndDropPanel()
         {
             InitializeComponent();
@@ -165,6 +164,169 @@ namespace PracaMagisterska
 
         }
 
+        private List<int> neuronQueueContainsCheck(object element)
+        {
+            List<int> res_List = new List<int>();
+
+            if (this.neuronQueue.Count > 0)
+            {
+                for (int i = 0; i < this.neuronQueue.Count(); i++)
+                {
+                    for (int j = 0; j < this.neuronQueue[i].Count(); j++)
+                    {
+                        if (this.neuronQueue[i][j] == element)
+                        {
+                            res_List.Add(i);
+                            res_List.Add(j);
+                            Console.WriteLine("Contains " + i + " " + j);
+                        }
+                    }
+                }
+            }
+            return res_List;
+        }
+
+        private void addToLeft(List<int> checkEl, Viewbox viewbox)
+        {
+            if (checkEl[1] > 0)
+            {
+                List<Viewbox> elements = this.neuronQueue[checkEl[0]].GetRange(checkEl[1], this.neuronQueue[checkEl[0]].Count - 1);
+                elements.Insert(0, viewbox);
+                this.neuronQueue.Add(elements);
+                return;
+            }
+            this.neuronQueue[checkEl[0]].Insert(checkEl[1], viewbox);
+        }
+
+        private void addToRight(List<int> checkEl, Viewbox viewbox)
+        {
+            if (checkEl.Count() > 2)
+            {
+                for (int j = 0; j < checkEl.Count(); j += 2)
+                {
+                    this.neuronQueue[checkEl[j]].Insert(checkEl[j + 1] + 1, viewbox);
+                }
+                return;
+            }
+            this.neuronQueue[0].Insert(checkEl[1] + 1, viewbox);
+        }
+
+        private bool linkLeftOrRight(MouseButtonEventArgs e, Viewbox viewbox, String site, KeyValuePair<Viewbox, Double[]> element)
+        {
+            var pos = e.GetPosition(this.dropCanvas);
+            bool outOfBorder = checkIfQuitBorder(pos.X, pos.Y, viewbox);
+            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+            // Check if something is on this place if is, come back to previous position
+            if (!outOfBorder && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
+            {
+                this.backToPreviousPosition(viewbox);
+                // true becaouse neuron doe not change position
+                return true;
+            }
+            else if (!outOfBorder)
+            {
+                List<int> checkEl = neuronQueueContainsCheck(element.Key);
+                if (this.neuronQueue.Count() == 0)
+                {
+                    List<Viewbox> elements = new List<Viewbox>();
+                    if (site == "left")
+                    {
+                        Viewbox elBox = (Viewbox)element.Key;
+                        elements.Add(viewbox);
+                        elements.Add(elBox);
+                        this.neuronQueue.Add(elements);
+                    }
+                    else
+                    {
+                        elements.Add(element.Key);
+                        elements.Add(viewbox);
+                        this.neuronQueue.Add(elements);
+                    }
+                }
+                else if (checkEl.Count() > 0)
+                {
+                    if (site == "left")
+                        this.addToLeft(checkEl, viewbox);
+                    else
+                        this.addToRight(checkEl, viewbox);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        //TODO: function to finish!!!!
+        private void checkIfNeuronLeaveQueue(Viewbox viewbox)
+        {
+            List<int> checkList = neuronQueueContainsCheck(viewbox);
+            if (checkList.Count == 0)
+                return;
+
+            int list_num = checkList[0];
+            int elInList = checkList[1];
+            Console.WriteLine("Delete from List");
+            if (checkList.Count > 2)
+            {
+                // czo!?
+            }
+            else if (elInList > this.neuronQueue[list_num].Count / 2)
+            {
+                for (int x = elInList; x < this.neuronQueue[list_num].Count(); x++)
+                {
+                    this.neuronQueue[list_num].RemoveAt(x);
+                }
+            }
+            else
+            {
+                for (int x = elInList; x > -1; x--)
+                {
+                    this.neuronQueue[list_num].RemoveAt(x);
+                }
+            }
+        }
+
+        private void setConnectionToDen(Viewbox viewbox, string direction, Viewbox element, string side)
+        {
+            string newDirection = " ";
+            if (side == "left")
+            {
+                viewbox.Name = direction;
+            }
+            else if (side == "right")
+            {
+                newDirection = direction == "up" ? "down" : "up";
+                // przydałaby się tutaj obsługa błędów
+                element.Name = newDirection;
+            }
+        }
+
+        private void set_TopAndBottom_Property(Viewbox viewbox, KeyValuePair<Viewbox, Double[]> element, bool condition, string side, double offset)
+        {
+            if (condition)
+            {
+                if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
+                {
+                    Console.WriteLine("Down");
+                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
+                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
+                    setConnectionToDen(viewbox, "down", element.Key, side);
+                }
+                else
+                {
+                    Console.WriteLine("Up");
+                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
+                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
+                    setConnectionToDen(viewbox, "up", element.Key, side);
+                }
+            }
+            else
+            {
+                viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
+                viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
+            }
+
+        }
+
         private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
@@ -179,188 +341,36 @@ namespace PracaMagisterska
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
-            void set_TopAndBottom_Property(KeyValuePair<Viewbox, Double[]> element, bool condition, string side)
-            {
-                if (condition)
-                {
-                    if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
-                    {
-                        Console.WriteLine("Down");
-                        viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
-                        viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
-                        setConnectionToDen("down", element.Key, side);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Up");
-                        viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
-                        viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
-                        setConnectionToDen("up", element.Key, side);
-                    }
-                }
-                else
-                {
-                    viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
-                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
-                }
-
-            }
-
-            void setConnectionToDen(string direction, Viewbox element, string side)
-            {
-                string newDirection = " ";
-                if (side == "left")
-                {
-                    viewbox.Name = direction;
-                }
-                else if (side == "right")
-                {
-                    newDirection = direction == "up" ? "down" : "up";
-                    // przydałaby się tutaj obsługa błędów
-                    element.Name = newDirection;
-                }
-            }
-
-            List<int> neuronQueueContainsCheck(object element)
-            {
-                List<int> res_List = new List<int>();
-
-                if (this.neuronQueue.Count > 0)
-                {
-                    for (int i = 0; i < this.neuronQueue.Count(); i++)
-                    {
-                        for (int j = 0; j < this.neuronQueue[i].Count(); j++)
-                        {
-                            if (this.neuronQueue[i][j] == element)
-                            {
-                                res_List.Add(i);
-                                res_List.Add(j);
-                                Console.WriteLine("Contains " + i + " " + j);
-                            }
-                        }
-                    }
-                }
-                return res_List;
-            }
-
             bool linkNeuron()
             {
                 foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
                 {
-                    Console.WriteLine(element.Key == viewbox);
-                    Console.WriteLine((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox))));
-                    Console.WriteLine((Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox))));
 
                     if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
                         (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
                     {
-
+                        bool results = false;
+                        Viewbox elBox = (Viewbox)element.Key;
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
-                            Viewbox elBox = (Viewbox)element.Key;
-                            set_TopAndBottom_Property(element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left");
+                            set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
 
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
 
-                            var pos = e.GetPosition(this.dropCanvas);
-                            bool quit = checkIfQuitBorder(pos.X, pos.Y, viewbox);
-
-                            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-
-                            if (!quit && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
-                            {
-                                Console.WriteLine("HOP HOP!");
-                                viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.RightProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
-                            }
-                            else if (!quit) // outOfBorder
-                            {
-                                List<int> checkEl = neuronQueueContainsCheck(element.Key);
-                                if (this.neuronQueue.Count() == 0)
-                                {
-                                    List<Viewbox> elements = new List<Viewbox>();
-                                    elements.Add(viewbox);
-                                    elements.Add(elBox);
-                                    this.neuronQueue.Add(elements);
-                                }
-                                else if (checkEl.Count() > 0)
-                                {
-                                    if (checkEl[1] > 0)
-                                    {
-                                        List<Viewbox> elements = this.neuronQueue[checkEl[0]].GetRange(checkEl[1], this.neuronQueue[checkEl[0]].Count - 1);
-                                        elements.Insert(0, viewbox);
-                                        this.neuronQueue.Add(elements);
-                                    }
-                                    else
-                                    {
-                                        this.neuronQueue[checkEl[0]].Insert(checkEl[1], viewbox);
-                                    }
-
-                                }
-
-                                return true;
-                            }
-
+                            results = this.linkLeftOrRight(e, viewbox, "left", element);
                         }
                         else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
                         {
-                            set_TopAndBottom_Property(element, (neuron.dendrites_list.Count() > 1), "right");
-                            List<int> checkEl = neuronQueueContainsCheck(element.Key);
+                            set_TopAndBottom_Property(viewbox, element, (neuron.dendrites_list.Count() > 1), "right", offset);
 
                             viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
                             viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
 
-                            var pos = e.GetPosition(this.dropCanvas);
-                            bool quit = checkIfQuitBorder(pos.X, pos.Y, viewbox);
-                            Console.WriteLine("Quit " + quit);
-
-                            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-
-                            if (!quit && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
-                            {
-                                Console.WriteLine("HOP HOP!");
-                                viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.RightProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.TopProperty, this.startPosition[0]);
-                                viewbox.SetValue(Canvas.BottomProperty, this.startPosition[0]);
-                            }
-                            else if (!quit)
-                            {
-                                Console.WriteLine("Not quit so LINK");
-                                if (this.neuronQueue.Count() == 0)
-                                {
-                                    List<Viewbox> elements = new List<Viewbox>();
-                                    elements.Add(element.Key);
-                                    elements.Add(viewbox);
-                                    this.neuronQueue.Add(elements);
-                                }
-                                else if (checkEl.Count() > 2)
-                                {
-
-                                    for (int j = 0; j < checkEl.Count(); j += 2)
-                                    {
-                                        this.neuronQueue[checkEl[j]].Insert(checkEl[j + 1] + 1, viewbox);
-                                    }
-
-                                }
-                                else if (checkEl.Count() > 0)
-                                {
-                                    this.neuronQueue[0].Insert(checkEl[1] + 1, viewbox);
-                                }
-
-
-                                return true;
-
-                            }
-
-
+                            results = this.linkLeftOrRight(e, viewbox, "right", element);
                         }
-
+                        return results;
                     }
-
                 }
                 return false;
             };
@@ -368,36 +378,17 @@ namespace PracaMagisterska
             bool linked = linkNeuron();
             List<int> checkList = neuronQueueContainsCheck(viewbox);
 
-            if (!linked && checkList.Count > 0)
+            if (!linked)
             {
-                int list_num = checkList[0];
-                int elInList = checkList[1];
-                Console.WriteLine("Delete from List");
-                if (checkList.Count > 2)
-                {
-                    // czo!?
-                }
-                else if (elInList > this.neuronQueue[list_num].Count / 2)
-                {
-                    for (int x = elInList; x < this.neuronQueue[list_num].Count(); x++)
-                    {
-                        this.neuronQueue[list_num].RemoveAt(x);
-                    }
-                }
-                else
-                {
-                    for (int x = elInList; x > -1; x--)
-                    {
-                        this.neuronQueue[list_num].RemoveAt(x);
-                    }
-                }
-
+                //TODO: function to finish
+                this.checkIfNeuronLeaveQueue(viewbox);
             }
+
+            double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+            canvasElements[(Viewbox)sender] = parameters;
 
 
             Console.WriteLine("List count " + this.neuronQueue.Count());
-            double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-            canvasElements[(Viewbox)sender] = parameters;
             Console.WriteLine(canvasElements[(Viewbox)sender][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
 
@@ -409,6 +400,16 @@ namespace PracaMagisterska
                 Console.WriteLine(el.Count());
                 counter++;
             }
+        }
+
+
+
+        private void backToPreviousPosition(Viewbox viewbox)
+        {
+            viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
+            viewbox.SetValue(Canvas.RightProperty, this.startPosition[1]);
+            viewbox.SetValue(Canvas.TopProperty, this.startPosition[2]);
+            viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
         }
 
         private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
@@ -439,8 +440,7 @@ namespace PracaMagisterska
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            reminderButon.IsEnabled = false;
-            resultButton.IsEnabled = false;
+            reminderButton.IsEnabled = false;
             if (this.pauseFlow)
             {
                 TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
@@ -762,8 +762,7 @@ namespace PracaMagisterska
             if (fromTimer)
             {
                 // Unload all neurons
-                reminderButon.IsEnabled = true;
-                resultButton.IsEnabled = true;
+                reminderButton.IsEnabled = true;
 
                 List<Viewbox> visited = new List<Viewbox>();
                 foreach (List<Viewbox> elList in this.neuronQueue)
@@ -773,7 +772,7 @@ namespace PracaMagisterska
                         if (!visited.Contains(elList[i]))
                         {
                             Neuron neuron = (Neuron)elList[i].Child;
-                            neuron.unload();
+                            neuron.unload(remindStarted);
                             neuron.isFull = false;
                             neuron.volumeToPush = 0;
                             Thread.Sleep(100);
@@ -817,6 +816,7 @@ namespace PracaMagisterska
             this.canvasElements.Clear();
             timerTextBlock.Text = "00:00";
             this.drainingTimer.Stop();
+            this.remindStarted = false;
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
@@ -867,6 +867,7 @@ namespace PracaMagisterska
             this.blockNeuronsDendrites();
             this.pauseFlow = false;
             this.drainingTimer.Stop();
+            this.remindStarted = false;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -875,24 +876,35 @@ namespace PracaMagisterska
 
         }
 
+        private void unblockEnds()
+        {
+            foreach (Viewbox viewbox in this.canvasElements.Keys)
+            {
+                ((Neuron)viewbox.Child).axon.blockTheEnd = false;
+                Console.WriteLine("set axon to block");
+            }
+        }
+
         private void reminderButon_Click(object sender, RoutedEventArgs e)
         {
             this.drainingTimer.Stop();
             this.blockTheEnd = false;
+            this.unblockEnds();
             this.counter = 0;
             this.color = System.Windows.Media.Brushes.Maroon;
             this.timerTextBlock.Text = "00:00";
             this.TimerStart = DateTime.Now;
             this.timer.Start();
             this.remindStarted = true;
-            this.reminderButon.IsEnabled = false;
+            this.reminderButton.IsEnabled = false;
             this.startButton.IsEnabled = false;
-
+            this.blockViewboxMoving();
         }
 
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
-
+            Results resultsWindow = new Results();
+            resultsWindow.ShowDialog();
         }
     }
 }
