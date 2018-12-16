@@ -27,7 +27,7 @@ namespace PracaMagisterska
         public double surface;
         public double flowedOutVolume { get; set; }
         public bool blockTheEnd { get; set; }
-        private double volume;
+        public double volume { get; set; }
         private double liquidVolume;
         private Rectangle[][] recAxonArray;
         private int columnsCounter = 0;

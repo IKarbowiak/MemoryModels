@@ -25,7 +25,7 @@ namespace PracaMagisterska
         public double diameter { get; set; }
         private double surface;
         private bool dimension3D;
-        private double volume;
+        public double volume { get; set; }
         private double liquidVolume = 0;
         private Rectangle[][] recDenArray;
         private int columnsCounter = 0;

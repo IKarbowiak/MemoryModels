@@ -36,6 +36,7 @@ namespace PracaMagisterska
         public bool isFlow { get; set; }
         public string model { get; set;  }
         public bool isFull { get; set; }
+        public double minVolumeToOutflow { get; set; }
 
         public Neuron(int dendrideNum)
         {
@@ -104,11 +105,28 @@ namespace PracaMagisterska
                 this.outFlowVolume = 0;
                 this.totalOutFlowVolume = 0;
                 this.isFlow = false;
+                this.calculateVolumeToOutFlow();
             }
             else
             {
                 Console.WriteLine("You must specify number of dendrites - 0 i sminimum");
             }
+
+        }
+
+        private void calculateVolumeToOutFlow()
+        {
+            this.minVolumeToOutflow = 0;
+            this.minVolumeToOutflow += axon.volume;
+            if (this.soma != null)
+            {
+                this.minVolumeToOutflow += this.soma.threshold;
+            }
+            if (this.dendrites_list.Count() > 0)
+            {
+                this.minVolumeToOutflow += this.dendrites_list[0].volume;
+            }
+            Console.WriteLine("%%%%%%%%%%%%%%%%%%%Total volume " + this.minVolumeToOutflow);
 
         }
 
@@ -187,6 +205,7 @@ namespace PracaMagisterska
             this.axon.blockTheEnd = blockAxon;
             axon.calculateParameters();
 
+            this.calculateVolumeToOutFlow();
             
         }
 

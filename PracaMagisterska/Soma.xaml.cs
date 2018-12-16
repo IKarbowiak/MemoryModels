@@ -26,7 +26,7 @@ namespace PracaMagisterska
         private bool dimension3D;
         private double surface;
         private double volume;
-        private double threshold;
+        public double threshold { get; set; }
         private int rowToReachTeshold;
         private double liquidVolume = 0;
         private Rectangle[][] recSomaArray;

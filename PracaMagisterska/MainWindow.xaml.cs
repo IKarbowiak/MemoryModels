@@ -54,7 +54,9 @@ namespace PracaMagisterska
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
         private bool blockTheEnd;
-
+        private List<double> timeThresholdForMemoryStorage = new List<double>();
+        private Dictionary<Neuron, double> timeBegginingOfOutflowInReminder = new Dictionary<Neuron, double>();
+        private Dictionary<Neuron, double> startOutFlowTime = new Dictionary<Neuron, double>();
 
         public MainWindow()
         {
@@ -85,7 +87,6 @@ namespace PracaMagisterska
 
         private void adjustTimer()
         {
-
             drainingTimer = new System.Windows.Threading.DispatcherTimer();
             drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             drainingTimer.Tick += (sender2, e1) =>
@@ -102,6 +103,7 @@ namespace PracaMagisterska
 
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+            int moreTicks = 0;
 
             timer.Tick += (sender2, e2) =>
             {
@@ -110,9 +112,16 @@ namespace PracaMagisterska
                 this.neuronFlow(sender2, e2, this.neuron1, this.flow);
                 this.neuronFlow(sender2, e2, this.neuron2, this.flow);
                 counter += 1;
-                if (counter >= this.tickThreshold)
+                if (counter >= this.tickThreshold && !remindStarted)
                 {
                     this.showResults(sender2, e2);
+                }
+                if (remindStarted && this.timeBegginingOfOutflowInReminder.Count() == 2)
+                {
+                    if (moreTicks >= 5)
+                        this.showResults(sender2, e2);
+                    else
+                        moreTicks += 1;
                 }
 
             };
@@ -126,11 +135,11 @@ namespace PracaMagisterska
             neuron0.outFlowVolume = 0;
             neuron1.outFlowVolume = 0;
             neuron2.outFlowVolume = 0;
-           
+
             reminderButton.IsEnabled = false;
             counter = 0;
             this.loadParams();
-
+            this.calculateTimeOfOutFlow();
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
                 Console.WriteLine("In bad place");
@@ -205,6 +214,17 @@ namespace PracaMagisterska
                     {
                         Console.WriteLine("AXON ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + axonRes.Item2);
                         neuron.outFlowVolume += axonRes.Item2;
+                        if (axonRes.Item2 > 0 && !this.startOutFlowTime.ContainsKey(neuron))
+                        {
+                            this.startOutFlowTime[neuron] = ((double)counter * (double)this.timerTimeSpan) / 1000;
+                        }
+                    }
+                    else if (remindStarted)
+                    {
+                        if (axonRes.Item2 > 0 && !this.timeBegginingOfOutflowInReminder.ContainsKey(neuron))
+                        {
+                            this.timeBegginingOfOutflowInReminder[neuron] = ((double)counter * (double)this.timerTimeSpan) / 1000;
+                        }
                     }
                 }
                 else if (somaRes.Item1 && axonFull)
@@ -398,6 +418,36 @@ namespace PracaMagisterska
             this.startButton.IsEnabled = false;
         }
 
+        private void calculateTimeOfOutFlow()
+        {
+            foreach (Neuron neuron in new List<Neuron> {neuron1, neuron2 })
+            {
+                double time = Math.Floor((neuron.minVolumeToOutflow / this.flow) * this.timerTimeSpan / 1000);
+                this.timeThresholdForMemoryStorage.Add(time);
+            }
+        }
+
+        private void resultsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Results resultsWindow = new Results();
+            resultsWindow.outFlowTimeTextBlockM1.Text = this.startOutFlowTime.ContainsKey(neuron1) ? this.startOutFlowTime[neuron1].ToString() : "0";
+            resultsWindow.outFlowTimeTextBlockM2.Text = this.startOutFlowTime.ContainsKey(neuron2) ? this.startOutFlowTime[neuron2].ToString() : "0";
+            resultsWindow.outFlowVolumeTextBlockM1.Text = this.neuron1.outFlowVolume.ToString("0.00");
+            resultsWindow.outFlowVolumeTextBlockM2.Text = this.neuron2.outFlowVolume.ToString("0.00");
+            resultsWindow.reminderOutFlowTimeTextBlockM1.Text = this.startOutFlowTime.ContainsKey(neuron1) ? this.timeBegginingOfOutflowInReminder[neuron1].ToString() : "0";
+            resultsWindow.reminderOutFlowTimeTextBlockM2.Text = this.startOutFlowTime.ContainsKey(neuron2) ? this.timeBegginingOfOutflowInReminder[neuron2].ToString() : "0";
+            if (this.timeBegginingOfOutflowInReminder.Count() == 2 && this.timeThresholdForMemoryStorage.Count() == 2)
+            {
+                resultsWindow.somethingRememberesTextBlockM1.Text = this.timeBegginingOfOutflowInReminder[neuron1] < this.timeThresholdForMemoryStorage[0] ? "True" : "False";
+                resultsWindow.somethingRememberesTextBlockM2.Text = this.timeBegginingOfOutflowInReminder[neuron2] < this.timeThresholdForMemoryStorage[1] ? "True" : "False";
+            }
+            else
+            {
+                resultsWindow.somethingRememberesTextBlockM1.Text = "False";
+                resultsWindow.somethingRememberesTextBlockM2.Text = "False";
+            }
+            resultsWindow.ShowDialog();
+        }
     }
 
 

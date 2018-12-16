@@ -46,6 +46,11 @@ namespace PracaMagisterska
         private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
+        private double timeThresholdForMemoryStorage;
+        private double timeBegginingOfOutflowInReminder;
+        private double startOutFlowTime = 0;
+        private bool somethingInNeuron = false;
+        private double totalOutFlow = 0;
 
         //private List<object> elementsToCheck = new List<object>();
 
@@ -69,15 +74,24 @@ namespace PracaMagisterska
 
             this.timer = new System.Windows.Threading.DispatcherTimer();
             this.timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
+            int moreTicks = 0;
 
             this.timer.Tick += (sender1, e1) =>
             {
                 this.myTimerTick(sender1, e1);
                 this.flow(sender1, e1, flowVolume);
                 counter += 1;
-                if (counter >= this.tickThreshold)
+                if (counter >= this.tickThreshold && !this.remindStarted)
                 {
                     this.stop(true);
+                }
+
+                if (remindStarted && this.timeBegginingOfOutflowInReminder > 0)
+                {
+                    if (moreTicks >= 5)
+                        this.stop(true);
+                    else
+                        moreTicks += 1;
                 }
 
             };
@@ -440,7 +454,10 @@ namespace PracaMagisterska
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            reminderButton.IsEnabled = false;
+            this.startOutFlowTime = 0;
+            this.timeBegginingOfOutflowInReminder = 0;
+            this.reminderButton.IsEnabled = false;
+            this.somethingInNeuron = false;
             if (this.pauseFlow)
             {
                 TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
@@ -466,6 +483,8 @@ namespace PracaMagisterska
             double divider = ((double)1000 / (double)this.timerTimeSpan);
             this.flowVolume = this.flowVolume / divider;
             this.drainingVolume = this.drainingVolume / divider;
+
+            this.calculateTimeOfOutFlow();
 
             Console.WriteLine("Flow Volume!!! Drag nad Drop!!!!" + this.flowVolume);
             if (canvasElements.Count() > 0)
@@ -537,7 +556,6 @@ namespace PracaMagisterska
             }
 
 
-
         }
 
         private void setNeuronParams(Neuron neuron, List<double> params_list)
@@ -580,7 +598,6 @@ namespace PracaMagisterska
 
         private void flow(object sender, EventArgs e, double flow)
         {
-
             Dictionary<Neuron, double> whatToPush = new Dictionary<Neuron, double>();
             Console.WriteLine("Count whatToPush" + whatToPush.Count());
 
@@ -691,6 +708,7 @@ namespace PracaMagisterska
             {
                 Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow, color);
                 volumeToPushNext = axonRes.Item2;
+                this.setOutFlowParameters(neuron, axonRes.Item2);
                 neuron.volumeToPush = volumeToPushNext;
                 return volumeToPushNext;
             }
@@ -714,6 +732,7 @@ namespace PracaMagisterska
                 {
                     Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
                     volumeToPushNext = axonRes.Item2;
+                    this.setOutFlowParameters(neuron, axonRes.Item2);
                     neuron.volumeToPush = volumeToPushNext;
                 }
                 else if (somaRes.Item1 && axonFull)
@@ -723,6 +742,29 @@ namespace PracaMagisterska
                 }
             }
             return volumeToPushNext;
+        }
+
+        private void setOutFlowParameters(Neuron neuron, double axonOutFlowVolume)
+        {
+            if (axonOutFlowVolume > 0)
+            {
+                //if (this.timeBegginingOfOutflowInReminder == 0 && this.remindStarted && neuron == this.neuronQueue[0][this.neuronQueue.Count()-1].Child)
+                if (this.timeBegginingOfOutflowInReminder == 0 && neuron == this.neuronQueue[0][this.neuronQueue[0].Count() - 1].Child)
+                {
+                    Console.WriteLine("Axon return volume !!!! " + counter);
+                    if (this.remindStarted)
+                        this.timeBegginingOfOutflowInReminder = ((double)counter * (double)this.timerTimeSpan) / 1000;
+                    else 
+                    {
+                        if (this.startOutFlowTime == 0)
+                        {
+                            this.startOutFlowTime = ((double)counter * (double)this.timerTimeSpan) / 1000;
+                            this.timeThresholdForMemoryStorage = this.startOutFlowTime;
+                        }
+                        this.totalOutFlow += axonOutFlowVolume;
+                    }
+                }
+            }
         }
 
         private void create_neuron(object sender, MouseButtonEventArgs e)
@@ -787,7 +829,17 @@ namespace PracaMagisterska
             }
 
             if (!remindStarted)
+            {
                 this.drainingTimer.Start();
+            }
+            else
+            {
+                Console.WriteLine("Counter value!!! " + this.timeBegginingOfOutflowInReminder);
+                if (this.timeBegginingOfOutflowInReminder < this.timeThresholdForMemoryStorage)
+                    this.somethingInNeuron = true;
+                else
+                    this.somethingInNeuron = false;
+            }
 
             this.remindStarted = false;
             this.color = System.Windows.Media.Brushes.DodgerBlue;
@@ -807,6 +859,16 @@ namespace PracaMagisterska
             }
         }
 
+        private void resetParams()
+        {
+            this.timerTextBlock.Text = "00:00";
+            this.pauseFlow = false;
+            this.drainingTimer.Stop();
+            this.remindStarted = false;
+            this.totalOutFlow = 0;
+            this.somethingInNeuron = false;
+        }
+
 
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
@@ -814,9 +876,21 @@ namespace PracaMagisterska
             this.dropCanvas.Children.Clear();
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
-            timerTextBlock.Text = "00:00";
-            this.drainingTimer.Stop();
-            this.remindStarted = false;
+            this.resetParams();
+        }
+
+
+        private void resetFlowButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.stop(false);
+            foreach (Viewbox viewbox in this.canvasElements.Keys)
+            {
+                Neuron neuron = (Neuron)viewbox.Child;
+                neuron.reset();
+                neuron.isFull = false;
+            }
+            this.blockNeuronsDendrites();
+            this.resetParams();
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
@@ -854,21 +928,6 @@ namespace PracaMagisterska
             startButton.IsEnabled = true;
         }
 
-        private void resetFlowButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.stop(false);
-            foreach (Viewbox viewbox in this.canvasElements.Keys)
-            {
-                Neuron neuron = (Neuron)viewbox.Child;
-                neuron.reset();
-                neuron.isFull = false;
-            }
-            timerTextBlock.Text = "00:00";
-            this.blockNeuronsDendrites();
-            this.pauseFlow = false;
-            this.drainingTimer.Stop();
-            this.remindStarted = false;
-        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -887,6 +946,7 @@ namespace PracaMagisterska
 
         private void reminderButon_Click(object sender, RoutedEventArgs e)
         {
+            this.timeBegginingOfOutflowInReminder = 0;
             this.drainingTimer.Stop();
             this.blockTheEnd = false;
             this.unblockEnds();
@@ -901,9 +961,33 @@ namespace PracaMagisterska
             this.blockViewboxMoving();
         }
 
+        private void calculateTimeOfOutFlow()
+        {
+            List<Double> resList = new List<double>();
+            foreach (List<Viewbox> neuronList in this.neuronQueue)
+            {
+                double volume = 0;
+                foreach (Viewbox viewbox in neuronList)
+                {
+                    Neuron neuron = (Neuron)viewbox.Child;
+                    volume += neuron.minVolumeToOutflow;
+                }
+                Console.WriteLine("Single neuron volume" + volume);
+                resList.Add(volume);
+            }
+            double minVolume = resList.Min();
+            this.timeThresholdForMemoryStorage = Math.Floor((minVolume / this.flowVolume) * this.timerTimeSpan / 1000);
+            Console.WriteLine("Min volume " + minVolume + " Time for outflow!!!  " + this.timeThresholdForMemoryStorage);
+
+        }
+
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
-            Results resultsWindow = new Results();
+            ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
+            resultsWindow.somethingRememberedTextBlock.Text = this.somethingInNeuron == true ? "True": "False";
+            resultsWindow.reminderOutFlowTimeTextBlock.Text = this.timeBegginingOfOutflowInReminder.ToString();
+            resultsWindow.outFlowTimeTextBlock.Text = this.startOutFlowTime.ToString();
+            resultsWindow.outFlowVolumeTextBlock.Text = this.totalOutFlow.ToString();
             resultsWindow.ShowDialog();
         }
     }
