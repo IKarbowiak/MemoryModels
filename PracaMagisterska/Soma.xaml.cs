@@ -32,7 +32,6 @@ namespace PracaMagisterska
         private Rectangle[][] recSomaArray;
         private int rowCounter;
         private bool isFull = false;
-        //public bool IsEnabled { get; set; }
 
         public Soma(bool dim3d)
         {
@@ -130,7 +129,6 @@ namespace PracaMagisterska
                 for (int i = 0; i < recSomaArray[0].Length; i++)
                 {
                     recSomaArray[j][i].Fill = color;
-                    //recSomaArray[j][i].Refresh();
                 }
             }
 
@@ -160,7 +158,6 @@ namespace PracaMagisterska
             toEmpty = toEmpty < 0 ? 0 : toEmpty;
             int toReach = unload == true ? this.rowToReachTeshold : (int)(somaRec.Height - toEmpty);
 
-            //for (int j = this.rowToReachTeshold; j < this.rowCounter; j++)
             for (int j = this.rowCounter; j < toReach; j++)
             {
                 for (int i = 0; i < recSomaArray[0].Length; i++)
@@ -230,7 +227,6 @@ namespace PracaMagisterska
                     {
                         Width = 1,
                         Height = 1,
-                        //Stroke = Brushes.Red,
                         StrokeThickness = 1,
 
                         Name = "rec_" + i + "_" + j

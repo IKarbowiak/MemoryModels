@@ -131,8 +131,6 @@ namespace PracaMagisterska
                 for (int j = 0; j < recDenArray.Length; j++)
                 {
                     recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
-                    //recDenArray[j][i].Refresh();
-
                 }
             }
 
@@ -186,9 +184,7 @@ namespace PracaMagisterska
                     {
                         Width = 1,
                         Height = 1,
-                        //Stroke = Brushes.Red,
                         StrokeThickness = 1,
-
                         Name = "rec_" + i + "_" + j
                     };
 

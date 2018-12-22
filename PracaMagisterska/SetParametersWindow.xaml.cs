@@ -38,20 +38,12 @@ namespace PracaMagisterska
             this.callback = action;
             this.parentWindow = window;
 
-            //string[] parameters = { "Neuron Length", "Denrite Diameter", "Axon Diameter", "Flow ", "Flow time", "Max speed" };
-            //string[] parametersM1BoxNames = {"neuronLenBoxM1", "denDiamBoxM1", "axonDiamBox1", "flowBoxM1", "timeBoxM1", "maxSpeedM1" };
-            //for (int i = 0; i < parametersM1BoxNames.Length; i++)
-            //{
-            //    info = new TextBlock() { Height=16};
-            //}
-
         }
 
 
         private void changeCurrentConfInParentWindow(string path)
         {
             this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text), double.Parse(drainingBox.Text));
-            //((MainWindow)Application.Current.MainWindow).currentConf = path;
         }
 
         private void writeParametersToXML(object sender, RoutedEventArgs e)
@@ -128,7 +120,6 @@ namespace PracaMagisterska
         private void load(string filename)
         {
             XElement xmlTree = XElement.Load(filename, LoadOptions.None);
-            //Console.WriteLine(xmlTree);
             foreach (XElement element in xmlTree.Elements())
             {
                 foreach (XElement childElement in element.Elements())

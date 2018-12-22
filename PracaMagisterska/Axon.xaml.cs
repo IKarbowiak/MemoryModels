@@ -68,7 +68,6 @@ namespace PracaMagisterska
 
         public void changeRecSize(int width, int height)
         {
-
             mainGrid.Width = width;
             mainGrid.Height = height;
 
@@ -76,7 +75,6 @@ namespace PracaMagisterska
             axonRec.Width = width;
             axonGrid.Height = height;
             axonGrid.Width = width;
-            //this.recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, System.Windows.Media.SolidColorBrush color)
@@ -95,7 +93,6 @@ namespace PracaMagisterska
                 {
                     this.fillRect(colLevelToFill, color);
                 }
-                //this.fillRect(sender, e, colToFillin1s);
             }
             else
             {
@@ -109,7 +106,6 @@ namespace PracaMagisterska
                     {
                         this.fillRect(colLevelToFill, color);
                     }
-                    //this.fillRect(sender, e, colToFillin1s);
                 }
                 this.isFull = true;
                 Console.WriteLine("Is full exon in powyzej: " + this.isFull);

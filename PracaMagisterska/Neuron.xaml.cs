@@ -37,6 +37,7 @@ namespace PracaMagisterska
         public string model { get; set;  }
         public bool isFull { get; set; }
         public double minVolumeToOutflow { get; set; }
+        public double volumeToOutFlowWhenNeuronFull { get; set; }
 
         public Neuron(int dendrideNum)
         {
@@ -101,9 +102,9 @@ namespace PracaMagisterska
                 neuronGrid.Children.Add(soma);
 
                 this.model = "Model" + dendrideNum;
-                //this.setParameters(this.neuronLength); //
                 this.outFlowVolume = 0;
                 this.totalOutFlowVolume = 0;
+                this.volumeToOutFlowWhenNeuronFull = 0;
                 this.isFlow = false;
                 this.calculateVolumeToOutFlow();
             }
@@ -117,7 +118,9 @@ namespace PracaMagisterska
         private void calculateVolumeToOutFlow()
         {
             this.minVolumeToOutflow = 0;
+            this.volumeToOutFlowWhenNeuronFull = 0;
             this.minVolumeToOutflow += axon.volume;
+            this.volumeToOutFlowWhenNeuronFull += axon.volume;
             if (this.soma != null)
             {
                 this.minVolumeToOutflow += this.soma.threshold;
@@ -125,9 +128,9 @@ namespace PracaMagisterska
             if (this.dendrites_list.Count() > 0)
             {
                 this.minVolumeToOutflow += this.dendrites_list[0].volume;
+                this.volumeToOutFlowWhenNeuronFull += this.dendrites_list[0].volume;
             }
             Console.WriteLine("%%%%%%%%%%%%%%%%%%%Total volume " + this.minVolumeToOutflow);
-
         }
 
 
@@ -163,7 +166,6 @@ namespace PracaMagisterska
                 Console.WriteLine("Change den params");
                 for (int i = 0; i < this.dendrites_list.Count(); i++)
                 {
-                    //newDirection = direction == "up" ? "down" : "up";
                     Dendrite den = this.dendrites_list[i];
                     den.diameter = dendriteLenAndDiam_List[i].Item1 == 0 ? this.denDiam : dendriteLenAndDiam_List[i].Item1;
                     den.length = dendriteLenAndDiam_List[i].Item2 == 0 ? this.dendriteLength : dendriteLenAndDiam_List[i].Item2;
