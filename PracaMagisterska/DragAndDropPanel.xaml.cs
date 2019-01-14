@@ -215,7 +215,8 @@ namespace PracaMagisterska
         {
             if (checkEl[1] > 0)
             {
-                List<Viewbox> elements = this.neuronQueue[checkEl[0]].GetRange(checkEl[1], this.neuronQueue[checkEl[0]].Count - 1);
+                List<Viewbox> queue = this.neuronQueue[checkEl[0]];
+                List<Viewbox> elements = queue.GetRange(checkEl[1], queue.Count() - checkEl[1]);
                 elements.Insert(0, viewbox);
                 this.neuronQueue.Add(elements);
                 return;
