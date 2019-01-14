@@ -386,6 +386,8 @@ namespace PracaMagisterska
                         bool results = false;
                         Viewbox elBox = (Viewbox)element.Key;
                         // check if neuron is near to the left side of queue
+                        double val = Math.Abs(element.Value[0] - Canvas.GetRight(viewbox));
+                        double val2 = Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox));
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
                             set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
@@ -394,6 +396,7 @@ namespace PracaMagisterska
                             viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
 
                             results = this.linkLeftOrRight(e, viewbox, "left", element);
+                            return results;
                         }
                         // check if neuron is near to the right side of queue
                         else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
@@ -404,8 +407,8 @@ namespace PracaMagisterska
                             viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
 
                             results = this.linkLeftOrRight(e, viewbox, "right", element);
+                            return results;
                         }
-                        return results;
                     }
                 }
                 return false;
