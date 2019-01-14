@@ -39,6 +39,7 @@ namespace PracaMagisterska
         public double minVolumeToOutflow { get; set; }
         public double volumeToOutFlowWhenNeuronFull { get; set; }
 
+        // set main neuron paramaters, create dendrite, soma and axon objects
         public Neuron(int dendrideNum)
         {
             InitializeComponent();
@@ -115,6 +116,7 @@ namespace PracaMagisterska
 
         }
 
+        // claculate volume when flow will out flow
         private void calculateVolumeToOutFlow()
         {
             this.minVolumeToOutflow = 0;
@@ -133,7 +135,7 @@ namespace PracaMagisterska
             Console.WriteLine("%%%%%%%%%%%%%%%%%%%Total volume " + this.minVolumeToOutflow);
         }
 
-
+        // unload neuron - empty axon, soma, dendrite
         public void unload(bool reminder)
         {
             this.axon.unloadFunc();
@@ -159,6 +161,7 @@ namespace PracaMagisterska
             Console.WriteLine("After" + this.totalOutFlowVolume);
         }
 
+        // set neuron parameter - update axon, soma, dendrite parameters
         public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon)
         {
             if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
@@ -211,6 +214,7 @@ namespace PracaMagisterska
             
         }
 
+        // reset neuron parameters
         public void reset()
         {
             this.axon.reset();
@@ -225,6 +229,7 @@ namespace PracaMagisterska
                 den.reset();
         }
 
+        // partial empty the soma of neuron
         public bool draining(double volumeToEmpty)
         {
             Console.WriteLine("In Neron draining " + volumeToEmpty);

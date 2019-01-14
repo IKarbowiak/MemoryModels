@@ -33,6 +33,7 @@ namespace PracaMagisterska
         private int columnsCounter = 0;
         public bool isFull { get; set; }
 
+        // set main axon parameters
         public Axon(bool dim3d = false, int recWidth = 260, int recHeight = 11)
         {
             InitializeComponent();
@@ -51,6 +52,7 @@ namespace PracaMagisterska
             recAxonArray = this.splitRecModel(axonRec, axonGrid);
         }
 
+        // calculate volume of axon
         public void calculateParameters()
         {
             if (dimension3D)
@@ -66,6 +68,7 @@ namespace PracaMagisterska
             
         }
 
+        // change size of axon xaml element
         public void changeRecSize(int width, int height)
         {
             mainGrid.Width = width;
@@ -77,6 +80,7 @@ namespace PracaMagisterska
             axonGrid.Width = width;
         }
 
+        // fill axon or push fluid out
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, System.Windows.Media.SolidColorBrush color)
         {
             double volumeToPush = 0;
@@ -116,6 +120,7 @@ namespace PracaMagisterska
             return new Tuple<bool, double>(this.isFull, volumeToPush);
         }
 
+        // fill part axon rectangle
         private void fillRect(int numberOfCol, System.Windows.Media.SolidColorBrush color)
         {
             Console.WriteLine("In fill ax " + numberOfCol);
@@ -148,7 +153,7 @@ namespace PracaMagisterska
             }
         }
 
-
+        // partial empty axon recatngles
         public void unloadFunc()
        {
             Console.WriteLine("Axon unload");
@@ -167,7 +172,7 @@ namespace PracaMagisterska
 
         }
 
-
+        // reste axon - empty rectangles
         public void reset()
         {
             this.resetParameters();
@@ -181,6 +186,7 @@ namespace PracaMagisterska
 
         }
 
+        // reset axon parameters
         public void resetParameters()
         {
             Console.WriteLine("Reset axon parms");
@@ -190,6 +196,7 @@ namespace PracaMagisterska
             this.flowedOutVolume = 0;
         }
 
+        // create ractangle which can be fill
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
             int rowNumber = Convert.ToInt32(modelElement.Height);

@@ -45,6 +45,7 @@ namespace PracaMagisterska
 
         }
 
+        // calculate basic Soma parameters as volume and trashold for leaking fluid to axon
         public void calculateParameters()
         {
             if (dimension3D)
@@ -62,6 +63,7 @@ namespace PracaMagisterska
             this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
         }
 
+        // fill soma or push fluid to axon
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull, System.Windows.Media.SolidColorBrush color)
         {
             bool push = false;
@@ -116,6 +118,7 @@ namespace PracaMagisterska
             return result;
         }
 
+        // fill rectangle to specific level
         private void fillRect(double rowLevel, System.Windows.Media.SolidColorBrush color)
         {
             Console.WriteLine("In soma fill REC !!! Row to fill: " + rowLevel);
@@ -136,6 +139,7 @@ namespace PracaMagisterska
 
         }
 
+        // reset parameters and empty soma to the level below treshold
         public bool partialEmpty(double volumeToEmpty)
         {
             bool empty = false;
@@ -151,7 +155,7 @@ namespace PracaMagisterska
 
         }
 
-
+        // empty soma to specific level
         public void unloadFunc(bool unload, double toEmpty = 0)
         {
             isFull = false;
@@ -180,6 +184,7 @@ namespace PracaMagisterska
 
         }
 
+        // reset soma parameters
         private void resetParams()
         {
             this.liquidVolume = 0;
@@ -187,6 +192,7 @@ namespace PracaMagisterska
             this.rowCounter = recSomaArray.Length - 1;
         }
 
+        // empty soma
         public void reset()
         {
             this.resetParams();
@@ -200,7 +206,7 @@ namespace PracaMagisterska
 
         }
 
-
+        // create rectangles for soma which can be fill 
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
             int rowNumber = Convert.ToInt32(modelElement.Height);

@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Timers;
 using System.Threading;
 using System.Xml.Linq;
+using System.IO;
 
 namespace PracaMagisterska
 {
@@ -43,6 +44,7 @@ namespace PracaMagisterska
         private Dictionary<Neuron, double> timeBegginingOfOutflowInReminder = new Dictionary<Neuron, double>();
         private Dictionary<Neuron, double> startOutFlowTime = new Dictionary<Neuron, double>();
 
+        // set main parameters and create neurons objects
         public MainWindow()
         {
             InitializeComponent();
@@ -70,6 +72,7 @@ namespace PracaMagisterska
             this.newFlow = true;
         }
 
+        // create timer objects, adjust therir interval and functions - what they will do in every tick
         private void adjustTimer()
         {
             drainingTimer = new System.Windows.Threading.DispatcherTimer();
@@ -112,6 +115,7 @@ namespace PracaMagisterska
             };
         }
 
+        // starts the simulation - starts timer
         private void start_Click(object sender, RoutedEventArgs e)
         { 
             double newTime;
@@ -123,6 +127,11 @@ namespace PracaMagisterska
 
             reminderButton.IsEnabled = false;
             counter = 0;
+            if (currentConf == null)
+            {
+                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
+                this.currentConf = projectPath + "\\defaultConf.xml";
+            }
             this.loadParams();
             this.calculateTimeOfOutFlow();
             if (!this.newFlow && timerTextBlock.Text != "00:00")
@@ -153,7 +162,7 @@ namespace PracaMagisterska
 
         }
 
-
+        // function that manages the flow of fluids through neurons
         private void neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
             Console.WriteLine("Tick treshold" + this.tickThreshold);
@@ -220,6 +229,7 @@ namespace PracaMagisterska
             }
         }
 
+        // change time in the stopwatch
         private void myTimerTick(object sender, EventArgs e)
         {
             if (counter < this.tickThreshold)
@@ -229,6 +239,7 @@ namespace PracaMagisterska
             }
         }
 
+        // show results in the table in main window when flow stopped
         private void showResults(object sender, EventArgs e)
         {
             timer.Stop();
@@ -260,6 +271,7 @@ namespace PracaMagisterska
 
         }
 
+        // reset flow and results table value after 'Reset' button click
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
             M1VolumeBlock.Text = "0";
@@ -281,8 +293,7 @@ namespace PracaMagisterska
             this.reminderButton.IsEnabled = true;
         }
 
-        
-
+        // open drag and drop button click
         private void DragAndDropButton_Click(object sender, RoutedEventArgs e)
         {
             DragAndDropPanel myWindow = new DragAndDropPanel();
@@ -291,6 +302,7 @@ namespace PracaMagisterska
 
         }
 
+        // stops the timers which stop the flow after 'Stop' button click
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             drainingTimer.Stop();
@@ -301,6 +313,7 @@ namespace PracaMagisterska
             this.reminderButton.IsEnabled = true;
         }
 
+        // open window for setting parameters
         private void setParamButton_Click(object sender, RoutedEventArgs e)
         {
             SetParametersWindow setParamsWindow;
@@ -314,7 +327,7 @@ namespace PracaMagisterska
             setParamsWindow.ShowDialog();
         }
 
-    
+        // function which is used after closing window with parametersm adjust time and speed of flow
         private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
         {
             this.currentConf = path;
@@ -325,6 +338,7 @@ namespace PracaMagisterska
             Console.WriteLine("In main Window" + path);
         }
 
+        // apply the value of parameters from xml 
         private void loadParams()
         {
             List<double> neuron_params = new List<double>();
@@ -367,6 +381,7 @@ namespace PracaMagisterska
             }
         }
 
+        // set params from xml to neuron, function is used by loadParams()
         private void setNeuronParams(Neuron neuron, List<double> params_list)
         {
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
@@ -389,6 +404,7 @@ namespace PracaMagisterska
 
         }
 
+        // start remaining simulation after 'Remindee' button click
         private void reminderButton_Click(object sender, RoutedEventArgs e)
         {
             this.drainingTimer.Stop();
@@ -403,6 +419,7 @@ namespace PracaMagisterska
             this.startButton.IsEnabled = false;
         }
 
+        // calculate the time flow below which, it is said that something was in neuron
         private void calculateTimeOfOutFlow()
         {
             foreach (Neuron neuron in new List<Neuron> {neuron1, neuron2 })
@@ -412,6 +429,7 @@ namespace PracaMagisterska
             }
         }
 
+        // create results window, add results values to results window and open the window
         private void resultsButton_Click(object sender, RoutedEventArgs e)
         {
             Results resultsWindow = new Results();

@@ -32,7 +32,7 @@ namespace PracaMagisterska
         private bool isFull = false;
         public bool isBlocked {get; set;}
 
-
+        // set main dendrite parameters
         public Dendrite(bool dim3d)
         {
             InitializeComponent();
@@ -44,6 +44,7 @@ namespace PracaMagisterska
             recDenArray = this.splitRecModel(denrdriteRec, dendriteGrid);
         }
 
+        // calculate volume of dendrite
         public void calculateParameters()
         {
             if (dimension3D)
@@ -58,7 +59,7 @@ namespace PracaMagisterska
 
         }
 
-
+        // fill dendrite or push fluid to soma
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, System.Windows.Media.SolidColorBrush color)
         {
             double volumeToPush = 0;
@@ -92,6 +93,7 @@ namespace PracaMagisterska
             return result;
         }
 
+        // fill dendrite rectangle to specific level
         private void fillRect(int numberOfCol, System.Windows.Media.SolidColorBrush color)
         {
             int colLevel = this.columnsCounter + numberOfCol;
@@ -121,6 +123,7 @@ namespace PracaMagisterska
             }
         }
 
+        // partial empty rectangles to specific level
         public void unloadFunc()
         {
             Console.WriteLine("Dendirte unload");
@@ -137,6 +140,7 @@ namespace PracaMagisterska
             this.resetParams();
         }
 
+        // empty dendrite rectangles
         public void reset()
         {
             this.resetParams();
@@ -150,6 +154,7 @@ namespace PracaMagisterska
 
         }
 
+        // reset dendrite parameters
         public void resetParams()
         {
             this.columnsCounter = 0;
@@ -157,7 +162,7 @@ namespace PracaMagisterska
             this.liquidVolume = 0;
         }
 
-
+        // create ractangle which can be fill
         public Rectangle[][] splitRecModel(Rectangle modelElement, Grid modelGrid)
         {
             int rowNumber = Convert.ToInt32(modelElement.Height);

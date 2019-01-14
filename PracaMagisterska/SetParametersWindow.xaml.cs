@@ -40,12 +40,13 @@ namespace PracaMagisterska
 
         }
 
-
+        // run function from parent window to change configuration path
         private void changeCurrentConfInParentWindow(string path)
         {
             this.callback(path, double.Parse(timeBox.Text), double.Parse(flowBox.Text), double.Parse(drainingBox.Text));
         }
 
+        // open window to save parameters to xml file
         private void writeParametersToXML(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
@@ -66,6 +67,7 @@ namespace PracaMagisterska
             }
         }
 
+        // save parameters to xml file
         private void saveXML(string filename)
         {
             XElement xmlTree = new XElement("Configuration");
@@ -83,6 +85,7 @@ namespace PracaMagisterska
             xmlTree.Save(filename);
         }
 
+        // add element to XML element
         private XElement addElementsToXElement(XElement xmlElement, StackPanel panel)
         {
             foreach (object obj in panel.Children)
@@ -102,6 +105,7 @@ namespace PracaMagisterska
 
         }
 
+        // open window and load configuration from xml file
         private void loadButton_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -117,6 +121,7 @@ namespace PracaMagisterska
             }
         }
 
+        // load parameters from xml file
         private void load(string filename)
         {
             XElement xmlTree = XElement.Load(filename, LoadOptions.None);
@@ -141,6 +146,8 @@ namespace PracaMagisterska
             }
         }
 
+
+        // validate field from parameter
         private bool validateField(TextBox textbox)
         {
             double i = 0;
@@ -149,11 +156,7 @@ namespace PracaMagisterska
             return true;
         }
 
-        private void updateNeuronValues(Neuron neuron)
-        {
-
-        }
-
+        // validate choosen xml fields
         private bool validateXmlFields(string file)
         {
             XElement xmlTree = XElement.Load(this.projectPath + file, LoadOptions.None);
@@ -185,6 +188,7 @@ namespace PracaMagisterska
             return allFieldsFull;
         }
 
+        // set current configuration to default after 'Default' button click
         private void defaultConf_Click(object sender, RoutedEventArgs e)
         {
             string path = this.projectPath + "\\defaultConf.xml";
@@ -192,6 +196,7 @@ namespace PracaMagisterska
             changeCurrentConfInParentWindow(path);
         }
 
+        // update current configuration to default after 'Default' button click
         private void updateDefault_Click(object sender, RoutedEventArgs e)
         {
             if (validateXmlFields("\\defaultConf.xml"))
@@ -201,7 +206,7 @@ namespace PracaMagisterska
             }
         }
 
-
+        // save configuration to currenctConf
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string path = this.projectPath + "\\currentConf.xml";

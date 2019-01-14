@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
-
+using System.IO;
 
 namespace PracaMagisterska
 {
@@ -46,7 +46,6 @@ namespace PracaMagisterska
         private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
-        private double timeThresholdForMemoryStorage;
         private double timeBegginingOfOutflowInReminder;
         private double startOutFlowTime = 0;
         private bool somethingInNeuron = false;
@@ -55,10 +54,8 @@ namespace PracaMagisterska
         private double maxSomaVolumeInQueue = 0;
         private int queueNumberForReminder;
         private int somaAmount;
-        private double somaVolumeReminder = 0;
-        //private List<object> elementsToCheck = new List<object>();
 
-
+        // set main parameters
         public DragAndDropPanel()
         {
             InitializeComponent();
@@ -73,9 +70,11 @@ namespace PracaMagisterska
 
         }
 
+        // create timer objects, adjust therir interval and functions - what they will do in every tick
         private void adjustTimer()
         {
 
+            // timer for flow
             this.timer = new System.Windows.Threading.DispatcherTimer();
             this.timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             int moreTicks = 0;
@@ -100,6 +99,7 @@ namespace PracaMagisterska
 
             };
 
+            // timer for draining
             drainingTimer = new System.Windows.Threading.DispatcherTimer();
             drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             drainingTimer.Tick += (sender2, e1) =>
@@ -120,6 +120,7 @@ namespace PracaMagisterska
             };
         }
 
+        // create neurons in the left panel, which can be click to create duplicated object in neuron panel
         private void createVieboxWithNeuron(int dendNumber)
         {
             TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + dendNumber };
@@ -136,6 +137,7 @@ namespace PracaMagisterska
 
         }
 
+        // check if matrix contain specific array of value, return True if contain
         private bool checkDictValue(double[][] values, double[] compareArray)
         {
             foreach (double[] value in values)
@@ -148,7 +150,7 @@ namespace PracaMagisterska
             return false;
         }
 
-
+        // add mause up an mause move function to element when it will be clicked and set starting position of clicked object
         private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
@@ -163,6 +165,7 @@ namespace PracaMagisterska
             viewbox.MouseUp += neuron_MouseUp;
         }
 
+        // adjust current position of element during move, prevent from moving out of border
         private void neuron_MouseMove(object sender, MouseEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
@@ -183,6 +186,8 @@ namespace PracaMagisterska
 
         }
 
+        // check if neuron Queue contains specific element
+        // return position in queue of searching element if found, else return empty list
         private List<int> neuronQueueContainsCheck(object element)
         {
             List<int> res_List = new List<int>();
@@ -205,6 +210,7 @@ namespace PracaMagisterska
             return res_List;
         }
 
+        // add neuron to the left side of queue
         private void addToLeft(List<int> checkEl, Viewbox viewbox)
         {
             if (checkEl[1] > 0)
@@ -217,6 +223,7 @@ namespace PracaMagisterska
             this.neuronQueue[checkEl[0]].Insert(checkEl[1], viewbox);
         }
 
+        // add neuron to the right side of queue
         private void addToRight(List<int> checkEl, Viewbox viewbox)
         {
             if (checkEl.Count() > 2)
@@ -227,9 +234,11 @@ namespace PracaMagisterska
                 }
                 return;
             }
-            this.neuronQueue[0].Insert(checkEl[1] + 1, viewbox);
+            this.neuronQueue[checkEl[0]].Insert(checkEl[1] + 1, viewbox);
         }
 
+        // link moving neuron to queue
+        // check if neuron is out of border, 
         private bool linkLeftOrRight(MouseButtonEventArgs e, Viewbox viewbox, String site, KeyValuePair<Viewbox, Double[]> element)
         {
             var pos = e.GetPosition(this.dropCanvas);
@@ -239,12 +248,15 @@ namespace PracaMagisterska
             if (!outOfBorder && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
             {
                 this.backToPreviousPosition(viewbox);
-                // true because neuron doe not change position
+                // true because neuron does not change position
                 return true;
             }
             else if (!outOfBorder)
             {
+                // get position of element to which the neuron should be linked
                 List<int> checkEl = neuronQueueContainsCheck(element.Key);
+
+                // do if neuron queue is empty
                 if (this.neuronQueue.Count() == 0)
                 {
                     List<Viewbox> elements = new List<Viewbox>();
@@ -262,6 +274,7 @@ namespace PracaMagisterska
                         this.neuronQueue.Add(elements);
                     }
                 }
+                // do if neuron queue is not empty
                 else if (checkEl.Count() > 0)
                 {
                     if (site == "left")
@@ -274,7 +287,7 @@ namespace PracaMagisterska
             return false;
         }
 
-        //TODO: function to finish!!!!
+        // remove neuron from queue
         private void checkIfNeuronLeaveQueue(Viewbox viewbox)
         {
             List<int> checkList = neuronQueueContainsCheck(viewbox);
@@ -284,11 +297,8 @@ namespace PracaMagisterska
             int list_num = checkList[0];
             int elInList = checkList[1];
             Console.WriteLine("Delete from List");
-            if (checkList.Count > 2)
-            {
-                // czo!?
-            }
-            else if (elInList > this.neuronQueue[list_num].Count / 2)
+
+            if (elInList > this.neuronQueue[list_num].Count / 2)
             {
                 for (int x = elInList; x < this.neuronQueue[list_num].Count(); x++)
                 {
@@ -300,10 +310,13 @@ namespace PracaMagisterska
                 for (int x = elInList; x > -1; x--)
                 {
                     this.neuronQueue[list_num].RemoveAt(x);
+
                 }
             }
+
         }
 
+        // set connection to specific dendrit in neuron with more than one dendrite
         private void setConnectionToDen(Viewbox viewbox, string direction, Viewbox element, string side)
         {
             string newDirection = " ";
@@ -318,6 +331,7 @@ namespace PracaMagisterska
             }
         }
 
+        // set top and bottom neuron poisition
         private void set_TopAndBottom_Property(Viewbox viewbox, KeyValuePair<Viewbox, Double[]> element, bool condition, string side, double offset)
         {
             if (condition)
@@ -345,6 +359,7 @@ namespace PracaMagisterska
 
         }
 
+        // try to link neuron to queue after mouse up from neuron
         private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
@@ -359,6 +374,7 @@ namespace PracaMagisterska
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
+            // link neuron to queue
             bool linkNeuron()
             {
                 foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
@@ -369,6 +385,7 @@ namespace PracaMagisterska
                     {
                         bool results = false;
                         Viewbox elBox = (Viewbox)element.Key;
+                        // check if neuron is near to the left side of queue
                         if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
                         {
                             set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
@@ -378,6 +395,7 @@ namespace PracaMagisterska
 
                             results = this.linkLeftOrRight(e, viewbox, "left", element);
                         }
+                        // check if neuron is near to the right side of queue
                         else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
                         {
                             set_TopAndBottom_Property(viewbox, element, (neuron.dendrites_list.Count() > 1), "right", offset);
@@ -421,7 +439,7 @@ namespace PracaMagisterska
         }
 
 
-
+        // back to the start position of move
         private void backToPreviousPosition(Viewbox viewbox)
         {
             viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
@@ -430,6 +448,7 @@ namespace PracaMagisterska
             viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
         }
 
+        // check if neuron quit border of neuron panel
         private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
         {
             double newX = x - (viewbox.Width / 2);
@@ -454,12 +473,19 @@ namespace PracaMagisterska
 
         }
 
+        // start flow simulation after 'Start' button clicked
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
+            if (canvasElements.Count() == 0)
+            {
+
+                return;
+            }
             this.startOutFlowTime = 0;
             this.timeBegginingOfOutflowInReminder = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
+            // if flow was paused
             if (this.pauseFlow)
             {
                 TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
@@ -473,11 +499,12 @@ namespace PracaMagisterska
             }
 
             Console.WriteLine("Current path: " + this.currentConf);
-            if (this.currentConf != null)
+            if (currentConf == null)
             {
-                Console.WriteLine("Current path exists");
-                this.loadParams();
+                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
+                this.currentConf = projectPath + "\\defaultConf.xml";
             }
+            this.loadParams();
             Console.WriteLine(this.flowVolume);
             this.blockViewboxMoving();
 
@@ -498,6 +525,7 @@ namespace PracaMagisterska
             }
         }
 
+        // apply value of parameters from xml file
         private void loadParams()
         {
             List<double> neuron0_params = new List<double>();
@@ -560,6 +588,7 @@ namespace PracaMagisterska
 
         }
 
+        // set params from xml to neuron, function is used by loadParams()
         private void setNeuronParams(Neuron neuron, List<double> params_list)
         {
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
@@ -582,6 +611,7 @@ namespace PracaMagisterska
 
         }
 
+        // block moving neurons during flow
         private void blockViewboxMoving()
         {
             foreach (Viewbox element in this.canvasElements.Keys)
@@ -590,6 +620,7 @@ namespace PracaMagisterska
             }
         }
 
+        // unblock moving neurons
         private void enableViewboxMoving()
         {
             foreach (Viewbox element in this.canvasElements.Keys)
@@ -598,11 +629,13 @@ namespace PracaMagisterska
             }
         }
 
+        // main function which push fluid to neurons
         private void flow(object sender, EventArgs e, double flow)
         {
             Dictionary<Neuron, List<double>> whatToPush = new Dictionary<Neuron, List<double>>();
             Console.WriteLine("Count whatToPush" + whatToPush.Count());
 
+            // if there is no queue but any neuron in panel exist
             if (this.neuronQueue.Count() == 0 && this.canvasElements.Count > 0)
             {
                 foreach (KeyValuePair<Viewbox, double[]> element in this.canvasElements)
@@ -711,6 +744,7 @@ namespace PracaMagisterska
                 }
             }
 
+            // push volume to neuron
             foreach (KeyValuePair<Neuron, List<double>> element in whatToPush)
             {
                 Neuron neuron = element.Key;
@@ -718,7 +752,7 @@ namespace PracaMagisterska
             }
         }
 
-
+        // add volume to up or down dendrite
         private Dictionary<Neuron, List<double>> addVolumeFlowUpOrDown(string site, Neuron neuron, Dictionary<Neuron, List<double>> whatToPush, double volumeToPush)
         {
             int index = site == "up" ? 0 : 1;
@@ -737,6 +771,7 @@ namespace PracaMagisterska
             return whatToPush;
         }
 
+        // add neuron to list of neuron which dendrite should be closed
         private void addToNeuronsToCloseDendriteList(Neuron neuron)
         {
             if (!this.neuronsToCloseDendrites.Contains(neuron))
@@ -745,12 +780,14 @@ namespace PracaMagisterska
             }
         }
 
+        // put fluid to neuron
         private double neuronFlow(object sender, EventArgs e, Neuron neuron, List<double> flowList)
         {
 
             double toPush = 0;
             double volumeToPushNext = 0;
             Console.WriteLine("In neuron flow");
+            // if there is no dendrite in neuron
             if (neuron.dendrites_list.Count() == 0)
             {
                 Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flowList[0], color);
@@ -761,6 +798,7 @@ namespace PracaMagisterska
             }
 
             int counter = 0;
+            // push volume to each dendrite
             foreach (Dendrite dendrite in neuron.dendrites_list)
             {
                 bool blocked = dendrite.isBlocked;
@@ -773,12 +811,14 @@ namespace PracaMagisterska
                 counter++;
             }
             Thread.Sleep(10);
+            // if dendrite return some volume push to soma
             if (toPush > 0)
             {
                 bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 Console.WriteLine("Axon is full : " + axonFull);
 
                 Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
+                // push volume to axon if axon is not full
                 if (somaRes.Item1 && !axonFull)
                 {
                     Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
@@ -786,6 +826,7 @@ namespace PracaMagisterska
                     this.setOutFlowParameters(neuron, axonRes.Item2);
                     neuron.volumeToPush = volumeToPushNext;
                 }
+                // if axon is full save the voume
                 else if (somaRes.Item1 && axonFull)
                 {
                     neuron.isFull = true;
@@ -795,6 +836,7 @@ namespace PracaMagisterska
             return volumeToPushNext;
         }
 
+        // set beggining of out flow time and beggining of out flow time in reminder and increase total out flow volume
         private void setOutFlowParameters(Neuron neuron, double axonOutFlowVolume)
         {
             if (axonOutFlowVolume > 0)
@@ -816,6 +858,7 @@ namespace PracaMagisterska
             }
         }
 
+        // create new neuron
         private void create_neuron(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox_sender = (Viewbox)sender;
@@ -827,6 +870,7 @@ namespace PracaMagisterska
             dropCanvas.Children.Add(viewbox);
         }
 
+        // change time in the stopwatch
         private void myTimerTick(object sender, EventArgs e)
         {
             Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
@@ -837,7 +881,7 @@ namespace PracaMagisterska
             this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
         }
 
-
+        // stop flow after 'Stop' button clicked
         private void stop(bool fromTimer)
         {
             Console.WriteLine("In stop!!!!!!!!!!!");
@@ -903,6 +947,7 @@ namespace PracaMagisterska
 
         }
 
+        // close dendrites from list
         private void blockNeuronsDendrites()
         {
             foreach (Neuron neuron in this.neuronsToCloseDendrites)
@@ -916,6 +961,8 @@ namespace PracaMagisterska
             }
         }
 
+
+        // reset parameters
         private void resetParams()
         {
             this.timerTextBlock.Text = "00:00";
@@ -926,10 +973,9 @@ namespace PracaMagisterska
             this.minTimeToOutFlow = 0;
             this.somethingInNeuron = false;
             this.startOutFlowTime = 0;
-            this.somaVolumeReminder = 0;
         }
 
-
+        // reset flow and parameters after click 'Reset' button
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
@@ -939,7 +985,7 @@ namespace PracaMagisterska
             this.resetParams();
         }
 
-
+        // reste flow after click 'Reset flow' button
         private void resetFlowButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
@@ -953,6 +999,7 @@ namespace PracaMagisterska
             this.resetParams();
         }
 
+        // stop flow and draining after 'Stop' button clisk
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
@@ -960,6 +1007,7 @@ namespace PracaMagisterska
             this.drainingTimer.Stop();
         }
 
+        // open parameters window after 'Set parameters' button click
         private void parametersButton_Click(object sender, RoutedEventArgs e)
         {
             SetParametersWindow setParamsWindow;
@@ -974,12 +1022,14 @@ namespace PracaMagisterska
             setParamsWindow.ShowDialog();
         }
 
+        // set value of current configuration xml file
         private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);
         }
 
+        // pause flow after 'Pasue' button click
         private void pauseButton_Click(object sender, RoutedEventArgs e)
         {
             timer.Stop();
@@ -989,21 +1039,23 @@ namespace PracaMagisterska
         }
 
 
+        // stop timers after window closing
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.timer.Stop();
-
+            this.drainingTimer.Stop();
         }
 
+        // unblock end of neurons for reminder flow
         private void unblockEnds()
         {
             foreach (Viewbox viewbox in this.canvasElements.Keys)
             {
                 ((Neuron)viewbox.Child).axon.blockTheEnd = false;
-                Console.WriteLine("set axon to block");
             }
         }
 
+        // start reminder simulation
         private void reminderButon_Click(object sender, RoutedEventArgs e)
         {
             this.timeBegginingOfOutflowInReminder = 0;
@@ -1021,6 +1073,7 @@ namespace PracaMagisterska
             this.blockViewboxMoving();
         }
 
+        // calculate minimum time of out flow, below which, the neuron is said to contains some information
         private void calculateTimeOfOutFlow()
         {   
             List<Double> resList = new List<double>();
@@ -1068,7 +1121,7 @@ namespace PracaMagisterska
             Console.WriteLine("Test time: " + this.minTimeToOutFlow);
         }
 
-
+        //create add prarameters values and open results window
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
