@@ -709,8 +709,10 @@ namespace PracaMagisterska
                             foreach (Dendrite den in first_el.dendrites_list)
                                 den.isBlocked = false;
                             this.addToNeuronsToCloseDendriteList(first_el);
+                            whatToPush[first_el] = new List<double>() { flow, flow };
                         }
-                        whatToPush[first_el] = new List<double>() { flow };
+                        else
+                            whatToPush[first_el] = new List<double>() { flow };
                     }
 
                     double toPush = 0;
