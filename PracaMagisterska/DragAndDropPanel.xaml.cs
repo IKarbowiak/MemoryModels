@@ -213,6 +213,8 @@ namespace PracaMagisterska
         // add neuron to the left side of queue
         private void addToLeft(List<int> checkEl, Viewbox viewbox)
         {
+            this.removeAbilityToMove(this.neuronQueue[checkEl[0]]);
+            // the checkEl can't be longer than 2 elements
             if (checkEl[1] > 0)
             {
                 List<Viewbox> queue = this.neuronQueue[checkEl[0]];
@@ -227,6 +229,8 @@ namespace PracaMagisterska
         // add neuron to the right side of queue
         private void addToRight(List<int> checkEl, Viewbox viewbox)
         {
+            this.removeAbilityToMove(this.neuronQueue[checkEl[0]]);
+            // checkEl list can be longer than 2 elements, but always is linked to the end of list
             if (checkEl.Count() > 2)
             {
                 for (int j = 0; j < checkEl.Count(); j += 2)
@@ -238,10 +242,35 @@ namespace PracaMagisterska
             this.neuronQueue[checkEl[0]].Insert(checkEl[1] + 1, viewbox);
         }
 
+        // remove ability to move neuron in neuron panel
+        private void removeAbilityToMove(List<Viewbox> checkList) 
+        {
+            if (checkList.Count() > 1)
+            {
+                Viewbox viewbox = checkList[checkList.Count() - 1];
+                Console.WriteLine("Remove ability");
+                viewbox.MouseDown -= this.neuron_MouseDown;
+                viewbox.MouseMove -= this.neuron_MouseMove;
+                viewbox.MouseUp -= this.neuron_MouseUp;
+            }
+        }
+
+        // remove empty queue (residue after unlinked) form neuron queue
+        private void removeEmptyNeuronQueue()
+        {
+            for (int i = 0; i < this.neuronQueue.Count(); i++)
+            {
+                if (this.neuronQueue[i].Count() == 0)
+                    this.neuronQueue.RemoveAt(i);
+            }
+        }
+
+
         // link moving neuron to queue
         // check if neuron is out of border, 
         private bool linkLeftOrRight(MouseButtonEventArgs e, Viewbox viewbox, String site, KeyValuePair<Viewbox, Double[]> element)
         {
+            this.removeEmptyNeuronQueue();
             var pos = e.GetPosition(this.dropCanvas);
             bool outOfBorder = checkIfQuitBorder(pos.X, pos.Y, viewbox);
             double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
@@ -312,6 +341,14 @@ namespace PracaMagisterska
                 {
                     this.neuronQueue[list_num].RemoveAt(x);
 
+                }
+            }
+            foreach (List<Viewbox> queue in this.neuronQueue)
+            {
+                if (queue.Count() > 0)
+                {
+                    queue[0].MouseDown += this.neuron_MouseDown;
+                    queue[queue.Count() - 1].MouseDown += this.neuron_MouseDown;
                 }
             }
 
