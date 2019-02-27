@@ -343,14 +343,8 @@ namespace PracaMagisterska
 
                 }
             }
-            foreach (List<Viewbox> queue in this.neuronQueue)
-            {
-                if (queue.Count() > 0)
-                {
-                    queue[0].MouseDown += this.neuron_MouseDown;
-                    queue[queue.Count() - 1].MouseDown += this.neuron_MouseDown;
-                }
-            }
+
+            this.enableViewboxMoving();
 
         }
 
@@ -397,13 +391,53 @@ namespace PracaMagisterska
 
         }
 
+        // link neuron to queue
+        private bool linkNeuron(Viewbox viewbox, Neuron neuron, MouseButtonEventArgs e)
+        {
+            int catchValue_rightleft = 30;
+            int catchValue_updown = 15;
+            double offset = 11.5;
+
+            foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
+            {
+                if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
+                    (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
+                {
+                    bool results = false;
+                    Viewbox elBox = (Viewbox)element.Key;
+                    // check if neuron is near to the left side of queue
+                    double val = Math.Abs(element.Value[0] - Canvas.GetRight(viewbox));
+                    double val2 = Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox));
+                    if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
+                    {
+                        set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
+
+                        viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
+                        viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
+
+                        results = this.linkLeftOrRight(e, viewbox, "left", element);
+                        return results;
+                    }
+                    // check if neuron is near to the right side of queue
+                    else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
+                    {
+                        set_TopAndBottom_Property(viewbox, element, (neuron.dendrites_list.Count() > 1), "right", offset);
+
+                        viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
+                        viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
+
+                        results = this.linkLeftOrRight(e, viewbox, "right", element);
+                        return results;
+                    }
+                }
+            }
+            return false;
+        }
+
         // try to link neuron to queue after mouse up from neuron
         private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Viewbox viewbox = (Viewbox)sender;
-            int catchValue_rightleft = 30;
-            int catchValue_updown = 15;
-            double offset = 11.5;
             Neuron neuron = (Neuron)viewbox.Child;
             Console.WriteLine("In mouse up ");
 
@@ -412,52 +446,12 @@ namespace PracaMagisterska
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
-            // link neuron to queue
-            bool linkNeuron()
-            {
-                foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
-                {
-
-                    if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
-                        (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
-                    {
-                        bool results = false;
-                        Viewbox elBox = (Viewbox)element.Key;
-                        // check if neuron is near to the left side of queue
-                        double val = Math.Abs(element.Value[0] - Canvas.GetRight(viewbox));
-                        double val2 = Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox));
-                        if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
-                        {
-                            set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
-
-                            viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
-                            viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
-
-                            results = this.linkLeftOrRight(e, viewbox, "left", element);
-                            return results;
-                        }
-                        // check if neuron is near to the right side of queue
-                        else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
-                        {
-                            set_TopAndBottom_Property(viewbox, element, (neuron.dendrites_list.Count() > 1), "right", offset);
-
-                            viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
-                            viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
-
-                            results = this.linkLeftOrRight(e, viewbox, "right", element);
-                            return results;
-                        }
-                    }
-                }
-                return false;
-            };
-
-            bool linked = linkNeuron();
+            bool linked = this.linkNeuron(viewbox, neuron, e);
             List<int> checkList = neuronQueueContainsCheck(viewbox);
 
             if (!linked)
             {
-                //TODO: function to finish
+                //TODO: function to finish - it's finished probably
                 this.checkIfNeuronLeaveQueue(viewbox);
             }
 
@@ -519,7 +513,6 @@ namespace PracaMagisterska
         {
             if (canvasElements.Count() == 0)
             {
-
                 return;
             }
             this.startOutFlowTime = 0;
@@ -652,21 +645,26 @@ namespace PracaMagisterska
 
         }
 
-        // block moving neurons during flow
+        // block moving all neurons during flow
         private void blockViewboxMoving()
         {
             foreach (Viewbox element in this.canvasElements.Keys)
             {
-                element.MouseDown -= new MouseButtonEventHandler(this.neuron_MouseDown);
+                element.MouseDown -= this.neuron_MouseDown;
             }
         }
 
         // unblock moving neurons
         private void enableViewboxMoving()
         {
-            foreach (Viewbox element in this.canvasElements.Keys)
+            // add posibility to move first and last element in queue
+            foreach (List<Viewbox> queue in this.neuronQueue)
             {
-                element.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+                if (queue.Count() > 0)
+                {
+                    queue[0].MouseDown += this.neuron_MouseDown;
+                    queue[queue.Count() - 1].MouseDown += this.neuron_MouseDown;
+                }
             }
         }
 
@@ -906,11 +904,15 @@ namespace PracaMagisterska
         {
             Viewbox viewbox_sender = (Viewbox)sender;
             int den_number = Int32.Parse(viewbox_sender.Name.Replace("n", ""));
-            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
-            Neuron newNeuron = new Neuron(den_number);
-            viewbox.Child = newNeuron;
-            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
-            dropCanvas.Children.Add(viewbox);
+
+            NeuronViewbox viewboxObj = new NeuronViewbox(den_number);
+            dropCanvas.Children.Add(viewboxObj);
+
+            //Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
+            //Neuron newNeuron = new Neuron(den_number);
+            //viewbox.Child = newNeuron;
+            //viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+            //dropCanvas.Children.Add(viewbox);
         }
 
         // change time in the stopwatch
@@ -1026,6 +1028,7 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             this.resetParams();
+            // TODO: chyba trzeba wyczyścić nazwy w niektózych viewboxach -- mam na myśli te gdzie są dodane nazwy up/down
         }
 
         // reste flow after click 'Reset flow' button

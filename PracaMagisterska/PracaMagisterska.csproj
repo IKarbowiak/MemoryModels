@@ -64,6 +64,9 @@
     <Compile Include="Neuron.xaml.cs">
       <DependentUpon>Neuron.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NeuronViewbox.xaml.cs">
+      <DependentUpon>NeuronViewbox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ResultsDragAndDropWindow.xaml.cs">
       <DependentUpon>ResultsDragAndDropWindow.xaml</DependentUpon>
     </Compile>
@@ -101,6 +104,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Neuron.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NeuronViewbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
