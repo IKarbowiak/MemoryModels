@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace PracaMagisterska
 {
@@ -23,17 +24,16 @@ namespace PracaMagisterska
         public Neuron neuron { get; set; }
         private double maxX;
         private double maxY;
-        private double[] startPosition;
+        private Point startPosition;
         private DragAndDropPanel parentWindow;
+        public double[] lastPosition { get; set; }
 
         public NeuronViewbox(int den_number)
         {
             Console.WriteLine("Here");
             InitializeComponent();
-            //this.viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
             this.neuron = new Neuron(den_number);
             this.viewbox.Child = this.neuron;
-            //viewbox.Child = this.newNeuron;
             this.viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
         }
 
@@ -52,11 +52,33 @@ namespace PracaMagisterska
             maxX = parentWindow.dropCanvas.ActualWidth - viewbox.Width;
             maxY = parentWindow.dropCanvas.ActualHeight - viewbox.Height;
 
-            this.startPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+            this.startPosition = e.GetPosition(parentWindow.dropCanvas);
             viewbox.CaptureMouse();
             Console.WriteLine("In Mouse Down");
             viewbox.MouseMove += neuron_MouseMove;
             viewbox.MouseUp += neuron_MouseUp;
+        }
+
+        private double[] adjustPosition(Point position)
+        {
+            var newX = position.X - (viewbox.Width / 2);
+            var newY = position.Y - (viewbox.Height / 2);
+
+            double[] res = this.changePositionIfLeftCanvas(newX, newY);
+
+            return res;
+        }
+
+        private double[] changePositionIfLeftCanvas(double newX, double newY)
+        {
+            if (newX < 0) newX = 0;
+            if (newX > maxX) newX = maxX;
+
+            if (newY < 0) newY = 0;
+            if (newY > maxY) newY = maxY;
+
+            double[] res = { newX, newY };
+            return res;
         }
 
         // adjust current position of element during move, prevent from moving out of border
@@ -76,11 +98,8 @@ namespace PracaMagisterska
 
 
             TranslateTransform transform = viewbox.RenderTransform as TranslateTransform;
-            if (transform == null)
-            {
-                transform = new TranslateTransform();
-                viewbox.RenderTransform = transform;
-            }
+            transform = new TranslateTransform();
+            viewbox.RenderTransform = transform;
 
             transform.X = newX;
             transform.Y = newY;
@@ -100,54 +119,25 @@ namespace PracaMagisterska
             viewbox.MouseMove -= neuron_MouseMove;
             viewbox.MouseUp -= neuron_MouseUp;
 
-            Console.WriteLine(parentWindow.dropCanvas.Children.ToString());
-            Console.WriteLine(viewbox.Parent);
-            Console.WriteLine();
-            
+            Point position = e.GetPosition(this.parentWindow.dropCanvas);
+            this.lastPosition = this.adjustPosition(position);
 
-            //bool linked = this.linkNeuron(viewbox, neuron, e);
-            //List<int> checkList = neuronQueueContainsCheck(viewbox);
+            this.parentWindow.after_mouseUp(this);
 
-            //if (!linked)
-            //{
-            //    //TODO: function to finish - it's finished probably
-            //    this.checkIfNeuronLeaveQueue(viewbox);
-            //}
-
-            //double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-            //canvasElements[(Viewbox)sender] = parameters;
-
-
-            //Console.WriteLine("List count " + this.neuronQueue.Count());
-            //Console.WriteLine(canvasElements[(Viewbox)sender][0]);
-            //Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
-
-            //// Check to remove 
-            //counter = 0;
-            //foreach (List<Viewbox> el in this.neuronQueue)
-            //{
-            //    Console.WriteLine("List " + counter);
-            //    Console.WriteLine(el.Count());
-            //    counter++;
-            //}
         }
 
         // remove ability to move neuron in neuron panel
-        private void removeAbilityToMove()
+        public void removeViewboxAbilityToMove()
         {
-            // List<Viewbox> checkList
-            //if (checkList.Count() > 1)
-            //{
-            //    Viewbox viewbox = checkList[checkList.Count() - 1];
             Console.WriteLine("Remove ability");
             this.viewbox.MouseDown -= this.neuron_MouseDown;
             this.viewbox.MouseMove -= this.neuron_MouseMove;
             this.viewbox.MouseUp -= this.neuron_MouseUp;
         }
 
-        private void enableViewboxMoving()
+        public void enableViewboxMoving()
         {
-            this.viewbox.MouseDown -= this.neuron_MouseDown;
+            this.viewbox.MouseDown += this.neuron_MouseDown;
         }
 
 
@@ -196,19 +186,29 @@ namespace PracaMagisterska
         }
 
         // back to the start position of move
-        private void backToPreviousPosition(Viewbox viewbox)
+        public void backToPreviousPosition()
         {
-            viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
-            viewbox.SetValue(Canvas.RightProperty, this.startPosition[1]);
-            viewbox.SetValue(Canvas.TopProperty, this.startPosition[2]);
-            viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
+            TranslateTransform transform = viewbox.RenderTransform as TranslateTransform;
+            if (transform == null)
+            {
+                transform = new TranslateTransform();
+                viewbox.RenderTransform = transform;
+            }
+
+            transform.X = this.startPosition.X;
+            transform.Y = this.startPosition.Y;
+
+            //viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
+            //viewbox.SetValue(Canvas.RightProperty, this.startPosition[1]);
+            //viewbox.SetValue(Canvas.TopProperty, this.startPosition[2]);
+            //viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
         }
 
         // check if neuron quit border of neuron panel
-        private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
-        {
-            double newX = x - (viewbox.Width / 2);
-            double newY = y - (viewbox.Height / 2);
+        public bool checkIfQuitBorder()
+        {   
+            double newX = lastPosition[0] - (viewbox.Width / 2);
+            double newY = lastPosition[1] - (viewbox.Height / 2);
 
             bool quit = false;
             if (newX < 0) { newX = 0; quit = true; }
@@ -217,12 +217,16 @@ namespace PracaMagisterska
             if (newY < 0) { newY = 0; quit = true; }
             if (newY > maxY) { newY = maxY; quit = true; }
 
+            TranslateTransform transform = viewbox.RenderTransform as TranslateTransform;
+            if (transform == null)
+            {
+                transform = new TranslateTransform();
+                viewbox.RenderTransform = transform;
+            }
             if (quit)
             {
-                viewbox.SetValue(Canvas.LeftProperty, newX);
-                viewbox.SetValue(Canvas.RightProperty, newX + viewbox.Width);
-                viewbox.SetValue(Canvas.TopProperty, newY);
-                viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
+                transform.X = newX;
+                transform.Y = newY;
             }
 
             return quit;
@@ -230,7 +234,7 @@ namespace PracaMagisterska
         }
 
         // set params from xml to neuron, function is used by loadParams()
-        private void setNeuronParams(Neuron neuron, List<double> params_list)
+        public void setNeuronParams(List<double> params_list)
         {
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
             int params_length = params_list.Count();
@@ -252,39 +256,188 @@ namespace PracaMagisterska
 
         }
 
-        // add volume to up or down dendrite
-        private Dictionary<Neuron, List<double>> addVolumeFlowUpOrDown(string site, Neuron neuron, Dictionary<Neuron, List<double>> whatToPush, double volumeToPush)
+        // put fluid to neuron
+        public double neuronFlow(object sender, EventArgs e, List<double> flowList, System.Windows.Media.SolidColorBrush color)
         {
-            int index = site == "up" ? 0 : 1;
-            if (whatToPush.ContainsKey(neuron))
-            {
-                double value = whatToPush[neuron][index];
-                whatToPush[neuron][index] = value + volumeToPush;
-            }
-            else
-            {
-                if (index == 0)
-                    whatToPush[neuron] = new List<double> { volumeToPush, 0 };
-                else
-                    whatToPush[neuron] = new List<double> { 0, volumeToPush };
-            }
-            return whatToPush;
-        }
 
-        private void blockNeuronsDendrites()
-        {
+            double toPush = 0;
+            double volumeToPushNext = 0;
+            Console.WriteLine("In neuron flow");
+            // if there is no dendrite in neuron
+            if (neuron.dendrites_list.Count() == 0)
+            {
+                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flowList[0], color);
+                volumeToPushNext = axonRes.Item2;
+                this.parentWindow.setOutFlowParameters(this, axonRes.Item2);
+                neuron.volumeToPush = volumeToPushNext;
+                return volumeToPushNext;
+            }
+
+            int counter = 0;
+            // push volume to each dendrite
             foreach (Dendrite dendrite in neuron.dendrites_list)
             {
-                Console.WriteLine("Block DEN!");
-                dendrite.isBlocked = true;
+                bool blocked = dendrite.isBlocked;
+                if (!dendrite.isBlocked)
+                {
+                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flowList[counter], color);
+                    if (dendriteRes.Item1)
+                        toPush += dendriteRes.Item2;
+                }
+                counter++;
             }
+            Thread.Sleep(10);
+            // if dendrite return some volume push to soma
+            if (toPush > 0)
+            {
+                bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
+                Console.WriteLine("Axon is full : " + axonFull);
+
+                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
+                // push volume to axon if axon is not full
+                if (somaRes.Item1 && !axonFull)
+                {
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
+                    volumeToPushNext = axonRes.Item2;
+                    this.parentWindow.setOutFlowParameters(this, axonRes.Item2);
+                    neuron.volumeToPush = volumeToPushNext;
+                }
+                // if axon is full save the voume
+                else if (somaRes.Item1 && axonFull)
+                {
+                    neuron.isFull = true;
+                    neuron.volumeToPush = somaRes.Item2;
+                }
+            }
+            return volumeToPushNext;
         }
 
-        private void resetNeuron()
+        public void changePosition(double X, double Y, string site)
+        {
+            double newX;
+            if (site == "left")
+                newX = X - viewbox.Width;
+            else
+                newX = X;
+
+            TranslateTransform transform = viewbox.RenderTransform as TranslateTransform;
+
+            transform = new TranslateTransform();
+            viewbox.RenderTransform = transform;
+
+            transform.X = newX;
+            transform.Y = Y;
+
+        }
+
+
+        public void resetNeuron()
         {
             neuron.reset();
             neuron.isFull = false;
         }
 
+        public double getNumberOfDendrites()
+        {
+            return neuron.dendrites_list.Count();
+        }
+
+        public void openDendrites()
+        {
+            foreach (Dendrite den in this.neuron.dendrites_list)
+                den.isBlocked = false;
+        }
+
+        public void openOneDendrite(string side)
+        {
+            if (side == "up")
+                this.neuron.dendrites_list[0].isBlocked = false;
+            else
+                this.neuron.dendrites_list[1].isBlocked = false;
+        }
+
+        public void closeDendrites()
+        {
+            foreach (Dendrite den in this.neuron.dendrites_list)
+            {
+                den.isBlocked = true;
+                Console.WriteLine("Block DEN!");
+            }
+        }
+
+        public void ublockUpOrDownDendrite()
+        {
+            if (viewbox.Name == "up")
+            {
+                Console.WriteLine("Unblock Den");
+                (neuron.dendrites_list[0]).isBlocked = false;
+            }
+            else if (viewbox.Name == "down")
+            {
+                Console.WriteLine("Unblock Den");
+                (neuron.dendrites_list[1]).isBlocked = false;
+            }
+
+        }
+
+        public double[] getCanvasParameters()
+        {
+            double[] parameters = { lastPosition[0], lastPosition[0] + viewbox.Width, lastPosition[1], lastPosition[1] + viewbox.Height };
+            return parameters;
+        }
+
+        public bool drain(double drainingVolume)
+        {
+            return neuron.draining(drainingVolume);
+        }
+
+        public void blockAxonEnd()
+        {
+            neuron.axon.blockTheEnd = true;
+            Console.WriteLine("set axon to block");
+        }
+
+        public void unblockAxonEnd()
+        {
+            neuron.axon.blockTheEnd = false;
+            Console.WriteLine("set axon to unblock");
+        }
+
+        public void unloadNeuron(bool remindStarted)
+        {
+            neuron.unload(remindStarted);
+            neuron.isFull = false;
+            neuron.volumeToPush = 0;
+        }
+
+        public double getVolumeToOutflowWhenNeuronIsFull()
+        {
+            return neuron.volumeToOutFlowWhenNeuronFull;
+        }
+
+        public double getSomaThreshold()
+        {
+            return neuron.soma.threshold;
+        }
+
+        public bool somaIsNull()
+        {
+            return neuron.soma == null;
+        }
+
+        public double getVolumeToPush()
+        {
+            return neuron.volumeToPush;
+        }
+
+        public void setVolumeToPush(double volume)
+        {
+            neuron.volumeToPush = volume;
+        }
+
+        public bool neuronIsFull()
+        {
+            return neuron.isFull;
+        }
     }
 }

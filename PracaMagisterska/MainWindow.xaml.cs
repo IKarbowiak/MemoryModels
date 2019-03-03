@@ -115,6 +115,11 @@ namespace PracaMagisterska
             };
         }
 
+        private void setCurrentConf()
+        {
+            string toRemove = "";
+        }
+
         // starts the simulation - starts timer
         private void start_Click(object sender, RoutedEventArgs e)
         { 
@@ -129,6 +134,7 @@ namespace PracaMagisterska
             counter = 0;
             if (currentConf == null)
             {
+                string test = Directory.GetCurrentDirectory();
                 string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
                 this.currentConf = projectPath + "\\defaultConf.xml";
             }
