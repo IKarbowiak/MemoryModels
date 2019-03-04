@@ -19,10 +19,6 @@ using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
-    /// <summary>
-    /// Interaction logic for Window1.xaml
-    /// </summary>
-    /// 
 
     public partial class DragAndDropPanel : Window
     {
@@ -65,13 +61,11 @@ namespace PracaMagisterska
             this.createVieboxWithNeuron(0);
             this.createVieboxWithNeuron(1);
             this.createVieboxWithNeuron(2);
-
         }
 
         // create timer objects, adjust therir interval and functions - what they will do in every tick
         private void adjustTimer()
         {
-
             // timer for flow
             this.timer = new System.Windows.Threading.DispatcherTimer();
             this.timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
@@ -90,11 +84,13 @@ namespace PracaMagisterska
                 if (remindStarted && this.timeBegginingOfOutflowInReminder > 0)
                 {
                     if (moreTicks >= 5)
+                    {
                         this.stop(true);
+                        this.enableViewboxInQueuMoving();
+                    }
                     else
                         moreTicks += 1;
                 }
-
             };
 
             // timer for draining
@@ -113,6 +109,7 @@ namespace PracaMagisterska
                     Console.WriteLine("Stop draining timer");
                     Console.WriteLine("Stop draining timer");
                     drainingTimer.Stop();
+                    this.enableViewboxInQueuMoving();
                 }
             };
         }
@@ -131,7 +128,6 @@ namespace PracaMagisterska
             viewbox.MouseDown += new MouseButtonEventHandler(this.create_neuron);
 
             objectHandlerPanel.Children.Add(viewbox);
-
         }
 
         private void setCurrentConf()
@@ -141,7 +137,6 @@ namespace PracaMagisterska
             GroupCollection groups = match.Groups;
             this.currentConf = groups[1].Value + "\\defaultConf.xml";
         }
-
 
         // check if matrix contain specific array of value, return True if contain
         private bool checkDictValue(double[][] values, double[] compareArray)
@@ -155,8 +150,6 @@ namespace PracaMagisterska
             }
             return false;
         }
-
-
 
         // check if neuron Queue contains specific element
         // return position in queue of searching element if found, else return empty list
@@ -230,7 +223,7 @@ namespace PracaMagisterska
         {
             for (int i = 0; i < this.neuronQueue.Count(); i++)
             {
-                if (this.neuronQueue[i].Count() == 0)
+                if (this.neuronQueue[i].Count() == 1 || this.neuronQueue[i].Count() == 0)
                     this.neuronQueue.RemoveAt(i);
             }
         }
@@ -240,7 +233,7 @@ namespace PracaMagisterska
         // check if neuron is out of border, 
         private bool linkLeftOrRight(NeuronViewbox viewbox, String site, KeyValuePair<NeuronViewbox, Double[]> element)
         {
-            this.removeEmptyNeuronQueue();
+            //this.removeEmptyNeuronQueue();
             bool outOfBorder = viewbox.checkIfQuitBorder();
             double[] newPosition = viewbox.getCanvasParameters();
             // Check if something is on this place if is, come back to previous position
@@ -287,6 +280,8 @@ namespace PracaMagisterska
         }
 
         // remove neuron from queue
+        // removing is possible only from first and last element of the list
+        // after removing, check if the rest of list should be removed or not
         private void checkIfNeuronLeaveQueue(NeuronViewbox viewbox)
         {
             List<int> checkList = neuronQueueContainsCheck(viewbox);
@@ -296,25 +291,24 @@ namespace PracaMagisterska
             int list_num = checkList[0];
             int elInList = checkList[1];
             Console.WriteLine("Delete from List");
-
-            if (elInList > this.neuronQueue[list_num].Count / 2)
+            this.neuronQueue[list_num].RemoveAt(elInList);
+            bool removeList = false;
+            this.clearFlow();
+            // block posibility to remind if the queus changed
+            reminderButton.IsEnabled = false;
+            
+            // check if other list contain reset of the neuron in the same order as in the updating one
+            foreach (List<NeuronViewbox> neuronList in this.neuronQueue)
             {
-                for (int x = elInList; x < this.neuronQueue[list_num].Count(); x++)
-                {
-                    this.neuronQueue[list_num].RemoveAt(x);
-                }
+                var res =  this.neuronQueue[list_num].Except(neuronList).ToList();
+                if (neuronList != this.neuronQueue[list_num] && !this.neuronQueue[list_num].Except(neuronList).Any())
+                    removeList = true;
             }
-            else
-            {
-                for (int x = elInList; x > -1; x--)
-                {
-                    this.neuronQueue[list_num].RemoveAt(x);
 
-                }
-            }
+            if (removeList == true)
+                this.neuronQueue.RemoveAt(list_num);
 
             this.enableViewboxInQueuMoving();
-
         }
 
         // set connection to specific dendrit in neuron with more than one dendrite
@@ -332,7 +326,6 @@ namespace PracaMagisterska
             }
         }
 
-        // TODO: remove setValue with Canvas
         // set top and bottom neuron poisition
         private void set_Position(NeuronViewbox viewbox, KeyValuePair<NeuronViewbox, Double[]> element, bool condition, string side, double offset)
         {
@@ -445,6 +438,8 @@ namespace PracaMagisterska
             this.timeBegginingOfOutflowInReminder = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
+            this.blockAllViewboxMoving();
+
             // if flow was paused
             if (this.pauseFlow)
             {
@@ -458,6 +453,8 @@ namespace PracaMagisterska
                 return;
             }
 
+            this.clearFlow();
+
             Console.WriteLine("Current path: " + this.currentConf);
             if (currentConf == null)
             {
@@ -465,7 +462,6 @@ namespace PracaMagisterska
             }
             this.loadParams();
             Console.WriteLine(this.flowVolume);
-            this.blockAllViewboxMoving();
 
             counter = 0;
             double divider = ((double)1000 / (double)this.timerTimeSpan);
@@ -754,7 +750,6 @@ namespace PracaMagisterska
             Console.WriteLine(this.tickThreshold);
             Console.WriteLine(this.counter);
             this.timer.Stop();
-            this.enableViewboxInQueuMoving();
             startButton.IsEnabled = true;
             this.timeOffset = TimeSpan.Parse("00:00:00");
             this.pauseFlow = false;
@@ -845,16 +840,21 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             this.resetParams();
-            // TODO: chyba trzeba wyczyścić nazwy w niektózych viewboxach -- mam na myśli te gdzie są dodane nazwy up/down
         }
 
-        // reste flow after click 'Reset flow' button
+        // reset flow after click 'Reset flow' button
         private void resetFlowButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
+            this.clearFlow();
+            this.blockNeuronsDendrites();
+            
+        }
+
+        private void clearFlow()
+        {
             foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 viewbox.resetNeuron();
-            this.blockNeuronsDendrites();
             this.resetParams();
         }
 
@@ -862,6 +862,7 @@ namespace PracaMagisterska
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
+            this.enableViewboxInQueuMoving();
             this.timeOffset = TimeSpan.Parse("00:00:00");
             this.drainingTimer.Stop();
         }
@@ -891,7 +892,6 @@ namespace PracaMagisterska
         // pause flow after 'Pasue' button click
         private void pauseButton_Click(object sender, RoutedEventArgs e)
         {
-            timer.Stop();
             this.timer.Stop();
             this.pauseFlow = true;
             startButton.IsEnabled = true;

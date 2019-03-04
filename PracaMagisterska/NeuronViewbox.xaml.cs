@@ -42,23 +42,6 @@ namespace PracaMagisterska
             parentWindow = (DragAndDropPanel)Window.GetWindow(this);
         }
 
-        // add mause up an mause move function to element when it will be clicked and set starting position of clicked object
-        private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Viewbox viewbox = sender as Viewbox;
-            if (this.parentWindow == null)
-                this.getParentWindow();
-            Canvas canvas = parentWindow.dropCanvas;
-            maxX = parentWindow.dropCanvas.ActualWidth - viewbox.Width;
-            maxY = parentWindow.dropCanvas.ActualHeight - viewbox.Height;
-
-            this.startPosition = e.GetPosition(parentWindow.dropCanvas);
-            viewbox.CaptureMouse();
-            Console.WriteLine("In Mouse Down");
-            viewbox.MouseMove += neuron_MouseMove;
-            viewbox.MouseUp += neuron_MouseUp;
-        }
-
         private double[] adjustPosition(Point position)
         {
             var newX = position.X - (viewbox.Width / 2);
@@ -79,6 +62,23 @@ namespace PracaMagisterska
 
             double[] res = { newX, newY };
             return res;
+        }
+
+        // add mause up an mause move function to element when it will be clicked and set starting position of clicked object
+        private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Viewbox viewbox = sender as Viewbox;
+            if (this.parentWindow == null)
+                this.getParentWindow();
+            Canvas canvas = parentWindow.dropCanvas;
+            maxX = parentWindow.dropCanvas.ActualWidth - viewbox.Width;
+            maxY = parentWindow.dropCanvas.ActualHeight - viewbox.Height;
+
+            this.startPosition = e.GetPosition(parentWindow.dropCanvas);
+            viewbox.CaptureMouse();
+            Console.WriteLine("In Mouse Down");
+            viewbox.MouseMove += neuron_MouseMove;
+            viewbox.MouseUp += neuron_MouseUp;
         }
 
         // adjust current position of element during move, prevent from moving out of border
@@ -103,7 +103,6 @@ namespace PracaMagisterska
 
             transform.X = newX;
             transform.Y = newY;
-
         }
 
         // try to link neuron to queue after mouse up from neuron
@@ -140,50 +139,6 @@ namespace PracaMagisterska
             this.viewbox.MouseDown += this.neuron_MouseDown;
         }
 
-
-
-        // set connection to specific dendrit in neuron with more than one dendrite
-        private void setConnectionToDen(Viewbox viewbox, string direction, Viewbox element, string side)
-        {
-            string newDirection = " ";
-            if (side == "left")
-            {
-                viewbox.Name = direction;
-            }
-            else if (side == "right")
-            {
-                newDirection = direction == "up" ? "down" : "up";
-                element.Name = newDirection;
-            }
-        }
-
-        // set top and bottom neuron poisition
-        private void set_TopAndBottom_Property(Viewbox viewbox, KeyValuePair<Viewbox, Double[]> element, bool condition, string side, double offset)
-        {
-            if (condition)
-            {
-                if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
-                {
-                    Console.WriteLine("Down");
-                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
-                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
-                    setConnectionToDen(viewbox, "down", element.Key, side);
-                }
-                else
-                {
-                    Console.WriteLine("Up");
-                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
-                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
-                    setConnectionToDen(viewbox, "up", element.Key, side);
-                }
-            }
-            else
-            {
-                viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
-                viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
-            }
-
-        }
 
         // back to the start position of move
         public void backToPreviousPosition()
@@ -332,7 +287,6 @@ namespace PracaMagisterska
             transform.Y = Y;
 
             this.lastPosition = new double[] { newX, Y};
-
         }
 
 

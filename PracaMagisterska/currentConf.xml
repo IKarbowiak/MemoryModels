@@ -2,7 +2,7 @@
 <Configuration>
   <General>
     <flowBox>25</flowBox>
-    <timeBox>20</timeBox>
+    <timeBox>10</timeBox>
     <drainingBox>10</drainingBox>
     <blockFlow>False</blockFlow>
   </General>
