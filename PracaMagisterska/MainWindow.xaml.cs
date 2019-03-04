@@ -17,6 +17,7 @@ using System.Timers;
 using System.Threading;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
@@ -117,7 +118,10 @@ namespace PracaMagisterska
 
         private void setCurrentConf()
         {
-            string toRemove = "";
+            Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
+            Match match = pattern.Match(Directory.GetCurrentDirectory());
+            GroupCollection groups = match.Groups;
+            this.currentConf = groups[1].Value + "\\defaultConf.xml";
         }
 
         // starts the simulation - starts timer
@@ -134,9 +138,7 @@ namespace PracaMagisterska
             counter = 0;
             if (currentConf == null)
             {
-                string test = Directory.GetCurrentDirectory();
-                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
-                this.currentConf = projectPath + "\\defaultConf.xml";
+                this.setCurrentConf();
             }
             this.loadParams();
             this.calculateTimeOfOutFlow();

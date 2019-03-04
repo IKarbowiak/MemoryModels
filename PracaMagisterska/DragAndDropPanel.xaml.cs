@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
@@ -132,6 +133,15 @@ namespace PracaMagisterska
             objectHandlerPanel.Children.Add(viewbox);
 
         }
+
+        private void setCurrentConf()
+        {
+            Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
+            Match match = pattern.Match(Directory.GetCurrentDirectory());
+            GroupCollection groups = match.Groups;
+            this.currentConf = groups[1].Value + "\\defaultConf.xml";
+        }
+
 
         // check if matrix contain specific array of value, return True if contain
         private bool checkDictValue(double[][] values, double[] compareArray)
@@ -451,8 +461,7 @@ namespace PracaMagisterska
             Console.WriteLine("Current path: " + this.currentConf);
             if (currentConf == null)
             {
-                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
-                this.currentConf = projectPath + "\\defaultConf.xml";
+                this.setCurrentConf();
             }
             this.loadParams();
             Console.WriteLine(this.flowVolume);
