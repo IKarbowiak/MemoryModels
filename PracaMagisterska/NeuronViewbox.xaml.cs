@@ -198,17 +198,14 @@ namespace PracaMagisterska
             transform.X = this.startPosition.X;
             transform.Y = this.startPosition.Y;
 
-            //viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
-            //viewbox.SetValue(Canvas.RightProperty, this.startPosition[1]);
-            //viewbox.SetValue(Canvas.TopProperty, this.startPosition[2]);
-            //viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
+            this.lastPosition = new double[] { this.startPosition.X, this.startPosition.Y };
         }
 
         // check if neuron quit border of neuron panel
         public bool checkIfQuitBorder()
         {   
-            double newX = lastPosition[0] - (viewbox.Width / 2);
-            double newY = lastPosition[1] - (viewbox.Height / 2);
+            double newX = lastPosition[0];
+            double newY = lastPosition[1];
 
             bool quit = false;
             if (newX < 0) { newX = 0; quit = true; }
@@ -225,10 +222,16 @@ namespace PracaMagisterska
             }
             if (quit)
             {
+                double prevY = newY;
+                if (newY > 5)
+                    newY = prevY - 3;
+                else
+                    newY = prevY + 3;
                 transform.X = newX;
                 transform.Y = newY;
             }
 
+            this.lastPosition = new double[] { newX, newY };
             return quit;
 
         }
@@ -327,6 +330,8 @@ namespace PracaMagisterska
 
             transform.X = newX;
             transform.Y = Y;
+
+            this.lastPosition = new double[] { newX, Y};
 
         }
 
