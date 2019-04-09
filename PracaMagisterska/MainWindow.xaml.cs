@@ -124,6 +124,13 @@ namespace PracaMagisterska
             this.currentConf = groups[1].Value + "\\defaultConf.xml";
         }
 
+        private void HTMButton_Click(object sender, RoutedEventArgs e)
+        {
+            HTM_window HTM_window = new HTM_window();
+
+            HTM_window.ShowDialog();
+        }
+
         // starts the simulation - starts timer
         private void start_Click(object sender, RoutedEventArgs e)
         { 
@@ -308,6 +315,12 @@ namespace PracaMagisterska
 
             myWindow.ShowDialog();
 
+        }
+
+        private void HHButton_Click(object sender, RoutedEventArgs e)
+        {
+            HH_model_window hh_model = new HH_model_window();
+            hh_model.ShowDialog();
         }
 
         // stops the timers which stop the flow after 'Stop' button click
