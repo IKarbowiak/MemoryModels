@@ -101,7 +101,10 @@
     <Compile Include="HH\HH_neuron.cs" />
     <Compile Include="HH\HH_model.cs" />
     <Compile Include="HTM\Cell.cs" />
+    <Compile Include="HTM\Column.cs" />
     <Compile Include="HTM\HTM.cs" />
+    <Compile Include="HTM\HTM_parameters.cs" />
+    <Compile Include="HTM\InputCell.cs" />
     <Compile Include="HTM\Segment.cs" />
     <Compile Include="HTM\Synapse.cs" />
     <Compile Include="HTM\SynapseState.cs" />

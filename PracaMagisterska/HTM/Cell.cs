@@ -9,12 +9,13 @@ namespace PracaMagisterska.HTM
     class Cell
     {
         private int segments_per_cell = 5;
+        private double synapse_activation_threshold = 1; // thershold for a segment, segment is said to be active if the number of connected active synapses is above this value
 
         private Column column;
         private int layer;
-        private bool active = false;
+        public bool active = false;
         private bool was_active = false;
-        private bool predicting = false;
+        public bool predicting = false;
         private bool was_predicted = false;
         private bool learning = false;
         private bool was_learning = false;

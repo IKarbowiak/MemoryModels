@@ -8,6 +8,8 @@ namespace PracaMagisterska.HTM
 {
     class Segment
     {
+        private int synapses_per_segment = 45;
+
         private List<Synapse> synapses;
         private bool distal;
         private bool next_step;
@@ -18,6 +20,11 @@ namespace PracaMagisterska.HTM
             this.synapses = new List<Synapse>();
             this.distal = distal;
             this.next_step = next_step;
+        }
+
+        public void add_synapse(Synapse synapse)
+        {
+            this.synapses.Add(synapse);
         }
 
     }
