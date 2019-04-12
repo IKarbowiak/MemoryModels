@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PracaMagisterska.HTM
 {
-    class UpdateSegments
+    public class UpdateSegments
     {
         public Dictionary<Cell, int[]> dict_data;
 

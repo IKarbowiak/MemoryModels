@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace PracaMagisterska.HTM
 {
-    class InputCell
+    public class InputCell
     {
-        private int x;
-        private int y;
+        public int x;
+        public int y;
         private int[][] input_data;
         private bool predicted;
+        public bool active;
+        public bool learning;
 
         public InputCell(int x, int y, int[][] input_data)
         {
@@ -20,6 +22,18 @@ namespace PracaMagisterska.HTM
             this.y = y;
             this.input_data = input_data;
             this.predicted = false;
+            this.learning = false;
+        }
+
+        // TODO: Fix was and i active
+        public bool is_active()
+        {
+            return this.input_data[this.x][this.y] == 1 ? true : false;
+        }
+
+        public bool was_active()
+        {
+            return this.input_data[this.x][this.y] == 1 ? true : false;
         }
 
     }

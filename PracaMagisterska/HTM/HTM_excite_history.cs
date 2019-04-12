@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PracaMagisterska.HTM
 {
-    class HTM_excite_history
+    public class HTM_excite_history
     {
         private const int INACTIVE = 0;
         private const int PREDICTING = 1;

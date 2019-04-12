@@ -7,10 +7,10 @@ using NumSharp.Core;
 
 namespace PracaMagisterska.HTM
 {
-    class HTM
+    public class HTM
     {
         public int layer;
-        private int inhibition_radius = 5;
+        private const int inhibition_radius = HTM_parameters.INHIBITION_RADIUS; // Average connected receptive field size of the columns.
         public int cells_per_column;
         private int[][] input_cells;
         private InputCell[][] proxy_cells;
@@ -19,10 +19,12 @@ namespace PracaMagisterska.HTM
         private Column[][] grid_columns;
         private int width;
         private int length;
+        private UpdateSegments update_segments;
 
         public HTM(int cells_in_column=HTM_parameters.CELLS_PER_COLUMN)
         {
             this.cells_per_column = cells_in_column;
+            this.update_segments = new UpdateSegments();
             //this.input_cells = new NDArray(typeof(int), );
             
         }
@@ -77,6 +79,22 @@ namespace PracaMagisterska.HTM
             } 
         }
 
+        public IEnumerable<Cell> get_cells()
+        {
+            foreach (Column column in this.get_columns())
+            {
+                foreach (Cell cell in column.cells)
+                {
+                    yield return cell;
+                }
+            }
+        }
+
+        public Tuple<int, int> get_columns_grid_size()
+        {
+            return Tuple.Create(grid_columns.Length, grid_columns[0].Length);
+        }
+
         private void wire_columns_to_input(int input_width, int input_length)
         {
             this.proxy_cells = new InputCell[input_width][];
@@ -124,20 +142,89 @@ namespace PracaMagisterska.HTM
             return y1 * stddev + mean;
         }
 
-        public IEnumerable<Cell> get_cells()
+        public bool update_data(int[][] new_data)
         {
-            foreach (Column column in this.get_columns())
+            if (new_data.Length == this.data.Length && new_data[0].Length == this.data[0].Length)
             {
-                foreach (Cell cell in column.cells)
-                {
-                    yield return cell;
-                }
+                this.data = new_data;
+                return true;
             }
+            return false;
         }
 
-        public Tuple<int, int> get_columns_grid_size()
+        public int lower_limit(int value)
         {
-            return Tuple.Create(grid_columns.Length, grid_columns[0].Length);
+            return Math.Max(0, Math.Min(value - 1, value - inhibition_radius));
         }
+
+        public int upper_limit(int value, int edge)
+        {
+            return Math.Min(edge, Math.Max(value + 1, value + inhibition_radius));
+        }
+
+        public List<Column> neighbors(Column col)
+        {
+            List<Column> neighbors_columns = new List<Column>();
+            
+            // calculate boundaries of neighbour
+            int start_x = this.lower_limit(col.x);
+            int start_y = this.lower_limit(col.y);
+
+            int end_x = this.upper_limit(col.x, this.width);
+            int end_y = this.upper_limit(col.y, this.length);
+
+            for (int i = start_x; i < end_x; i++)
+            {
+                for (int j = start_y; j < end_y; j++)
+                {
+                    neighbors_columns.Add(this.grid_columns[i][j]);
+                }
+            }
+
+            return neighbors_columns;
+        }
+
+        public List<Column> get_active_columns()
+        {
+            List<Column> active_columns = new List<Column>();
+            foreach (Column column in this.get_columns())
+            {
+                if (column.active)
+                    active_columns.Add(column);
+            }
+
+            return active_columns;
+        }
+
+        public void execute(bool learning = true)
+        {
+            foreach(Cell cell in this.get_cells())
+            {
+                cell.clock_tick();
+            }
+            SpatialPool spatial_pool = new SpatialPool();
+            spatial_pool.perform(this);
+
+            TemporalPool temporal_pool = new TemporalPool(this, learning, this.update_segments);
+            temporal_pool.perform();
+        }
+
+        public double average_receptive_field_size()
+        {
+            // docs Numenta: The radius of the average connected receptive field size of all the columns. 
+            // The connected receptive field size of a column includes only the connected synapses (those with permanence values >= connectedPerm).
+            // This is used to determine the extent of lateral inhibition between columns
+            List<double> radius_list = new List<Double>();
+            foreach (Column col in this.get_columns())
+            {
+                foreach (Synapse synapse in col.get_connected_synapses())
+                {
+                    radius_list.Add(Math.Sqrt(Math.Pow((double)(col.x - synapse.input_cell.x), 2) + Math.Pow((double)(col.y - synapse.input_cell.y), 2)));
+                }
+            }
+
+            return radius_list.Sum() / radius_list.Count();
+        }
+
     }
 }

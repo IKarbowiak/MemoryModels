@@ -103,9 +103,11 @@
     <Compile Include="HTM\Cell.cs" />
     <Compile Include="HTM\Column.cs" />
     <Compile Include="HTM\HTM.cs" />
+    <Compile Include="HTM\HTM_excite_history.cs" />
     <Compile Include="HTM\HTM_parameters.cs" />
     <Compile Include="HTM\InputCell.cs" />
     <Compile Include="HTM\Segment.cs" />
+    <Compile Include="HTM\SpatialPool.cs" />
     <Compile Include="HTM\Synapse.cs" />
     <Compile Include="HTM\SynapseState.cs" />
     <Compile Include="HTM\UpdateSegments.cs" />
@@ -211,7 +213,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="HTM\HTM_congiguration.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
