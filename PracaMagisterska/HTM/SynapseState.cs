@@ -6,9 +6,20 @@ using System.Threading.Tasks;
 
 namespace PracaMagisterska.HTM
 {
-    class SynapseState
+    public class SynapseState
     {
-        public SynapseState()
+        public Synapse synapse;
+        public Segment segment;
+        public bool input_was_active;
+
+        public SynapseState(Synapse syn, Segment seg, bool was_active)
+        {
+            this.synapse = syn;
+            this.segment = seg;
+            this.input_was_active = was_active;
+        }
+
+        public void capture_segment_state()
         {
 
         }

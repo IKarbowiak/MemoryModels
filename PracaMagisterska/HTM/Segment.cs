@@ -28,12 +28,12 @@ namespace PracaMagisterska.HTM
             this.synapses.Add(synapse);
         }
 
-        public List<Synapse> old_firing_synapses()
+        public List<Synapse> old_firing_synapses(bool connection_required = true)
         {
             List<Synapse> firing_synapses = new List<Synapse>();
             foreach (Synapse synapse in this.synapses)
             {
-                if (synapse.was_firing())
+                if (synapse.was_firing(connection_required))
                     firing_synapses.Add(synapse);
             }
             return firing_synapses;
@@ -87,6 +87,12 @@ namespace PracaMagisterska.HTM
             }
 
             return (firing_synapses.Count() / total) >= fraction_segment_activation_threshold;
+        }
+
+        public void create_synapse(Cell input)
+        {
+            // input: coming data or the previous cell in network
+            this.add_synapse(new Synapse(cell: input));
         }
 
     }

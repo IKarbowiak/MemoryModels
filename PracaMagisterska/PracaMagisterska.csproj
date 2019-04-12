@@ -110,6 +110,7 @@
     <Compile Include="HTM\SpatialPool.cs" />
     <Compile Include="HTM\Synapse.cs" />
     <Compile Include="HTM\SynapseState.cs" />
+    <Compile Include="HTM\TemporalPool.cs" />
     <Compile Include="HTM\UpdateSegments.cs" />
     <Compile Include="HTM_window.xaml.cs">
       <DependentUpon>HTM_window.xaml</DependentUpon>

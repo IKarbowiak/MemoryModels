@@ -14,5 +14,16 @@ namespace PracaMagisterska.HTM
         {
 
         }
+
+        public void add(Cell cell, Segment segment, int time_delta= 0)
+        {
+            // time_delta: 0 mean current state, -1 mean previous state
+            
+        }
+
+        public void capture_segment_state()
+        {
+
+        }
     }
 }

@@ -123,7 +123,7 @@ namespace PracaMagisterska.HTM
                     // TODO: Figure out why it is desribe by this equation, maybe try with other
                     double locality_bias = ((double)HTM_parameters.INPUT_BIAS_PEAK / 0.4) 
                         * Math.Exp(Math.Pow((distance / ((double)longer_side * HTM_parameters.INPUT_BIAS_STD_DEV)), 2) / (-2));
-                    Synapse synapse = new Synapse(proxy_cell, rand_permanence * locality_bias);
+                    Synapse synapse = new Synapse(input_cell: proxy_cell, permanence: rand_permanence * locality_bias);
                     col.segment.add_synapse(synapse);
                 }
             }

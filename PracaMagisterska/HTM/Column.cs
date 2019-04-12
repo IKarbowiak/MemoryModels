@@ -126,5 +126,46 @@ namespace PracaMagisterska.HTM
         {
             return this.segment.get_connected_synapses();
         }
+
+        public Tuple<Cell, Segment> get_best_matching_cell(bool next_step = true)
+        {
+            // doc Numenta: find the segment with the largest number of active synapses.
+            // If no segments are found, then an index of -1 is returned
+            Cell best_cell = null;
+            int best_cell_firing_synapse_count = 0;
+            Segment best_segment = null;
+
+            foreach (Cell cell in this.cells)
+            {
+                Segment segment = cell.get_best_matching_segment(next_step);
+                int synapses_count = segment != null ? segment.old_firing_synapses(connection_required: false).Count() : 0;
+                if (synapses_count > best_cell_firing_synapse_count)
+                {
+                    best_cell_firing_synapse_count = synapses_count; ;
+                    best_segment = segment;
+                    best_cell = cell;
+                }
+            }
+
+            // if best_cell is none, choose cell with the fewest segments
+            if (best_cell == null)
+            {
+                int fewest_segment = this.cells[0].segments.Count();
+                best_cell = this.cells[0];
+                foreach (Cell cell in this.cells)
+                {
+                    if (best_cell == cell)
+                        continue;
+                    if (cell.segments.Count() < fewest_segment)
+                    {
+                        best_cell = cell;
+                        fewest_segment = cell.segments.Count();
+                    }
+                }
+                best_segment = best_cell.get_best_matching_segment(next_step);
+            }
+
+            return Tuple.Create(best_cell, best_segment);
+        }
     }
 }

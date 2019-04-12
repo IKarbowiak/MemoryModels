@@ -9,6 +9,8 @@ namespace PracaMagisterska.HTM
     public static class HTM_parameters
     {
         public const int SYNAPSES_PER_SEGMENT = 45;
+        public const int SEGMENTS_PER_CELL = 5;
+        public const int SYNAPSE_ACTIVATION_THRESHOLD = 1;
         public const double CONNECTED_PERMANENCE = 0.2;
         public const double PERMANENCE_INCREMENT = 0.04;
         public const double PERMANENCE_DECREMENT = 0.04;
@@ -21,5 +23,6 @@ namespace PracaMagisterska.HTM
         public const int MIN_OVERLAP = 5;
         public const double AVG_SCALE = 0.995;
         public const int THRESHOLD_SYNAPSES_PER_SEGMENT = 20;
+        public const int MIN_SYNAPSES_PER_SEGMENT_THRESHOLD = 1; // how much synapses must fire to be even consider as for learning
     }
 }

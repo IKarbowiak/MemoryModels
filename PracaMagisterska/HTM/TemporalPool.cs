@@ -42,7 +42,6 @@ namespace PracaMagisterska.HTM
                             bu_predicted = true;
                             cell.active = true;
 
-                            // TODO: fix it => always false !!!
                             if (this.learning && segment.was_active_from_learning_cells())
                             {
                                 is_cell_chosen = true;
@@ -53,13 +52,29 @@ namespace PracaMagisterska.HTM
                     }
                 }
 
-                if (bu_predicted)
+                // active all cells if any of them was predicted
+                if (!bu_predicted)
                 {
                     foreach (Cell cell in column.cells)
                         cell.active = true;
                 }
 
                 // learning part of phase 1
+                if (learning && !is_cell_chosen)
+                {
+                    Tuple<Cell, Segment> best_cell_and_segment = column.get_best_matching_cell(next_step: true);
+                    Cell cell = best_cell_and_segment.Item1;
+                    Segment segment = best_cell_and_segment.Item2;
+                    cell.learning = true;
+                    Segment new_segment;
+
+                    if (segment == null)
+                        new_segment = cell.create_segment(htm, true);
+
+                    this.update_segments.add(cell, segment, -1);
+
+                        
+                }
 
             }
         }
