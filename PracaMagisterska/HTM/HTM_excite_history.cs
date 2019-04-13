@@ -9,9 +9,8 @@ namespace PracaMagisterska.HTM
     public class HTM_excite_history
     {
         private const int INACTIVE = 0;
-        private const int PREDICTING = 1;
-        private const int ACTIVE = 2;
-
+        private const int ACTIVE = 1;
+        private const int PREDICTING = 2;
 
         private int layer;
         private int cells_per_column;
