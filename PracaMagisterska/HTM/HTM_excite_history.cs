@@ -17,8 +17,8 @@ namespace PracaMagisterska.HTM
         private int cells_per_column;
         private int column_width;
         private int column_length;
-        private List<List<int>> cell_excite_history;
-        private List<List<int>> column_excite_history;
+        public List<List<int>> cell_excite_history;
+        public List<List<int>> column_excite_history;
 
         public HTM_excite_history(int layer, int cells_in_column, int column_width, int column_length)
         {

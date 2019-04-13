@@ -24,5 +24,6 @@ namespace PracaMagisterska.HTM
         public const double AVG_SCALE = 0.995;
         public const int THRESHOLD_SYNAPSES_PER_SEGMENT = 20;
         public const int MIN_SYNAPSES_PER_SEGMENT_THRESHOLD = 1; // how much synapses must fire to be even consider as for learning
+        public const int MAX_NEW_SYNAPSES = 3;
     }
 }

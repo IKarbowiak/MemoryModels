@@ -32,12 +32,12 @@ namespace PracaMagisterska.HTM
 
         }
 
-        public bool is_firing()
+        public bool is_firing(bool connection_required = true)
         {
             if (input_cell != null)
-                return this.input_cell.is_active() && this.connected();
+                return this.input_cell.is_active() && ( this.connected() || !connection_required);
             else
-                return this.cell.active && this.connected();
+                return this.cell.active && ( this.connected() || !connection_required );
         }
 
         public bool connected()
@@ -61,6 +61,19 @@ namespace PracaMagisterska.HTM
                 return this.input_cell.learning;
             else
                 return this.cell.learning;
+        }
+
+        public bool firing_at(int time_delta, bool connection_required = true)
+        {
+            if (time_delta == 0)
+                return this.is_firing(connection_required);
+            else if (time_delta == -1)
+                return this.was_firing(connection_required);
+            else
+            {
+                Console.WriteLine("Time delta is different than 0 and -1");
+                return false;
+            }
         }
     }
 }

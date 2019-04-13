@@ -109,7 +109,7 @@ namespace PracaMagisterska.HTM
         public Segment create_segment(HTM htm, bool next_step)
         {
             const int synapses_per_segment = HTM_parameters.SYNAPSES_PER_SEGMENT;
-            Segment segment = new Segment(next_step);
+            Segment segment = new Segment(next_step: next_step);
             int synapse_len = this.create_synapses(segment, htm.get_cells(), synapses_per_segment, true, false);
 
             if (!next_step && synapse_len < synapses_per_segment)

@@ -14,7 +14,7 @@ namespace PracaMagisterska.HTM
         public int cells_per_column;
         private int[][] input_cells;
         private InputCell[][] proxy_cells;
-        private int[][] data;
+        public int[][] data;
         private double input_compression;
         private Column[][] grid_columns;
         private int width;
@@ -206,7 +206,8 @@ namespace PracaMagisterska.HTM
             spatial_pool.perform(this);
 
             TemporalPool temporal_pool = new TemporalPool(this, learning, this.update_segments);
-            temporal_pool.perform();
+            UpdateSegments update_segments = temporal_pool.perform();
+
         }
 
         public double average_receptive_field_size()

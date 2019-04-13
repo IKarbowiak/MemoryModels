@@ -32,13 +32,22 @@ namespace PracaMagisterska
 
         public int[][] data_generator()
         {
-            int[][] data = new int[6][];
-            data[0] = new int[] { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 };
-            data[1] = new int[] { 0, 0, 0, 0, 1, 0, 1, 0, 1, 1 };
-            data[2] = new int[] { 0, 0, 1, 0, 1, 0, 0, 0, 0, 1 };
-            data[3] = new int[] { 0, 1, 0, 0, 1, 1, 0, 1, 0, 1 };
-            data[4] = new int[] { 1, 0, 1, 0, 1, 0, 1, 0, 0, 1 };
-            data[5] = new int[] { 0, 0, 0, 1, 1, 0, 0, 0, 1, 1 };
+            int[][] old_data = this.htm.data;
+            int[][] data = new int[old_data.Length][];
+
+            for (int i = 0; i < old_data.Length; i++) 
+            {
+                int[] row = old_data[i];
+                int[] new_row = new int[old_data[0].Length];
+
+                for (int j = 0; j < row.Length; j++)
+                {
+                    new_row[j] = row[j] == 1 ? 0 : 1;
+                }
+
+                data[i] = new_row;
+            }
+
             return data;
         }
 
@@ -55,7 +64,7 @@ namespace PracaMagisterska
             htm.initialize_input(data, 1);
             Tuple<int, int> grid_column_shape = htm.get_columns_grid_size();
             HTM_excite_history excite_history = new HTM_excite_history(htm.layer, htm.cells_per_column, grid_column_shape.Item1, grid_column_shape.Item2);
-            this.execute(excite_history, this.data_generator, 20);
+            this.execute(excite_history, this.data_generator, 100);
 
         }
 
@@ -74,9 +83,18 @@ namespace PracaMagisterska
                     break;
                 }
 
-                history.update_history(htm);
                 htm.execute();
+                history.update_history(htm);
                 iteration_number -= 1;
+            }
+
+            foreach (List<int> data in history.cell_excite_history)
+            {
+                foreach (int i in data)
+                {
+                    if (i == 1)
+                        Console.WriteLine("predicting");
+                }
             }
         }
 
