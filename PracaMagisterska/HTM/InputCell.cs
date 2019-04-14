@@ -10,12 +10,12 @@ namespace PracaMagisterska.HTM
     {
         public int x;
         public int y;
-        private int[][] input_data;
+        private List<List<int>> input_data;
         private bool predicted;
         public bool active;
         public bool learning;
 
-        public InputCell(int x, int y, int[][] input_data)
+        public InputCell(int x, int y, List<List<int>> input_data)
         {
             // x, y are location of cell in input data
             this.x = x;

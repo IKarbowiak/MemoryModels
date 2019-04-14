@@ -14,7 +14,7 @@ namespace PracaMagisterska.HTM
         public int cells_per_column;
         private int[][] input_cells;
         private InputCell[][] proxy_cells;
-        public int[][] data;
+        public List<List<int>> data;
         private double input_compression;
         private Column[][] grid_columns;
         private int width;
@@ -25,19 +25,18 @@ namespace PracaMagisterska.HTM
         {
             this.cells_per_column = cells_in_column;
             this.update_segments = new UpdateSegments();
-            //this.input_cells = new NDArray(typeof(int), );
             
         }
 
-        public void initialize_input(int[][] data, int layer, double comprssion_factor=1.0)
+        public void initialize_input(List<List<int>> data, int layer, double comprssion_factor=1.0)
         {
             // compression_fctor: the ratio of input elements to columns
             this.data = data;
             this.input_compression = comprssion_factor;
             this.layer = layer;
 
-            int input_width = data.Length;
-            int input_length = data[0].Length;
+            int input_width = data.Count;
+            int input_length = data[0].Count;
 
             // get width and length of input cells
             this.width = (int)(input_width / this.input_compression);
@@ -45,7 +44,7 @@ namespace PracaMagisterska.HTM
 
             this.create_columns();
 
-            if (this.width * this.length < 45)
+             if (this.width * this.length < 45)
             {
                 Console.WriteLine("Increase size of input to at least 45 cells.");
             }
@@ -142,9 +141,9 @@ namespace PracaMagisterska.HTM
             return y1 * stddev + mean;
         }
 
-        public bool update_data(int[][] new_data)
+        public bool update_data(List<List<int>> new_data)
         {
-            if (new_data.Length == this.data.Length && new_data[0].Length == this.data[0].Length)
+            if (new_data.Count == this.data.Count && new_data[0].Count == this.data[0].Count)
             {
                 this.data = new_data;
                 return true;
