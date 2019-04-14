@@ -8,7 +8,7 @@ namespace PracaMagisterska.HTM
 {
     public class Column
     {
-        private int min_overlap = 5;
+        private int min_overlap = HTM_parameters.MIN_OVERLAP;
 
         public int x;
         public int y;

@@ -16,8 +16,8 @@ namespace PracaMagisterska.HTM
         private int cells_per_column;
         private int column_width;
         private int column_length;
-        public List<List<int>> cell_excite_history;
         public List<List<int>> column_excite_history;
+        public List<List<List<int>>> cell_excite_history;
 
         public HTM_excite_history(int layer, int cells_in_column, int column_width, int column_length)
         {
@@ -25,22 +25,34 @@ namespace PracaMagisterska.HTM
             this.cells_per_column = cells_in_column;
             this.column_width = column_width;
             this.column_length = column_length;
-            this.cell_excite_history = new List<List<int>>();
             this.column_excite_history = new List<List<int>>();
+            this.cell_excite_history = new List<List<List<int>>>();
         }
+
 
         public void update_history(HTM htm)
         {
-            List<int> cell_exicte_time_slice = new List<int>();
+            List<List<int>> cell_exicte_time_slice = new List<List<int>>();
             
-            foreach (Cell cell in htm.get_cells())
+            for (int i = 0; i < HTM_parameters.CELLS_PER_COLUMN; i++)
             {
-                int state = INACTIVE;
-                if (cell.active)
-                    state = ACTIVE;
-                else if (cell.predicting)
-                    state = PREDICTING;
-                cell_exicte_time_slice.Add(state);
+                cell_exicte_time_slice.Add(new List<int>());
+            }
+
+            foreach (Column column in htm.get_columns())
+            {
+                int cell_num = 0;
+                foreach (Cell cell in column.cells)
+                {
+                    int state = INACTIVE;
+                    if (cell.active)
+                        state = ACTIVE;
+                    else if (cell.predicting)
+                        state = PREDICTING;
+                    cell_exicte_time_slice[cell_num].Add(state);
+                    cell_num++;
+                }
+
             }
 
             List<int> column_exicte_time_slice = new List<int>();
@@ -53,7 +65,7 @@ namespace PracaMagisterska.HTM
 
             this.cell_excite_history.Add(cell_exicte_time_slice);
             this.column_excite_history.Add(column_exicte_time_slice);
-            
+
         }
 
     }

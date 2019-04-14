@@ -20,7 +20,6 @@ namespace PracaMagisterska.HTM
             this.overlap(htm);
             List<Column> active_columns = this.inhibition(htm);
             double inhibition_radius = this.learning(active_columns, htm);
-            Console.WriteLine(inhibition_radius);
         }
 
         private void overlap(HTM htm)
