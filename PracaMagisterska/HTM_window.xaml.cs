@@ -123,6 +123,8 @@ namespace PracaMagisterska
 
             result_panel.Children.Clear();
             iteration_panel.Children.Clear();
+            input_marker_panel.Children.Clear();
+
             TextBlock info = new TextBlock()
             {
                 Text = "Iteration number",
