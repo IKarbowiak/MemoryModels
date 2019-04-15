@@ -125,17 +125,20 @@ namespace PracaMagisterska
             iteration_panel.Children.Clear();
             input_marker_panel.Children.Clear();
 
-            TextBlock info = new TextBlock()
+            foreach (KeyValuePair<StackPanel, string> data in new Dictionary<StackPanel, string> { { iteration_panel, "Iteration number" },
+                { result_panel, "HTM layers" }, { input_marker_panel, "Input" } })
             {
-                Text = "Iteration number",
-                TextAlignment = TextAlignment.Center,
-                FontSize = 12,
-                FontWeight = FontWeights.DemiBold,
-            };
-            iteration_panel.Children.Add(info);
+                TextBlock info = new TextBlock()
+                {
+                    Text = data.Value,
+                    TextAlignment = TextAlignment.Center,
+                    FontSize = 12,
+                    FontWeight = FontWeights.DemiBold,
+                    Margin = new Thickness(0, 0, 0, 5),
+                };
+                data.Key.Children.Add(info);
+            }
 
-            TextBlock blank = new TextBlock() { };
-            result_panel.Children.Add(blank);
             this.after_reset = true;
         }
 

@@ -6,158 +6,32 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         ResizeMode="CanResize"
-        Title="MainWindow" Height="500" Width="1000">
-    <Grid x:Name="Start" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20*"/>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="30*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="4*"/>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="5*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" TextAlignment="Center" FontSize="30" Margin="10,10,0.8,0" Height="40"><Run Text="Simple Neuron Model"/></TextBlock>
-        <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,140,0"/>
-        <Button x:Name="stopButton" Grid.Row="0" Grid.Column="1" Content="Stop" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,0,0" Click="stopButton_Click" />
-        <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,60,0,0" Click="resetButton_Click"/>
-        <Button x:Name="HHButton" Grid.Row="0" Grid.Column="1" Content="HH model" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="280,60,0,0" Click="HHButton_Click" />
-        <Button x:Name="HTMButton" Grid.Row="0" Grid.Column="1" Content="HTM model" VerticalAlignment="Center" HorizontalAlignment="Left" Width="51" Height="20" Margin="80,60,0,0" Click="HTMButton_Click" />
-        <TextBlock Grid.Column="2" Grid.Row="0" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center" FontSize="14" Height="18" >
-                <Run Text="Results"/></TextBlock>
-        <StackPanel Grid.Row="1" Grid.RowSpan="3" Grid.Column="0">
-            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
-            <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10" BorderBrush="Gray" BorderThickness="1" >
-                <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
-            </Border>
-            <TextBlock Margin="0,30,0,0" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
-
-            <Button x:Name="setParamButton" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
-            <Button Width="120" Height="20" Margin="0,60,0,10" VerticalAlignment="Bottom" Click="DragAndDropButton_Click" Content="Drag and drop panel"/>
-            <Button x:Name="reminderButton" Grid.Row="2" Grid.Column="0"  Width="120" Height="20" VerticalAlignment="Center" Click="reminderButton_Click" Margin="0,10,0,10"  Content="Reminder"/>
-            <Button x:Name="resultsButton" Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,10,0,10" Content="Results" Click="resultsButton_Click"/>
-        </StackPanel>
-        
-        <Grid x:Name="gridModel1Main" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="40*"/>
-                <ColumnDefinition Width="5*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="10*"/>
-                <RowDefinition Height="4*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center" Height="16" Width="10" />
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center" Height="16" Margin="6.4,18.4,11.4,16" Width="11"/>
-            <!--<local:Model1UC length="40" Grid.Column="1" Grid.Row="1"/>-->
-            <!--<Rectangle x:Name="RecModel1" Fill="#FFF4F4F5"  VerticalAlignment="Stretch" Height="8" Margin="0,0,0,0" Grid.Row="0" Stroke="Black"  Grid.Column="1" Width="200" x:FieldModifier="public"/>-->
-        </Grid>
-        <Grid x:Name="gridModel2Main" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="40*"/>
-                <ColumnDefinition Width="5*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="10*"/>
-                <RowDefinition Height="4*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center" Height="16" Width="12" />
-            <!--<Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="4.8,18.8,1.6,19.6" Grid.Row="1" Stroke="Black" VerticalAlignment="Stretch" Grid.Column="1"/>-->
-            <!--<Rectangle Fill="#FFF4F4F5" Stroke="Black" HorizontalAlignment="Stretch" Grid.Column="1" Height="40" Margin="35,0.2,105,0" Grid.Row="1" VerticalAlignment="Stretch"/>-->
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center" Height="16" Width="11"/>
-        </Grid>
-        <Grid x:Name="gridModel3Main" Grid.Row="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="400"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="10*"/>
-                <RowDefinition Height="4*"/>
-            </Grid.RowDefinitions>
-            <!--<Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="40,0,0,0" Grid.Row="1" Stroke="Black" VerticalAlignment="Stretch" Grid.Column="1"/>-->
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <!--<Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="0,14,130,0" Grid.Row="1" Stroke="Black" VerticalAlignment="Stretch" Grid.Column="1"/>-->
-            <!--<Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Stretch" Height="8" Margin="0,0,130,14" Grid.Row="1" Stroke="Black" VerticalAlignment="Stretch" Grid.Column="1"/>-->
-            <!--<Rectangle Fill="#FFF4F4F5" Stroke="Black" HorizontalAlignment="Stretch" Grid.Column="1" Margin="35,0.2,105,0" Height="40" Grid.Row="1" VerticalAlignment="Stretch"/>-->
-            <TextBlock Grid.Column="2" Grid.Row="1" Text="🡆" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-        </Grid>
-
-        <!--<Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.RowSpan="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3*"/>
-
-            </Grid.RowDefinitions>
-            <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0" BorderBrush="Gray" BorderThickness="1" >
-                <TextBlock x:Name="timerTextBlock" Height="30" Width="100" TextAlignment="Center" FontSize="15">00:00</TextBlock>
-            </Border>
-            <TextBlock Grid.Column="0" Grid.Row="1" Margin="0,10,0,20" FontWeight="DemiBold" VerticalAlignment="Top" TextAlignment="Center" FontSize="15" Height="19"><Run Text="Please choose parameters"/></TextBlock>
-            <Button x:Name="setParamButton" Grid.Column="0" Grid.Row="1" Height="20" Width="120" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,10" Background="Beige" Content="Set parameters" Click="setParamButton_Click"/>
-            <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,40" FontSize="15" FontWeight="DemiBold">Timer</TextBlock>
-            <Button Grid.Row="1" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Bottom" Click="DragAndDropButton_Click" Content="Drag and drop panel"/>
-            <Button Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,0,0,35"  Content="Reminder"/>
-            <Button Grid.Row="2" Grid.Column="0" Width="120" Height="20" VerticalAlignment="Center" Margin="0,35,0,0" Content="Results"/>
-        </Grid>-->
-        <Grid Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        Title="MainWindow" Height="400" Width="500">
+    <Border BorderBrush="DimGray" BorderThickness="1" Margin="7,7,7,7">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="2*"/>
-                <RowDefinition Height="2*"/>
                 <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center" FontSize="11" Grid.Row="1" TextWrapping="Wrap" Margin="0,0,10,0">Volume of outflow from one flow<Run Text=" ["/>
-                <Run Text="μ" /><Run Text="m"/><Run Typography.Variants="Superscript" Text="3"/><Run Text="]"/></TextBlock>
-            <TextBlock Grid.Column="1" FontWeight="DemiBold" VerticalAlignment="Center" TextAlignment="Center" FontSize="11" Grid.Row="1" TextWrapping="Wrap" Margin="10,0,0,0">Total outflow volume<Run Text=" ["/>
-                <Run Text="μ" /><Run Text="m"/><Run Typography.Variants="Superscript" Text="3"/><Run Text="]"/></TextBlock>
-            <Border Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0,15,0">
-                <TextBlock x:Name="M1VolumeBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-            <Border Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0,15,0">
-                <TextBlock x:Name="M1VolumeTotalBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-        </Grid>
-        <Grid Grid.Column="2" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0">
-                <TextBlock x:Name="M2VolumeBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-            <Border Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0">
-                <TextBlock x:Name="M2VolumeTotalBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-        </Grid>
-        <Grid Grid.Column="2" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0">
-                <TextBlock x:Name="M3VolumeBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-            <Border Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Background="GhostWhite" BorderBrush="Silver" BorderThickness="1" Margin="15,0">
-                <TextBlock x:Name="M3VolumeTotalBlock" TextAlignment="Center" Height="16" Text="0"/>
-            </Border>
-        </Grid>
 
-    </Grid>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Text="Memory models" TextAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
+            <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                <TextBlock Margin="0,0,0,5" TextAlignment="Center">
+                Personal solution which try to model mmemory with use of liquid flow inside neurons.
+                </TextBlock>
+                <Button Width="100" Height="20" Click="personal_sulution_button">Personal solution</Button>
+                <TextBlock Margin="0,20,0,5" TextAlignment="Center">
+                Hierarchial temporal Memory is biologically theory proposed by Jeff Hawkins.
+                </TextBlock>
+                <Button Width="100" Height="20" Margin="0,0,0,0" Click="HTM_model_button">HTM Model</Button>
+                <TextBlock Margin="0,20,0,5" TextAlignment="Center">
+                Hodgkin-Huxley model extended about flow equations.
+                </TextBlock>
+                <Button Width="100" Height="20" Margin="0,0,0,0" Click="HH_model_button">HH Model</Button>
+            </StackPanel>
+
+        </Grid>
+    </Border>
 </Window>
