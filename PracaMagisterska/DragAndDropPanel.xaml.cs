@@ -15,23 +15,17 @@ using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
-    /// <summary>
-    /// Interaction logic for Window1.xaml
-    /// </summary>
-    /// 
 
     public partial class DragAndDropPanel : Window
     {
-        private double maxX;
-        private double maxY;
-        private double[] startPosition;
-        public Dictionary<Viewbox, double[]> canvasElements { get; set; }
+        public Dictionary<NeuronViewbox, double[]> canvasElements { get; set; }
         private System.Windows.Threading.DispatcherTimer timer;
         private System.Windows.Threading.DispatcherTimer drainingTimer;
-        private List<List<Viewbox>> neuronQueue = new List<List<Viewbox>>();
+        private List<List<NeuronViewbox>> neuronQueue = new List<List<NeuronViewbox>>();
         private int counter = 0;
         private string currentConf;
         private double flowVolume;
@@ -42,7 +36,7 @@ namespace PracaMagisterska
         private TimeSpan timeOffset;
         private int tickThreshold;
         private int timerTimeSpan;
-        private List<Neuron> neuronsToCloseDendrites = new List<Neuron>();
+        private List<NeuronViewbox> neuronsToCloseDendrites = new List<NeuronViewbox>();
         private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
@@ -60,20 +54,18 @@ namespace PracaMagisterska
         {
             InitializeComponent();
             this.timerTimeSpan = 200;
-            canvasElements = new Dictionary<Viewbox, double[]>();
+            canvasElements = new Dictionary<NeuronViewbox, double[]>();
             this.adjustTimer();
             this.flowTime = 40;
             this.flowVolume = 12;
             this.createVieboxWithNeuron(0);
             this.createVieboxWithNeuron(1);
             this.createVieboxWithNeuron(2);
-
         }
 
         // create timer objects, adjust therir interval and functions - what they will do in every tick
         private void adjustTimer()
         {
-
             // timer for flow
             this.timer = new System.Windows.Threading.DispatcherTimer();
             this.timer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
@@ -92,11 +84,13 @@ namespace PracaMagisterska
                 if (remindStarted && this.timeBegginingOfOutflowInReminder > 0)
                 {
                     if (moreTicks >= 5)
+                    {
                         this.stop(true);
+                        this.enableViewboxInQueuMoving();
+                    }
                     else
                         moreTicks += 1;
                 }
-
             };
 
             // timer for draining
@@ -105,10 +99,9 @@ namespace PracaMagisterska
             drainingTimer.Tick += (sender2, e1) =>
             {
                 List<bool> emptyResults = new List<bool>();
-                foreach (Viewbox viewbox in this.canvasElements.Keys)
+                foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 {
-                    Neuron neuron = (Neuron)viewbox.Child;
-                    bool empty = neuron.draining(this.drainingVolume);
+                    bool empty = viewbox.drain(this.drainingVolume);
                     emptyResults.Add(empty);
                 }
                 if (!emptyResults.Contains(false))
@@ -116,6 +109,7 @@ namespace PracaMagisterska
                     Console.WriteLine("Stop draining timer");
                     Console.WriteLine("Stop draining timer");
                     drainingTimer.Stop();
+                    this.enableViewboxInQueuMoving();
                 }
             };
         }
@@ -134,7 +128,14 @@ namespace PracaMagisterska
             viewbox.MouseDown += new MouseButtonEventHandler(this.create_neuron);
 
             objectHandlerPanel.Children.Add(viewbox);
+        }
 
+        private void setCurrentConf()
+        {
+            Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
+            Match match = pattern.Match(Directory.GetCurrentDirectory());
+            GroupCollection groups = match.Groups;
+            this.currentConf = groups[1].Value + "\\defaultConf.xml";
         }
 
         // check if matrix contain specific array of value, return True if contain
@@ -148,42 +149,6 @@ namespace PracaMagisterska
                 }
             }
             return false;
-        }
-
-        // add mause up an mause move function to element when it will be clicked and set starting position of clicked object
-        private void neuron_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Viewbox viewbox = (Viewbox)sender;
-            maxX = dropCanvas.ActualWidth - viewbox.Width;
-            maxY = dropCanvas.ActualHeight - viewbox.Height;
-
-            this.startPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-
-            viewbox.CaptureMouse();
-            Console.WriteLine("In Mouse Down");
-            viewbox.MouseMove += neuron_MouseMove;
-            viewbox.MouseUp += neuron_MouseUp;
-        }
-
-        // adjust current position of element during move, prevent from moving out of border
-        private void neuron_MouseMove(object sender, MouseEventArgs e)
-        {
-            Viewbox viewbox = (Viewbox)sender;
-            var pos = e.GetPosition(dropCanvas);
-            var newX = pos.X - (viewbox.Width / 2);
-            var newY = pos.Y - (viewbox.Height / 2);
-
-            if (newX < 0) newX = 0;
-            if (newX > maxX) newX = maxX;
-
-            if (newY < 0) newY = 0;
-            if (newY > maxY) newY = maxY;
-
-            viewbox.SetValue(Canvas.LeftProperty, newX);
-            viewbox.SetValue(Canvas.RightProperty, newX + viewbox.Width);
-            viewbox.SetValue(Canvas.TopProperty, newY);
-            viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
-
         }
 
         // check if neuron Queue contains specific element
@@ -211,14 +176,14 @@ namespace PracaMagisterska
         }
 
         // add neuron to the left side of queue
-        private void addToLeft(List<int> checkEl, Viewbox viewbox)
+        private void addToLeft(List<int> checkEl, NeuronViewbox viewbox)
         {
             this.removeAbilityToMove(this.neuronQueue[checkEl[0]]);
             // the checkEl can't be longer than 2 elements
             if (checkEl[1] > 0)
             {
-                List<Viewbox> queue = this.neuronQueue[checkEl[0]];
-                List<Viewbox> elements = queue.GetRange(checkEl[1], queue.Count() - checkEl[1]);
+                List<NeuronViewbox> queue = this.neuronQueue[checkEl[0]];
+                List<NeuronViewbox> elements = queue.GetRange(checkEl[1], queue.Count() - checkEl[1]);
                 elements.Insert(0, viewbox);
                 this.neuronQueue.Add(elements);
                 return;
@@ -227,7 +192,7 @@ namespace PracaMagisterska
         }
 
         // add neuron to the right side of queue
-        private void addToRight(List<int> checkEl, Viewbox viewbox)
+        private void addToRight(List<int> checkEl, NeuronViewbox viewbox)
         {
             this.removeAbilityToMove(this.neuronQueue[checkEl[0]]);
             // checkEl list can be longer than 2 elements, but always is linked to the end of list
@@ -243,15 +208,13 @@ namespace PracaMagisterska
         }
 
         // remove ability to move neuron in neuron panel
-        private void removeAbilityToMove(List<Viewbox> checkList) 
+        private void removeAbilityToMove(List<NeuronViewbox> checkList) 
         {
             if (checkList.Count() > 1)
             {
-                Viewbox viewbox = checkList[checkList.Count() - 1];
+                NeuronViewbox viewbox = checkList[checkList.Count() - 1];
                 Console.WriteLine("Remove ability");
-                viewbox.MouseDown -= this.neuron_MouseDown;
-                viewbox.MouseMove -= this.neuron_MouseMove;
-                viewbox.MouseUp -= this.neuron_MouseUp;
+                viewbox.removeViewboxAbilityToMove();
             }
         }
 
@@ -260,7 +223,7 @@ namespace PracaMagisterska
         {
             for (int i = 0; i < this.neuronQueue.Count(); i++)
             {
-                if (this.neuronQueue[i].Count() == 0)
+                if (this.neuronQueue[i].Count() == 1 || this.neuronQueue[i].Count() == 0)
                     this.neuronQueue.RemoveAt(i);
             }
         }
@@ -268,16 +231,15 @@ namespace PracaMagisterska
 
         // link moving neuron to queue
         // check if neuron is out of border, 
-        private bool linkLeftOrRight(MouseButtonEventArgs e, Viewbox viewbox, String site, KeyValuePair<Viewbox, Double[]> element)
+        private bool linkLeftOrRight(NeuronViewbox viewbox, String site, KeyValuePair<NeuronViewbox, Double[]> element)
         {
-            this.removeEmptyNeuronQueue();
-            var pos = e.GetPosition(this.dropCanvas);
-            bool outOfBorder = checkIfQuitBorder(pos.X, pos.Y, viewbox);
-            double[] newPosition = new double[] { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
+            //this.removeEmptyNeuronQueue();
+            bool outOfBorder = viewbox.checkIfQuitBorder();
+            double[] newPosition = viewbox.getCanvasParameters();
             // Check if something is on this place if is, come back to previous position
             if (!outOfBorder && this.checkDictValue(this.canvasElements.Values.ToArray(), newPosition))
             {
-                this.backToPreviousPosition(viewbox);
+                viewbox.backToPreviousPosition();
                 // true because neuron does not change position
                 return true;
             }
@@ -289,10 +251,10 @@ namespace PracaMagisterska
                 // do if neuron queue is empty
                 if (this.neuronQueue.Count() == 0)
                 {
-                    List<Viewbox> elements = new List<Viewbox>();
+                    List<NeuronViewbox> elements = new List<NeuronViewbox>();
                     if (site == "left")
                     {
-                        Viewbox elBox = (Viewbox)element.Key;
+                        NeuronViewbox elBox = (NeuronViewbox)element.Key;
                         elements.Add(viewbox);
                         elements.Add(elBox);
                         this.neuronQueue.Add(elements);
@@ -318,7 +280,9 @@ namespace PracaMagisterska
         }
 
         // remove neuron from queue
-        private void checkIfNeuronLeaveQueue(Viewbox viewbox)
+        // removing is possible only from first and last element of the list
+        // after removing, check if the rest of list should be removed or not
+        private void checkIfNeuronLeaveQueue(NeuronViewbox viewbox)
         {
             List<int> checkList = neuronQueueContainsCheck(viewbox);
             if (checkList.Count == 0)
@@ -327,35 +291,28 @@ namespace PracaMagisterska
             int list_num = checkList[0];
             int elInList = checkList[1];
             Console.WriteLine("Delete from List");
-
-            if (elInList > this.neuronQueue[list_num].Count / 2)
+            this.neuronQueue[list_num].RemoveAt(elInList);
+            bool removeList = false;
+            this.clearFlow();
+            // block posibility to remind if the queus changed
+            reminderButton.IsEnabled = false;
+            
+            // check if other list contain reset of the neuron in the same order as in the updating one
+            foreach (List<NeuronViewbox> neuronList in this.neuronQueue)
             {
-                for (int x = elInList; x < this.neuronQueue[list_num].Count(); x++)
-                {
-                    this.neuronQueue[list_num].RemoveAt(x);
-                }
-            }
-            else
-            {
-                for (int x = elInList; x > -1; x--)
-                {
-                    this.neuronQueue[list_num].RemoveAt(x);
-
-                }
-            }
-            foreach (List<Viewbox> queue in this.neuronQueue)
-            {
-                if (queue.Count() > 0)
-                {
-                    queue[0].MouseDown += this.neuron_MouseDown;
-                    queue[queue.Count() - 1].MouseDown += this.neuron_MouseDown;
-                }
+                var res =  this.neuronQueue[list_num].Except(neuronList).ToList();
+                if (neuronList != this.neuronQueue[list_num] && !this.neuronQueue[list_num].Except(neuronList).Any())
+                    removeList = true;
             }
 
+            if (removeList == true)
+                this.neuronQueue.RemoveAt(list_num);
+
+            this.enableViewboxInQueuMoving();
         }
 
         // set connection to specific dendrit in neuron with more than one dendrite
-        private void setConnectionToDen(Viewbox viewbox, string direction, Viewbox element, string side)
+        private void setConnectionToDen(NeuronViewbox viewbox, string direction, NeuronViewbox element, string side)
         {
             string newDirection = " ";
             if (side == "left")
@@ -370,108 +327,98 @@ namespace PracaMagisterska
         }
 
         // set top and bottom neuron poisition
-        private void set_TopAndBottom_Property(Viewbox viewbox, KeyValuePair<Viewbox, Double[]> element, bool condition, string side, double offset)
+        private void set_Position(NeuronViewbox viewbox, KeyValuePair<NeuronViewbox, Double[]> element, bool condition, string side, double offset)
         {
+            double[] param = viewbox.getCanvasParameters();
+            double posX;
+            double posY;
+            if (side == "left")
+                posX = element.Value[0] - 1;
+            else
+                posX = element.Value[1] + 1 ;
+
             if (condition)
             {
-                if ((element.Value[2] - Canvas.GetTop(viewbox)) <= 0)
+                if (element.Value[2] - param[2] <= 0)
                 {
                     Console.WriteLine("Down");
-                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] + offset);
-                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] + offset);
+                    posY = element.Value[2] + offset;
                     setConnectionToDen(viewbox, "down", element.Key, side);
                 }
                 else
                 {
+                    posY = element.Value[2] - offset;
                     Console.WriteLine("Up");
-                    viewbox.SetValue(Canvas.TopProperty, element.Value[2] - offset);
-                    viewbox.SetValue(Canvas.BottomProperty, element.Value[3] - offset);
                     setConnectionToDen(viewbox, "up", element.Key, side);
                 }
             }
             else
             {
-                viewbox.SetValue(Canvas.TopProperty, element.Value[2]);
-                viewbox.SetValue(Canvas.BottomProperty, element.Value[3]);
+                posY = element.Value[2];
             }
+            viewbox.changePosition(posX, posY, side);
 
         }
 
-        // try to link neuron to queue after mouse up from neuron
-        private void neuron_MouseUp(object sender, MouseButtonEventArgs e)
+        // link neuron to queue
+        private bool linkNeuron(NeuronViewbox viewbox)
         {
-            Viewbox viewbox = (Viewbox)sender;
             int catchValue_rightleft = 30;
             int catchValue_updown = 15;
-            double offset = 11.5;
-            Neuron neuron = (Neuron)viewbox.Child;
-            Console.WriteLine("In mouse up ");
+            double offset = 11.6;
 
-
-            viewbox.ReleaseMouseCapture();
-            viewbox.MouseMove -= neuron_MouseMove;
-            viewbox.MouseUp -= neuron_MouseUp;
-
-            // link neuron to queue
-            bool linkNeuron()
+            foreach (KeyValuePair<NeuronViewbox, Double[]> element in canvasElements)
             {
-                foreach (KeyValuePair<Viewbox, Double[]> element in canvasElements)
+                double[] viewbox_params = viewbox.getCanvasParameters();
+                if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - viewbox_params[2]) <= catchValue_updown) ||
+                    (Math.Abs(element.Value[3] - viewbox_params[3]) <= catchValue_updown)))
                 {
-
-                    if ((element.Key != viewbox) && ((Math.Abs(element.Value[2] - Canvas.GetTop(viewbox)) <= catchValue_updown) ||
-                        (Math.Abs(element.Value[3] - Canvas.GetBottom(viewbox)) <= catchValue_updown)))
+                    bool results = false;
+                    NeuronViewbox elBox = (NeuronViewbox)element.Key;
+                    // check if neuron is near to the left side of queue
+                    double val = Math.Abs(element.Value[0] - viewbox_params[0]);
+                    double val2 = Math.Abs(element.Value[1] - viewbox_params[1]);
+                    if (Math.Abs(element.Value[0] - viewbox_params[1]) <= catchValue_rightleft)
                     {
-                        bool results = false;
-                        Viewbox elBox = (Viewbox)element.Key;
-                        // check if neuron is near to the left side of queue
-                        double val = Math.Abs(element.Value[0] - Canvas.GetRight(viewbox));
-                        double val2 = Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox));
-                        if (Math.Abs(element.Value[0] - Canvas.GetRight(viewbox)) <= catchValue_rightleft)
-                        {
-                            set_TopAndBottom_Property(viewbox, element, ((Neuron)elBox.Child).dendrites_list.Count() > 1, "left", offset);
-
-                            viewbox.SetValue(Canvas.LeftProperty, element.Value[0] - viewbox.Width - 1);
-                            viewbox.SetValue(Canvas.RightProperty, element.Value[0] - 1);
-
-                            results = this.linkLeftOrRight(e, viewbox, "left", element);
-                            return results;
-                        }
-                        // check if neuron is near to the right side of queue
-                        else if (Math.Abs(element.Value[1] - Canvas.GetLeft(viewbox)) <= catchValue_rightleft)
-                        {
-                            set_TopAndBottom_Property(viewbox, element, (neuron.dendrites_list.Count() > 1), "right", offset);
-
-                            viewbox.SetValue(Canvas.LeftProperty, element.Value[1] + 1);
-                            viewbox.SetValue(Canvas.RightProperty, element.Value[1] + viewbox.Width + 1);
-
-                            results = this.linkLeftOrRight(e, viewbox, "right", element);
-                            return results;
-                        }
+                        set_Position(viewbox, element, elBox.getNumberOfDendrites() > 1, "left", offset);
+                        results = this.linkLeftOrRight(viewbox, "left", element);
+                        return results;
+                    }
+                    // check if neuron is near to the right side of queue
+                    else if (Math.Abs(element.Value[1] - viewbox_params[0]) <= catchValue_rightleft)
+                    {
+                        set_Position(viewbox, element, (viewbox.getNumberOfDendrites() > 1), "right", offset);
+                        results = this.linkLeftOrRight(viewbox, "right", element);
+                        return results;
                     }
                 }
-                return false;
-            };
+            }
+            return false;
+        }
 
-            bool linked = linkNeuron();
-            List<int> checkList = neuronQueueContainsCheck(viewbox);
+        // try to link neuron to queue after mouse up from neuron
+        public void after_mouseUp(NeuronViewbox viewboxObj)
+        {
+            bool linked = this.linkNeuron(viewboxObj);
+            List<int> checkList = neuronQueueContainsCheck(viewboxObj);
 
             if (!linked)
             {
-                //TODO: function to finish
-                this.checkIfNeuronLeaveQueue(viewbox);
+                //TODO: function to finish - it's finished probably
+                this.checkIfNeuronLeaveQueue(viewboxObj);
             }
 
-            double[] parameters = { Canvas.GetLeft(viewbox), Canvas.GetRight(viewbox), Canvas.GetTop(viewbox), Canvas.GetBottom(viewbox) };
-            canvasElements[(Viewbox)sender] = parameters;
+            double[] parameters = viewboxObj.getCanvasParameters();
+            canvasElements[viewboxObj] = parameters;
 
 
             Console.WriteLine("List count " + this.neuronQueue.Count());
-            Console.WriteLine(canvasElements[(Viewbox)sender][0]);
+            Console.WriteLine(canvasElements[viewboxObj][0]);
             Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
 
             // Check to remove 
             counter = 0;
-            foreach (List<Viewbox> el in this.neuronQueue)
+            foreach (List<NeuronViewbox> el in this.neuronQueue)
             {
                 Console.WriteLine("List " + counter);
                 Console.WriteLine(el.Count());
@@ -480,52 +427,19 @@ namespace PracaMagisterska
         }
 
 
-        // back to the start position of move
-        private void backToPreviousPosition(Viewbox viewbox)
-        {
-            viewbox.SetValue(Canvas.LeftProperty, this.startPosition[0]);
-            viewbox.SetValue(Canvas.RightProperty, this.startPosition[1]);
-            viewbox.SetValue(Canvas.TopProperty, this.startPosition[2]);
-            viewbox.SetValue(Canvas.BottomProperty, this.startPosition[3]);
-        }
-
-        // check if neuron quit border of neuron panel
-        private bool checkIfQuitBorder(double x, double y, Viewbox viewbox)
-        {
-            double newX = x - (viewbox.Width / 2);
-            double newY = y - (viewbox.Height / 2);
-
-            bool quit = false;
-            if (newX < 0) { newX = 0; quit = true; }
-            if (newX > maxX) { newX = maxX; quit = true; }
-
-            if (newY < 0) { newY = 0; quit = true; }
-            if (newY > maxY) { newY = maxY; quit = true; }
-
-            if (quit)
-            {
-                viewbox.SetValue(Canvas.LeftProperty, newX);
-                viewbox.SetValue(Canvas.RightProperty, newX + viewbox.Width);
-                viewbox.SetValue(Canvas.TopProperty, newY);
-                viewbox.SetValue(Canvas.BottomProperty, newY + viewbox.Height);
-            }
-
-            return quit;
-
-        }
-
         // start flow simulation after 'Start' button clicked
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
             if (canvasElements.Count() == 0)
             {
-
                 return;
             }
             this.startOutFlowTime = 0;
             this.timeBegginingOfOutflowInReminder = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
+            this.blockAllViewboxMoving();
+
             // if flow was paused
             if (this.pauseFlow)
             {
@@ -539,15 +453,15 @@ namespace PracaMagisterska
                 return;
             }
 
+            this.clearFlow();
+
             Console.WriteLine("Current path: " + this.currentConf);
             if (currentConf == null)
             {
-                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
-                this.currentConf = projectPath + "\\defaultConf.xml";
+                this.setCurrentConf();
             }
             this.loadParams();
             Console.WriteLine(this.flowVolume);
-            this.blockViewboxMoving();
 
             counter = 0;
             double divider = ((double)1000 / (double)this.timerTimeSpan);
@@ -599,96 +513,67 @@ namespace PracaMagisterska
                 }
             }
 
-            foreach (Viewbox element in canvasElements.Keys)
+            foreach (NeuronViewbox element in canvasElements.Keys)
             {
-                Neuron neuron = (Neuron)element.Child;
-                if (neuron.dendrites_list.Count() == 0)
-                {
-                    this.setNeuronParams(neuron, neuron0_params);
-                }
-                else if (neuron.dendrites_list.Count() == 1)
-                {
-                    this.setNeuronParams(neuron, neuron1_params);
-                }
-                else if (neuron.dendrites_list.Count() == 2)
-                {
-                    this.setNeuronParams(neuron, neuron2_params);
-                }
+                double numberOfDendrites = element.getNumberOfDendrites();
+                if (numberOfDendrites == 0)
+                     element.setNeuronParams(neuron0_params);
+                else if (numberOfDendrites == 1)
+                    element.setNeuronParams(neuron1_params);
+                else if (numberOfDendrites == 2)
+                    element.setNeuronParams(neuron2_params);
             }
 
             Console.WriteLine("Drag and drop " + this.blockTheEnd);
             if (blockTheEnd)
             {
-                foreach (List<Viewbox> viewbox_list in this.neuronQueue)
-                {
-                    ((Neuron)viewbox_list[viewbox_list.Count - 1].Child).axon.blockTheEnd = true;
-                    Console.WriteLine("set axon to block");
-                }
+                foreach (List<NeuronViewbox> viewbox_list in this.neuronQueue)
+                    viewbox_list[viewbox_list.Count - 1].blockAxonEnd();
             }
-
-
         }
 
-        // set params from xml to neuron, function is used by loadParams()
-        private void setNeuronParams(Neuron neuron, List<double> params_list)
-        {
-            List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
-            int params_length = params_list.Count();
-            if (neuron.dendrites_list.Count() == 0)
-            {
-                Console.WriteLine("set params in neuron 0 ");
-                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false);
-            }
-            else if (neuron.dendrites_list.Count() > 0)
-            {
-                Console.WriteLine("set params in neuron 1 or 2 ");
-                for (int i = 0; i < params_length - 4; i += 2)
-                {
-                    Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
-                    denList.Add(denTuple);
-                }
-                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
-            }
 
-        }
-
-        // block moving neurons during flow
-        private void blockViewboxMoving()
+        // block moving all neurons during flow
+        private void blockAllViewboxMoving()
         {
-            foreach (Viewbox element in this.canvasElements.Keys)
+            foreach (NeuronViewbox element in this.canvasElements.Keys)
             {
-                element.MouseDown -= new MouseButtonEventHandler(this.neuron_MouseDown);
+                element.removeViewboxAbilityToMove();
             }
         }
 
         // unblock moving neurons
-        private void enableViewboxMoving()
+        private void enableViewboxInQueuMoving()
         {
-            foreach (Viewbox element in this.canvasElements.Keys)
+            // add posibility to move first and last element in queue
+            foreach (List<NeuronViewbox> queue in this.neuronQueue)
             {
-                element.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
+                if (queue.Count() > 0)
+                {
+                    queue[0].enableViewboxMoving();
+                    queue[queue.Count() - 1].enableViewboxMoving();
+                }
             }
         }
 
         // main function which push fluid to neurons
         private void flow(object sender, EventArgs e, double flow)
         {
-            Dictionary<Neuron, List<double>> whatToPush = new Dictionary<Neuron, List<double>>();
+            Dictionary<NeuronViewbox, List<double>> whatToPush = new Dictionary<NeuronViewbox, List<double>>();
             Console.WriteLine("Count whatToPush" + whatToPush.Count());
 
             // if there is no queue but any neuron in panel exist
             if (this.neuronQueue.Count() == 0 && this.canvasElements.Count > 0)
             {
-                foreach (KeyValuePair<Viewbox, double[]> element in this.canvasElements)
+                foreach (KeyValuePair<NeuronViewbox, double[]> element in this.canvasElements)
                 {
-                    Neuron neuron = (Neuron)element.Key.Child;
-                    if (neuron.dendrites_list.Count() > 1)
+                    NeuronViewbox viewboxObj = (NeuronViewbox)element.Key;
+                    if (viewboxObj.getNumberOfDendrites() > 1)
                     {
-                        foreach (Dendrite den in neuron.dendrites_list)
-                            den.isBlocked = false;
-                        this.addToNeuronsToCloseDendriteList(neuron);
+                        viewboxObj.openDendrites();
+                        this.addToNeuronsToCloseDendriteList(viewboxObj);
                     }
-                    whatToPush[neuron] = new List<double> { flow };
+                    whatToPush[viewboxObj] = new List<double> { flow };
                 }
             }
 
@@ -701,13 +586,12 @@ namespace PracaMagisterska
                 Console.WriteLine("In flow 2");
                 if (this.neuronQueue[i].Count() > 0)
                 {
-                    Neuron first_el = (Neuron)(this.neuronQueue[i][0]).Child;
+                    NeuronViewbox first_el = this.neuronQueue[i][0];
                     if (!whatToPush.ContainsKey(first_el))
                     {
-                        if (first_el.dendrites_list.Count() > 1)
+                        if (first_el.getNumberOfDendrites() > 1)
                         {
-                            foreach (Dendrite den in first_el.dendrites_list)
-                                den.isBlocked = false;
+                            first_el.openDendrites();
                             this.addToNeuronsToCloseDendriteList(first_el);
                             whatToPush[first_el] = new List<double>() { flow, flow };
                         }
@@ -719,66 +603,59 @@ namespace PracaMagisterska
                     for (int j = 1; j < this.neuronQueue[i].Count(); j++)
                     {
                         toPush = 0;
-                        Viewbox viewbox_prev = this.neuronQueue[i][j - 1];
-                        Neuron prevNeuron = (Neuron)viewbox_prev.Child;
-                        Neuron currentNeuron = (Neuron)(this.neuronQueue[i][j]).Child;
+                        NeuronViewbox viewbox_prev = this.neuronQueue[i][j - 1];
+                        NeuronViewbox viewbox_current = this.neuronQueue[i][j];
 
-                        toPush += prevNeuron.volumeToPush;
+                        toPush += viewbox_prev.getVolumeToPush();
 
-                        if (currentNeuron.isFull)
+                        if (viewbox_current.neuronIsFull())
                         {
-                            toPush += currentNeuron.volumeToPush;
-                            currentNeuron.volumeToPush = 0;
-                            if (prevNeuron.dendrites_list.Count() > 1 && whatToPush.ContainsKey(prevNeuron) && whatToPush[prevNeuron].Count() > 1)
+                            toPush += viewbox_current.getVolumeToPush();
+                            viewbox_current.setVolumeToPush(0);
+                            if (viewbox_prev.getNumberOfDendrites() > 1 && whatToPush.ContainsKey(viewbox_prev) && whatToPush[viewbox_prev].Count() > 1)
                             {
-                                if (whatToPush.ContainsKey(prevNeuron) && whatToPush[prevNeuron].Count() >1)
+                                if (whatToPush.ContainsKey(viewbox_prev) && whatToPush[viewbox_prev].Count() >1)
                                 {
                                     // When neuron has two or more dendrites
                                     List<double> newFlowValues = new List<double>();
-                                    foreach (Double value in whatToPush[prevNeuron])
+                                    foreach (Double value in whatToPush[viewbox_prev])
                                     {
-                                        newFlowValues.Add(value + toPush / whatToPush[prevNeuron].Count());
+                                        newFlowValues.Add(value + toPush / whatToPush[viewbox_prev].Count());
                                     }
-                                    whatToPush[prevNeuron] = newFlowValues;
+                                    whatToPush[viewbox_prev] = newFlowValues;
                                 }
                             }
-                            else if (whatToPush.ContainsKey(prevNeuron))
+                            else if (whatToPush.ContainsKey(viewbox_prev))
                             {
-                                double value = whatToPush[prevNeuron][0];
-                                whatToPush[prevNeuron] = new List<double> { value + toPush };
+                                double value = whatToPush[viewbox_prev][0];
+                                whatToPush[viewbox_prev] = new List<double> { value + toPush };
                             }
                             else
-                                whatToPush[prevNeuron] = new List<double> { toPush };
-                            prevNeuron.axon.blockTheEnd = true;
+                                whatToPush[viewbox_prev] = new List<double> { toPush };
+                            viewbox_prev.blockAxonEnd();
                             break;
                         }
 
                         else if (toPush > 0)
                         {
-                            if (currentNeuron.dendrites_list.Count() > 1 )
-                                whatToPush = this.addVolumeFlowUpOrDown(viewbox_prev.Name, currentNeuron, whatToPush, toPush);
+                            if (viewbox_current.getNumberOfDendrites() > 1 )
+                                whatToPush = this.addVolumeFlowUpOrDown(viewbox_prev.Name, viewbox_current, whatToPush, toPush);
                             else
                             {
-                                if (whatToPush.ContainsKey(currentNeuron))
+                                if (whatToPush.ContainsKey(viewbox_current))
                                 {
-                                    double value = whatToPush[currentNeuron][0];
-                                    whatToPush[currentNeuron] = new List<double> { value + toPush };
+                                    double value = whatToPush[viewbox_current][0];
+                                    whatToPush[viewbox_current] = new List<double> { value + toPush };
                                 }
                                 else
-                                    whatToPush[currentNeuron] = new List<double> { toPush };
+                                    whatToPush[viewbox_current] = new List<double> { toPush };
                             }
                             Console.WriteLine(viewbox_prev.Name);
-                            if (viewbox_prev.Name == "up")
+                            string side = viewbox_prev.Name;
+                            if (side == "up" || side == "down")
                             {
-                                Console.WriteLine("Unblock Den");
-                                ((Dendrite)currentNeuron.dendrites_list[0]).isBlocked = false;
-                                this.addToNeuronsToCloseDendriteList(currentNeuron);
-                            }
-                            else if (viewbox_prev.Name == "down")
-                            {
-                                Console.WriteLine("Unblock Den");
-                                ((Dendrite)currentNeuron.dendrites_list[1]).isBlocked = false;
-                                this.addToNeuronsToCloseDendriteList(currentNeuron);
+                                viewbox_current.openOneDendrite(side);
+                                this.addToNeuronsToCloseDendriteList(viewbox_current);
                             }
                         }
                         Console.WriteLine("After break @@@@@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -788,15 +665,15 @@ namespace PracaMagisterska
             }
 
             // push volume to neuron
-            foreach (KeyValuePair<Neuron, List<double>> element in whatToPush)
+            foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
             {
-                Neuron neuron = element.Key;
-                this.neuronFlow(sender, e, neuron, element.Value);
+                NeuronViewbox viewboxObj = element.Key;
+                viewboxObj.neuronFlow(sender, e, element.Value, color);
             }
         }
 
         // add volume to up or down dendrite
-        private Dictionary<Neuron, List<double>> addVolumeFlowUpOrDown(string site, Neuron neuron, Dictionary<Neuron, List<double>> whatToPush, double volumeToPush)
+        private Dictionary<NeuronViewbox, List<double>> addVolumeFlowUpOrDown(string site, NeuronViewbox neuron, Dictionary<NeuronViewbox, List<double>> whatToPush, double volumeToPush)
         {
             int index = site == "up" ? 0 : 1;
             if (whatToPush.ContainsKey(neuron))
@@ -815,7 +692,7 @@ namespace PracaMagisterska
         }
 
         // add neuron to list of neuron which dendrite should be closed
-        private void addToNeuronsToCloseDendriteList(Neuron neuron)
+        private void addToNeuronsToCloseDendriteList(NeuronViewbox neuron)
         {
             if (!this.neuronsToCloseDendrites.Contains(neuron))
             {
@@ -823,68 +700,12 @@ namespace PracaMagisterska
             }
         }
 
-        // put fluid to neuron
-        private double neuronFlow(object sender, EventArgs e, Neuron neuron, List<double> flowList)
-        {
-
-            double toPush = 0;
-            double volumeToPushNext = 0;
-            Console.WriteLine("In neuron flow");
-            // if there is no dendrite in neuron
-            if (neuron.dendrites_list.Count() == 0)
-            {
-                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flowList[0], color);
-                volumeToPushNext = axonRes.Item2;
-                this.setOutFlowParameters(neuron, axonRes.Item2);
-                neuron.volumeToPush = volumeToPushNext;
-                return volumeToPushNext;
-            }
-
-            int counter = 0;
-            // push volume to each dendrite
-            foreach (Dendrite dendrite in neuron.dendrites_list)
-            {
-                bool blocked = dendrite.isBlocked;
-                if (!dendrite.isBlocked)
-                {
-                    Tuple<bool, double> dendriteRes = dendrite.newFlow(sender, e, flowList[counter], color);
-                    if (dendriteRes.Item1)
-                        toPush += dendriteRes.Item2;
-                }
-                counter++;
-            }
-            Thread.Sleep(10);
-            // if dendrite return some volume push to soma
-            if (toPush > 0)
-            {
-                bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
-                Console.WriteLine("Axon is full : " + axonFull);
-
-                Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
-                // push volume to axon if axon is not full
-                if (somaRes.Item1 && !axonFull)
-                {
-                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
-                    volumeToPushNext = axonRes.Item2;
-                    this.setOutFlowParameters(neuron, axonRes.Item2);
-                    neuron.volumeToPush = volumeToPushNext;
-                }
-                // if axon is full save the voume
-                else if (somaRes.Item1 && axonFull)
-                {
-                    neuron.isFull = true;
-                    neuron.volumeToPush = somaRes.Item2;
-                }
-            }
-            return volumeToPushNext;
-        }
-
         // set beggining of out flow time and beggining of out flow time in reminder and increase total out flow volume
-        private void setOutFlowParameters(Neuron neuron, double axonOutFlowVolume)
+        public void setOutFlowParameters(NeuronViewbox viewboxObj, double axonOutFlowVolume)
         {
             if (axonOutFlowVolume > 0)
             {
-                if (this.timeBegginingOfOutflowInReminder == 0 && neuron == this.neuronQueue[0][this.neuronQueue[0].Count() - 1].Child)
+                if (this.timeBegginingOfOutflowInReminder == 0 &&  ( (this.neuronQueue.Count() == 0) || viewboxObj == this.neuronQueue[0][this.neuronQueue[0].Count() - 1]))
                 {
                     Console.WriteLine("Axon return volume !!!! " + counter);
                     if (this.remindStarted)
@@ -906,11 +727,9 @@ namespace PracaMagisterska
         {
             Viewbox viewbox_sender = (Viewbox)sender;
             int den_number = Int32.Parse(viewbox_sender.Name.Replace("n", ""));
-            Viewbox viewbox = new Viewbox() { StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform, Height = 40, Width = 250 };
-            Neuron newNeuron = new Neuron(den_number);
-            viewbox.Child = newNeuron;
-            viewbox.MouseDown += new MouseButtonEventHandler(this.neuron_MouseDown);
-            dropCanvas.Children.Add(viewbox);
+
+            NeuronViewbox viewboxObj = new NeuronViewbox(den_number);
+            dropCanvas.Children.Add(viewboxObj);
         }
 
         // change time in the stopwatch
@@ -931,7 +750,6 @@ namespace PracaMagisterska
             Console.WriteLine(this.tickThreshold);
             Console.WriteLine(this.counter);
             this.timer.Stop();
-            this.enableViewboxMoving();
             startButton.IsEnabled = true;
             this.timeOffset = TimeSpan.Parse("00:00:00");
             this.pauseFlow = false;
@@ -942,17 +760,14 @@ namespace PracaMagisterska
                 // Unload all neurons
                 reminderButton.IsEnabled = true;
 
-                List<Viewbox> visited = new List<Viewbox>();
-                foreach (List<Viewbox> elList in this.neuronQueue)
+                List<NeuronViewbox> visited = new List<NeuronViewbox>();
+                foreach (List<NeuronViewbox> elList in this.neuronQueue)
                 {
                     for (int i = elList.Count - 1; i >= 0; i--)
                     {
                         if (!visited.Contains(elList[i]))
                         {
-                            Neuron neuron = (Neuron)elList[i].Child;
-                            neuron.unload(remindStarted);
-                            neuron.isFull = false;
-                            neuron.volumeToPush = 0;
+                            elList[i].unloadNeuron(remindStarted);
                             Thread.Sleep(100);
                             visited.Add(elList[i]);
                         }
@@ -972,9 +787,13 @@ namespace PracaMagisterska
             {
                 Console.WriteLine("Counter value!!! " + this.timeBegginingOfOutflowInReminder);
                 if (this.startOutFlowTime > 0 && this.timeBegginingOfOutflowInReminder < this.startOutFlowTime)
+                {
                     this.somethingInNeuron = true;
+                }
                 else if (this.startOutFlowTime == 0 && this.timeBegginingOfOutflowInReminder <= this.minTimeToOutFlow)
+                {
                     this.somethingInNeuron = true;
+                }
                 else if (this.startOutFlowTime == 0)
                 {
                     double timedifference = this.timeBegginingOfOutflowInReminder - this.minTimeToOutFlow + (double)(this.somaAmount * this.timerTimeSpan)/1000;
@@ -982,7 +801,9 @@ namespace PracaMagisterska
                     this.somethingInNeuron = (this.maxSomaVolumeInQueue <= additionalVolume || this.maxSomaVolumeInQueue < (additionalVolume + this.flowVolume)) ? false : true;
                 }
                 else
+                {
                     this.somethingInNeuron = false;
+                }
             }
 
             this.remindStarted = false;
@@ -993,15 +814,8 @@ namespace PracaMagisterska
         // close dendrites from list
         private void blockNeuronsDendrites()
         {
-            foreach (Neuron neuron in this.neuronsToCloseDendrites)
-            {
-                foreach (Dendrite dendrite in neuron.dendrites_list)
-                {
-                    Console.WriteLine("Block DEN!");
-                    dendrite.isBlocked = true;
-                }
-
-            }
+            foreach (NeuronViewbox viewboxObj in this.neuronsToCloseDendrites)
+                viewboxObj.closeDendrites();
         }
 
 
@@ -1028,17 +842,19 @@ namespace PracaMagisterska
             this.resetParams();
         }
 
-        // reste flow after click 'Reset flow' button
+        // reset flow after click 'Reset flow' button
         private void resetFlowButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
-            foreach (Viewbox viewbox in this.canvasElements.Keys)
-            {
-                Neuron neuron = (Neuron)viewbox.Child;
-                neuron.reset();
-                neuron.isFull = false;
-            }
+            this.clearFlow();
             this.blockNeuronsDendrites();
+            
+        }
+
+        private void clearFlow()
+        {
+            foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
+                viewbox.resetNeuron();
             this.resetParams();
         }
 
@@ -1046,6 +862,7 @@ namespace PracaMagisterska
         private void stopButton_Click(object sender, RoutedEventArgs e)
         {
             this.stop(false);
+            this.enableViewboxInQueuMoving();
             this.timeOffset = TimeSpan.Parse("00:00:00");
             this.drainingTimer.Stop();
         }
@@ -1075,7 +892,6 @@ namespace PracaMagisterska
         // pause flow after 'Pasue' button click
         private void pauseButton_Click(object sender, RoutedEventArgs e)
         {
-            timer.Stop();
             this.timer.Stop();
             this.pauseFlow = true;
             startButton.IsEnabled = true;
@@ -1092,10 +908,8 @@ namespace PracaMagisterska
         // unblock end of neurons for reminder flow
         private void unblockEnds()
         {
-            foreach (Viewbox viewbox in this.canvasElements.Keys)
-            {
-                ((Neuron)viewbox.Child).axon.blockTheEnd = false;
-            }
+            foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
+                viewbox.unblockAxonEnd();
         }
 
         // start reminder simulation
@@ -1113,31 +927,32 @@ namespace PracaMagisterska
             this.remindStarted = true;
             this.reminderButton.IsEnabled = false;
             this.startButton.IsEnabled = false;
-            this.blockViewboxMoving();
+            this.blockAllViewboxMoving();
         }
 
         // calculate minimum time of out flow, below which, the neuron is said to contains some information
         private void calculateTimeOfOutFlow()
-        {   
+        {
+            if (this.neuronQueue.Count() == 0)
+                return;
             List<Double> resList = new List<double>();
             List<int> somaCounter = new List<int>();
             List<Double> sumOfSomaVolume = new List<double>();
             int elements = 0;
-            foreach (List<Viewbox> neuronList in this.neuronQueue)
+            foreach (List<NeuronViewbox> neuronList in this.neuronQueue)
             {
                 double timeForNeuron = 0;
                 int somaC = 0;
                 int listAmountElements = 0;
                 double somaVol = 0;
-                foreach (Viewbox viewbox in neuronList)
+                foreach (NeuronViewbox viewbox in neuronList)
                 {
-                    Neuron neuron = (Neuron)viewbox.Child;
-                    timeForNeuron += neuron.volumeToOutFlowWhenNeuronFull;
-                    if (neuron.soma != null)
+                    timeForNeuron += viewbox.getVolumeToOutflowWhenNeuronIsFull();
+                    if (!viewbox.somaIsNull())
                     {
                         somaC += 1;
                         listAmountElements += 2;
-                        somaVol += neuron.soma.threshold;
+                        somaVol += viewbox.getSomaThreshold();
                     }
                     else
                     {

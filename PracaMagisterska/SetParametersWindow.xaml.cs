@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
@@ -38,6 +39,14 @@ namespace PracaMagisterska
             this.callback = action;
             this.parentWindow = window;
 
+        }
+
+        private void setProjectPath()
+        {
+            Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
+            Match match = pattern.Match(Directory.GetCurrentDirectory());
+            GroupCollection groups = match.Groups;
+            this.projectPath = groups[1].Value;
         }
 
         // run function from parent window to change configuration path

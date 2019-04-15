@@ -17,6 +17,7 @@ using System.Timers;
 using System.Threading;
 using System.Xml.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PracaMagisterska
 {
@@ -115,6 +116,21 @@ namespace PracaMagisterska
             };
         }
 
+        private void setCurrentConf()
+        {
+            Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
+            Match match = pattern.Match(Directory.GetCurrentDirectory());
+            GroupCollection groups = match.Groups;
+            this.currentConf = groups[1].Value + "\\defaultConf.xml";
+        }
+
+        private void HTMButton_Click(object sender, RoutedEventArgs e)
+        {
+            HTM_window HTM_window = new HTM_window();
+
+            HTM_window.ShowDialog();
+        }
+
         // starts the simulation - starts timer
         private void start_Click(object sender, RoutedEventArgs e)
         { 
@@ -129,8 +145,7 @@ namespace PracaMagisterska
             counter = 0;
             if (currentConf == null)
             {
-                string projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
-                this.currentConf = projectPath + "\\defaultConf.xml";
+                this.setCurrentConf();
             }
             this.loadParams();
             this.calculateTimeOfOutFlow();
@@ -300,6 +315,12 @@ namespace PracaMagisterska
 
             myWindow.ShowDialog();
 
+        }
+
+        private void HHButton_Click(object sender, RoutedEventArgs e)
+        {
+            HH_model_window hh_model = new HH_model_window();
+            hh_model.ShowDialog();
         }
 
         // stops the timers which stop the flow after 'Stop' button click
