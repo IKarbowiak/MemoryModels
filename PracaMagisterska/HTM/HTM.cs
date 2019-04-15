@@ -28,11 +28,11 @@ namespace PracaMagisterska.HTM
             
         }
 
-        public void initialize_input(List<List<int>> data, int layer, double comprssion_factor=1.0)
+        public void initialize_input(List<List<int>> data, int layer, double compression_factor=1.0)
         {
             // compression_fctor: the ratio of input elements to columns
             this.data = data;
-            this.input_compression = comprssion_factor;
+            this.input_compression = compression_factor;
             this.layer = layer;
 
             int input_width = data.Count;

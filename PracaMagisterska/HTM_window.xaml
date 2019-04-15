@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="HTM_window" Height="750" Width="770">
+        Title="HTM_window" Height="750" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -38,8 +38,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="80" FontSize="15" 
                        Text="Legend" Margin="20,0,0,0"/>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
@@ -51,6 +52,8 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
                        Text="inactive state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="inactive_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="100" FontSize="10" TextAlignment="Right"
+                       Margin="0,0,3,2"><Run FontWeight="Bold" Text="R - "/><Run Text="reverse input"/></TextBlock>
             </StackPanel>
             <Line Grid.Row="1" Grid.ColumnSpan="3" Stretch="Fill" VerticalAlignment="Top" Stroke="Black" X2="2" Margin="0,1,0,0"/>
             <Line Grid.Row="2" Grid.ColumnSpan="3" Stretch="Fill" VerticalAlignment="Top" Stroke="Black" X2="2" Margin="0,1,0,0"/>
@@ -61,17 +64,21 @@
             <TextBlock Grid.Column="0" Grid.Row="1" Width="100" Height="20" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,7">Reverse input data</TextBlock>
             <Grid x:Name="input_grid_reverse" Grid.Row="1" Grid.Column="1"  Width="600" Height="11" VerticalAlignment="Bottom" Margin="0,0,0,10"></Grid>
 
-            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
                 <Grid Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="iteration_panel" Grid.Column="0">
-                        <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold">Iteration number</TextBlock>
+                        <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">Iteration number</TextBlock>
                     </StackPanel>
                     <StackPanel x:Name="result_panel" Grid.Column="1">
-                        <TextBlock></TextBlock>
+                        <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">HTM Layers</TextBlock>
+                    </StackPanel>
+                    <StackPanel x:Name="input_marker_panel" Grid.Column="2">
+                        <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">Input</TextBlock>
                     </StackPanel>
                 </Grid>
             </ScrollViewer>
