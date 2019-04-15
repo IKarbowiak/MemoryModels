@@ -41,9 +41,9 @@
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="80" FontSize="15" 
-                       Text="Legend" Margin="20,0,0,0"/>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="70" FontSize="15" 
+                       Text="Legend" Margin="0,0,0,2"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="60" FontSize="10" TextAlignment="Right"
                        Text="active state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="active_legend" Width="10" Height="10"  Stroke="Black"></Rectangle>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="80" FontSize="10" TextAlignment="Right"
