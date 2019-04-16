@@ -95,6 +95,9 @@
     <Compile Include="Dendrite.xaml.cs">
       <DependentUpon>Dendrite.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlowModel.xaml.cs">
+      <DependentUpon>FlowModel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HH_model_window.xaml.cs">
       <DependentUpon>HH_model_window.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FlowModel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HH_model_window.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -162,7 +169,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Model1.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
