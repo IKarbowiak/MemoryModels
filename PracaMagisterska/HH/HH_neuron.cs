@@ -13,9 +13,9 @@ namespace PracaMagisterska
         private double g_K = 36;            // S/m^2 
         private double g_Cl = 0.3;              // S/m^2
         // reversal potenntial
-        private double V_Na = 50;          // V
-        private double V_K = -77;         //V
-        private double V_Cl = -54.387;       //V
+        private double V_Na = 115;          // V
+        private double V_K = -12;         //V
+        private double V_Cl = 10.613;       //V
         // capacitance
         public double cm = 1;           // F/m^2
         // radius

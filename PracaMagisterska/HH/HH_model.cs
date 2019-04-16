@@ -23,116 +23,99 @@ namespace PracaMagisterska
         public HH_model()
         {
             start = new RelayCommand(start_action);
-
-            //foreach (DataPoint point in this.Points)
-            //{
-            //    Console.WriteLine(point);
-            //}
-
         }
 
-
+ 
 
         public void start_action()
         {
             hh_neuron = new HH_neuron();
-            this.Solution();
+            this.Points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
+            this.euler(this.Rigid, new double[] { 0, 0.31767691, 0.05293249, 0.59612075 }, 0.0, 50.0, 0.001);
+            this.Title = "Test";
             Console.WriteLine("Finish");
         }
 
-        private void Solution()
+
+        private List<double> euler(Func<double, double[], double[]> hh, double[] start_parameters, double start_t, double end_t, double time_step)
         {
-            var solver = new RungeKutta45OdeSolver();
-            var timeSpan = new DoubleVector(0.0, 50.0);
-            var initial_params = new DoubleVector(-65, 0.05, 0.6, 0.32);
-            this.Points = new List<DataPoint> { new DataPoint( 0.0, -65) };
+            List<double> V_values = new List<double>() {start_parameters[0] };
+            double t = start_t;
+            double[] y = start_parameters;
 
-            // Construct the delegate representing our system of differential equations...
-            var odeFunction = new Func<double, DoubleVector, DoubleVector>(this.Rigid);
-
-            RungeKutta45OdeSolver.Options solverOptions = new RungeKutta45OdeSolver.Options
+            while (t < end_t)
             {
-                Refine = 1
-            };
+                t += time_step;
+                double[] params_increment = this.Rigid(t, y);
+                for (int i = 0; i < params_increment.Length; i++)
+                {
+                    y[i] += time_step * params_increment[i];
+                }
 
-            RungeKutta45OdeSolver.Solution<DoubleMatrix> soln = solver.Solve(odeFunction, timeSpan, initial_params, solverOptions);
-            //var V_elements = soln.Y.Col(1);
-            //var T_elements = soln.T;
-            //Console.WriteLine(T_elements);
-            //Console.WriteLine(V_elements);
-            //foreach (int index in Enumerable.Range(0, V_elements.Count()))
-            //{
-            //    this.Points.Add(new DataPoint(T_elements[index], V_elements[index]));
-            //};
-           
-            //Console.WriteLine("T = " + soln.T.ToString("G5"));
-            //Console.WriteLine("Y = ");
-            //Console.WriteLine(soln.Y.ToTabDelimited("G5"));
+                this.Points.Add(new DataPoint(t, y[0]));
+                V_values.Add(y[0]);
+            }
 
-
-            this.Title = "Test";
+            return V_values;
 
         }
 
-        public DoubleVector Rigid(double t, DoubleVector y)
+        public double[] Rigid(double t, double[] y)
         {
             double V = y[0];
             double m = y[1];
             double h = y[2];
             double n = y[3];
 
-            //Console.Write(t);
-            //Console.Write('\t');
-            //Console.Write(V);
-            //Console.WriteLine();
-            //this.Points.Add(new DataPoint(t, V));
-
             double dvdt = (I_inj(t) - this.hh_neuron.I_Na(V, m, h) - this.hh_neuron.I_K(V, n) - this.hh_neuron.I_Cl(V)) / this.hh_neuron.cm;
             double dmdt = this.alpha_m(1 - m) - this.beta_m(V) * m;
             double dhdt = this.alpha_h(1 - h) - this.beta_h(V) * h;
             double dndt = this.alpha_n(1 - n) - this.beta_n(V) * n;
-            this.Points.Add(new DataPoint(t, V));
-            var res = new DoubleVector(dvdt, dmdt, dhdt, dndt);
+            var res = new double[] { dvdt, dmdt, dhdt, dndt };
             return res;
         }
 
         public static double I_inj(double t)
         {
-            if (10 < t && t < 200)
+            if (5 < t && t < 6)
             {
-                return 10;
+                return 150;
+            }
+            else if (15 < t && t < 16)
+            {
+                return 50.0;
             }
             return 0;
         }
 
         private double alpha_n(double V)
         {
-            return 0.01 * (V + 55) / (1.0 - Math.Exp(-(V + 55) / 10) );
+            return 0.01 * (10.0 - V) / (Math.Exp(1 - (0.1 * V)) - 1.0);
         }
 
         private double beta_n(double V)
         {
-            return 0.125 * Math.Exp(-(V + 65) / 80);
+            return 0.125 * Math.Exp(-V / 80.0);
         }
 
         private double alpha_m(double V)
         {
-            return 0.1 * (V + 40) / (1 - Math.Exp(-(V + 40) / 10));
+            return 0.1 * (25.0 - V) / (Math.Exp(2.5 - (0.1 * V)) - 1.0);
         }
 
         private double beta_m(double V)
         {
-            return 4 * Math.Exp(-(V + 65) / 18);
+            return 4.0 * Math.Exp(-V / 18.0);
         }
 
         private double alpha_h(double V)
         {
-            return 0.07 * Math.Exp( - (V + 65) / 20);
+            return 0.07 * Math.Exp( - V / 20.0);
         }
 
         private double beta_h(double V)
         {
-            return 1 / (Math.Exp(-(V + 35) / 10) + 1);
+            return 1.0 / (Math.Exp(3.0 - (0.1 * V)) + 1.0);
         }
     }
 }
