@@ -23,8 +23,6 @@
         <Button x:Name="startButton" Grid.Row="0" Grid.Column="1" Content="Start" Click="start_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,140,0"/>
         <Button x:Name="stopButton" Grid.Row="0" Grid.Column="1" Content="Stop" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="0,60,0,0" Click="stopButton_Click" />
         <Button x:Name="resetButton" Grid.Row="0" Grid.Column="1" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="140,60,0,0" Click="resetButton_Click"/>
-        <Button x:Name="HHButton" Grid.Row="0" Grid.Column="1" Content="HH model" VerticalAlignment="Center" HorizontalAlignment="Center" Width="51" Height="20" Margin="280,60,0,0" Click="HHButton_Click" />
-        <Button x:Name="HTMButton" Grid.Row="0" Grid.Column="1" Content="HTM model" VerticalAlignment="Center" HorizontalAlignment="Left" Width="51" Height="20" Margin="80,60,0,0" Click="HTMButton_Click" />
         <TextBlock Grid.Column="2" Grid.Row="0" FontWeight="DemiBold" VerticalAlignment="Bottom" TextAlignment="Center" FontSize="14" Height="18" >
                 <Run Text="Results"/></TextBlock>
         <StackPanel Grid.Row="1" Grid.RowSpan="3" Grid.Column="0">
