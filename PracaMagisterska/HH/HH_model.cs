@@ -7,33 +7,30 @@ using CenterSpace.NMath.Analysis;
 using CenterSpace.NMath.Core;
 using System.Windows.Forms;
 using OxyPlot;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.CommandWpf;
-using System.Windows.Threading;
 
 namespace PracaMagisterska
 {
     class HH_model
     {
         private HH_neuron hh_neuron;
-        public IList<DataPoint> Points { get; private set; }
-        public string Title { get; private set; }
-        public RelayCommand start { get; set; }
+        public List<DataPoint> potential_points { get; private set; }
+        public List<DataPoint> current_points { get; private set; }
 
         public HH_model()
         {
-            start = new RelayCommand(start_action);
+
         }
 
- 
 
-        public void start_action()
+        public Tuple<List<DataPoint>, List<DataPoint>> start_action()
         {
             hh_neuron = new HH_neuron();
-            this.Points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
+            this.potential_points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
+            this.current_points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
             this.euler(this.Rigid, new double[] { 0, 0.31767691, 0.05293249, 0.59612075 }, 0.0, 50.0, 0.001);
-            this.Title = "Test";
             Console.WriteLine("Finish");
+            Tuple<List<DataPoint>, List<DataPoint>> res = Tuple.Create(this.potential_points, this.current_points);
+            return res;
         }
 
 
@@ -52,7 +49,8 @@ namespace PracaMagisterska
                     y[i] += time_step * params_increment[i];
                 }
 
-                this.Points.Add(new DataPoint(t, y[0]));
+                this.potential_points.Add(new DataPoint(t, y[0]));
+                this.current_points.Add(new DataPoint(t, I_inj(t)));
                 V_values.Add(y[0]);
             }
 

@@ -6,21 +6,19 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Title="HH_model" Height="450" Width="800">
-    <!--<Window.DataContext>
+        Title="HH_model" Height="750" Width="800">
+    <Window.DataContext>
         <local:HH_model/>
-    </Window.DataContext>-->
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="7*"/>
+            <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
-        <Button Command="{Binding start}" Grid.Row="0" Width="100" Height="30" Margin="0,0,150,0">Click</Button>
-        <Button Click="refresh_button" Grid.Row="0" Width="100" Height="30" Margin="150,0,0,0">Refresh</Button>
-        <oxy:Plot Title="{Binding Title}" x:Name="action_res" Grid.Row="1">
-            <oxy:Plot.Series>
-                <oxy:LineSeries ItemsSource="{Binding Points}"/>
-            </oxy:Plot.Series>
-        </oxy:Plot>
+        <Button Click="start_button" Grid.Row="0" Width="100" Height="30" Margin="0,0,0,0">Click</Button>
+        <Grid Grid.Row="1" x:Name="plot1_grid">
+        </Grid>
+        <Grid Grid.Row="2" x:Name="plot2_grid"/>
     </Grid>
 </Window>
