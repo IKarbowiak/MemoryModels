@@ -89,10 +89,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Axon.xaml.cs">
+    <Compile Include="PersonalSolution\Axon.xaml.cs">
       <DependentUpon>Axon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dendrite.xaml.cs">
+    <Compile Include="PersonalSolution\Dendrite.xaml.cs">
       <DependentUpon>Dendrite.xaml</DependentUpon>
     </Compile>
     <Compile Include="FlowModel.xaml.cs">
@@ -118,10 +118,10 @@
     <Compile Include="HTM_window.xaml.cs">
       <DependentUpon>HTM_window.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Neuron.xaml.cs">
+    <Compile Include="PersonalSolution\Neuron.xaml.cs">
       <DependentUpon>Neuron.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NeuronViewbox.xaml.cs">
+    <Compile Include="PersonalSolution\NeuronViewbox.xaml.cs">
       <DependentUpon>NeuronViewbox.xaml</DependentUpon>
     </Compile>
     <Compile Include="ResultsDragAndDropWindow.xaml.cs">
@@ -133,7 +133,7 @@
     <Compile Include="SetParametersWindow.xaml.cs">
       <DependentUpon>SetParametersWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Soma.xaml.cs">
+    <Compile Include="PersonalSolution\Soma.xaml.cs">
       <DependentUpon>Soma.xaml</DependentUpon>
     </Compile>
     <Compile Include="DragAndDropPanel.xaml.cs">
@@ -141,11 +141,11 @@
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Page Include="Axon.xaml">
+    <Page Include="PersonalSolution\Axon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dendrite.xaml">
+    <Page Include="PersonalSolution\Dendrite.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,11 +173,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Neuron.xaml">
+    <Page Include="PersonalSolution\Neuron.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="NeuronViewbox.xaml">
+    <Page Include="PersonalSolution\NeuronViewbox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -193,7 +193,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Soma.xaml">
+    <Page Include="PersonalSolution\Soma.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

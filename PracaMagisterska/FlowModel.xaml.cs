@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
+using PracaMagisterska.HTM;
+using PracaMagisterska.PersonalSolution;
 
 namespace PracaMagisterska
 {

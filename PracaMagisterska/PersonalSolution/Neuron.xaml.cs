@@ -13,8 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using PracaMagisterska.PersonalSolution;
 
-namespace PracaMagisterska
+namespace PracaMagisterska.PersonalSolution
 {
     /// <summary>
     /// Interaction logic for Neuron.xaml

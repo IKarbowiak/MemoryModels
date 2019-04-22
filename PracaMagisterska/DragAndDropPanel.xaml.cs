@@ -16,6 +16,7 @@ using System.Threading;
 using System.Xml.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
+using PracaMagisterska.PersonalSolution;
 
 namespace PracaMagisterska
 {

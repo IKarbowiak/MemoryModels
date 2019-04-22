@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 
-namespace PracaMagisterska
+namespace PracaMagisterska.PersonalSolution
 {
     /// <summary>
     /// Interaction logic for Axon.xaml
