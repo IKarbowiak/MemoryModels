@@ -573,8 +573,10 @@ namespace PracaMagisterska
                     {
                         viewboxObj.openDendrites();
                         this.addToNeuronsToCloseDendriteList(viewboxObj);
+                        whatToPush[viewboxObj] = new List<double> { flow, flow };
                     }
-                    whatToPush[viewboxObj] = new List<double> { flow };
+                    else
+                        whatToPush[viewboxObj] = new List<double> { flow };
                 }
             }
 
