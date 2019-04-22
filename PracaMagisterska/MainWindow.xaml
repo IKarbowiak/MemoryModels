@@ -27,7 +27,9 @@
                 </TextBlock>
                 <Button Width="100" Height="20" Margin="0,0,0,0" Click="HTM_model_button">HTM Model</Button>
                 <TextBlock Margin="0,20,0,5" TextAlignment="Center">
-                Hodgkin-Huxley model extended about flow equations.
+                Hodgkin-Huxley model. <LineBreak/>
+                Mathemathical model describing inititation and propagation of action potential.
+                <!--Hodgkin-Huxley model.  extended about flow equations.-->
                 </TextBlock>
                 <Button Width="100" Height="20" Margin="0,0,0,0" Click="HH_model_button">HH Model</Button>
             </StackPanel>

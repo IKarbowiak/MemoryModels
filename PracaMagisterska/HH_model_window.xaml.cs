@@ -56,6 +56,7 @@ namespace PracaMagisterska
             {
                 Position = OxyPlot.Axes.AxisPosition.Left,
                 Title = y_axis,
+                TitleFontWeight = OxyPlot.FontWeights.Bold,
             });
 
             // Adjust X-axis title 
@@ -64,6 +65,7 @@ namespace PracaMagisterska
                 MajorStep = 5,
                 Position = OxyPlot.Axes.AxisPosition.Bottom,
                 Title = x_axis,
+                TitleFontWeight = OxyPlot.FontWeights.Bold,
             });
 
             OxyPlot.Series.LineSeries line_series = new OxyPlot.Series.LineSeries() { Color = OxyPlot.OxyColor.Parse("#206040") };

@@ -28,7 +28,6 @@ namespace PracaMagisterska
             this.potential_points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
             this.current_points = new List<DataPoint> { new DataPoint(0.0, 0.0) };
             this.euler(this.Rigid, new double[] { 0, 0.31767691, 0.05293249, 0.59612075 }, 0.0, 50.0, 0.001);
-            Console.WriteLine("Finish");
             Tuple<List<DataPoint>, List<DataPoint>> res = Tuple.Create(this.potential_points, this.current_points);
             return res;
         }

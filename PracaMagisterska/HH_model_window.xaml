@@ -13,12 +13,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="7*"/>
             <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
-        <Button Click="start_button" Grid.Row="0" Width="100" Height="30" Margin="0,0,0,0">Click</Button>
-        <Grid Grid.Row="1" x:Name="plot1_grid">
+        <TextBlock Text="Hodgkin Huxley model" FontSize="30" TextAlignment="Center" />
+        <Button Click="start_button" Grid.Row="1"  Width="100" Height="20" Margin="0,0,0,0">Start</Button>
+        <Grid Grid.Row="2" x:Name="plot1_grid">
         </Grid>
-        <Grid Grid.Row="2" x:Name="plot2_grid"/>
+        <Grid Grid.Row="3" x:Name="plot2_grid"/>
     </Grid>
 </Window>
