@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CenterSpace.NMath.Analysis;
-using CenterSpace.NMath.Core;
 using System.Windows.Forms;
 using OxyPlot;
 
