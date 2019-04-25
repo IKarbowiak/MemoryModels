@@ -71,8 +71,8 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" >
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron length ["/><Run Text="m" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be 0.1 and 55 "/><Run FontSize="9" Text="m"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Neuron diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.1 and 20 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Neuron max speed"/></TextBlock>
                         </StackPanel >
                         <StackPanel x:Name="Model1_params" Grid.Column="1" >
@@ -92,11 +92,11 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" >
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Soma diameter ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 60 and 15400 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.2 and 4 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Soma diameter ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 7 and 35 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.1 and 20 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="m" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 0.1 and 37 "/><Run FontSize="9" Text="m"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Axon max speed"/></TextBlock>
                         </StackPanel>
                         <StackPanel x:Name="Model2_params" Grid.Column="1">
@@ -119,16 +119,16 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock Margin="15,0,0,5" FontWeight="Bold" TextAlignment="Center">Dendrite 1</TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 1 length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 1 diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 1 length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 60 and 15400 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 1 diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.2 and 4 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock Margin="15,0,0,5" FontWeight="Bold" TextAlignment="Center">Dendrite 2</TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 2 length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 2 diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 2 length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 60 and 15400 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Dendrite 2 diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.2 and 4 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock Margin="15,0,0,5" FontWeight="Bold" TextAlignment="Center">Soma</TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Soma diameter ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Soma diameter ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 7 and 35 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
                             <TextBlock Margin="15,0,0,5" FontWeight="Bold" TextAlignment="Center">Axon</TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0,3 and 0,5 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="μ" /><Run Text="m]:"/><LineBreak/><Run FontSize="9" Text="(length should be ...."/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon diameter ["/><Run Text="μ" /><Run Text="m]"/><LineBreak/><Run FontSize="9" Text="(value should be between 0.1 and 20 "/><Run FontSize="9" Text="μ"/><Run FontSize="9" Text="m)"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon length ["/><Run Text="mm]:"/><LineBreak/><Run FontSize="9" Text="(length should be between 0.1 and 37 "/><Run FontSize="9" Text="mm)"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Axon max speed"/></TextBlock>
                         </StackPanel>
                         <StackPanel x:Name="Model3_params" Grid.Column="1">

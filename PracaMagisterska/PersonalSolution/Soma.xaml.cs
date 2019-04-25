@@ -60,7 +60,7 @@ namespace PracaMagisterska.PersonalSolution
             }
             this.threshold = (this.diameter / 2 - this.axonDiameter / 2) * this.volume /  (this.diameter);
             Console.WriteLine("Calculate thrwshold " + this.threshold);
-            this.rowToReachTeshold = (int)(this.threshold * somaRec.Height / this.volume);
+            this.rowToReachTeshold = (int)(somaRec.Height / 2 - 1);
         }
 
         // fill soma or push fluid to axon
