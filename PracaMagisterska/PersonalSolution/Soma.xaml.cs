@@ -76,7 +76,7 @@ namespace PracaMagisterska.PersonalSolution
             if (this.isFull)
             {
                 push = true;
-                Tuple<bool, double> res = new Tuple<bool, double>(push, volumeToPush);
+                Tuple<bool, double> res = new Tuple<bool, double>(push, volumeIncrease);
                 return res;
             }
 

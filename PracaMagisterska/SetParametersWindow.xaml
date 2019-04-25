@@ -46,9 +46,11 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t  "/>
+                                <Run Text="["/><Run Text="μm" /><Run BaselineAlignment="Superscript" Text="2" FontSize="8"/><Run Text="/s]"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Flow time [s]"/></TextBlock>
-                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Draining speed "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Draining speed "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t  "/>
+                            <Run Text="["/><Run Text="μm" /><Run BaselineAlignment="Superscript" Text="2" FontSize="8"/><Run Text="/s]"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the of flow end?"/></TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" x:Name="generalParams">

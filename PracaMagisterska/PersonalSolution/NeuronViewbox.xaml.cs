@@ -192,30 +192,30 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // set params from xml to neuron, function is used by loadParams()
-        public void setNeuronParams(List<double> params_list)
+        public void setNeuronParams(List<double> params_list, double divider)
         {
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
             int params_length = params_list.Count();
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("set params in neuron 0 ");
-                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false);
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
                 Console.WriteLine("set params in neuron 1 or 2 ");
                 for (int i = 0; i < params_length - 4; i += 2)
                 {
-                    Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
+                    Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i] / divider);
                     denList.Add(denTuple);
                 }
-                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider);
             }
 
         }
 
         // put fluid to neuron
-        public double neuronFlow(object sender, EventArgs e, List<double> flowList, System.Windows.Media.SolidColorBrush color)
+        public double neuronFlow(object sender, EventArgs e, List<double> flowList, System.Windows.Media.SolidColorBrush color, bool missMaxAxonSpeed)
         {
 
             double toPush = 0;
@@ -224,7 +224,12 @@ namespace PracaMagisterska.PersonalSolution
             // if there is no dendrite in neuron
             if (neuron.dendrites_list.Count() == 0)
             {
-                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flowList[0], color);
+                double flow = flowList[0];
+                if (neuron.axon.maxSpeed < flow)
+                {
+                    flow = neuron.axon.maxSpeed;
+                }
+                Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow, color);
                 volumeToPushNext = axonRes.Item2;
                 this.parentWindow.setOutFlowParameters(this, axonRes.Item2);
                 neuron.volumeToPush = volumeToPushNext;
@@ -242,6 +247,8 @@ namespace PracaMagisterska.PersonalSolution
                     if (dendriteRes.Item1)
                         toPush += dendriteRes.Item2;
                 }
+                if (missMaxAxonSpeed)
+                    break;
                 counter++;
             }
             Thread.Sleep(10);
@@ -255,7 +262,20 @@ namespace PracaMagisterska.PersonalSolution
                 // push volume to axon if axon is not full
                 if (somaRes.Item1 && !axonFull)
                 {
-                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
+                    double pushValue = somaRes.Item2;
+                    double additionalVolume = 0;
+                    if (!missMaxAxonSpeed && pushValue > neuron.axon.maxSpeed)
+                    {
+                        additionalVolume = pushValue - neuron.axon.maxSpeed;
+                        pushValue = neuron.axon.maxSpeed;
+                    }
+
+                    if (additionalVolume > 0)
+                    {
+                        neuron.soma.newFlow(sender, e, additionalVolume, true, color);
+                    }
+
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, pushValue, color);
                     volumeToPushNext = axonRes.Item2;
                     this.parentWindow.setOutFlowParameters(this, axonRes.Item2);
                     neuron.volumeToPush = volumeToPushNext;

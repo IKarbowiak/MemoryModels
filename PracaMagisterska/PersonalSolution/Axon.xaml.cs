@@ -32,6 +32,7 @@ namespace PracaMagisterska.PersonalSolution
         private Rectangle[][] recAxonArray;
         private int columnsCounter = 0;
         public bool isFull { get; set; }
+        public double maxSpeed;
 
         // set main axon parameters
         public Axon(bool dim3d = false, int recWidth = 260, int recHeight = 11)
@@ -42,6 +43,7 @@ namespace PracaMagisterska.PersonalSolution
             this.liquidVolume = 0;
             this.dimension3D = dim3d;
             this.flowedOutVolume = 0;
+            this.maxSpeed = 1000;
             this.calculateParameters();
             this.blockTheEnd = false;
             this.isFull = false;

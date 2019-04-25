@@ -178,7 +178,10 @@ namespace PracaMagisterska
             Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
-                Console.WriteLine("Neuron 0");
+                if (neuron.axon.maxSpeed < flow)
+                {
+                    flow = neuron.axon.maxSpeed;
+                }
                 Tuple<bool, double> axRes = neuron.axon.newFlow(sender, e, flow, color);
                 axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                 neuron.volumeToPush = axRes.Item2;
@@ -201,6 +204,8 @@ namespace PracaMagisterska
                     if (dendriteRes.Item1)
                         toPush += dendriteRes.Item2;
                 }
+                if (remindStarted)
+                    break;
             }
             if (toPush > 0)
             {
@@ -208,7 +213,20 @@ namespace PracaMagisterska
                 Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
                 if (somaRes.Item1 && !axonFull)
                 {
-                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, somaRes.Item2, color);
+                    double pushValue = somaRes.Item2;
+                    double additionalVolume = 0;
+                    if (!remindStarted && pushValue > neuron.axon.maxSpeed)
+                    {
+                        additionalVolume = pushValue - neuron.axon.maxSpeed;
+                        pushValue = neuron.axon.maxSpeed;
+                    }
+
+                    if (additionalVolume > 0)
+                    {
+                        neuron.soma.newFlow(sender, e, additionalVolume, true, color);
+                    }
+
+                    Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, pushValue, color);
                     axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                     if (!axonFull && !remindStarted)
                     {
@@ -231,7 +249,6 @@ namespace PracaMagisterska
                 {
                     neuron.soma.newFlow(sender, e, somaRes.Item2, axonFull, color);
                 }
-
             }
         }
 
@@ -339,10 +356,15 @@ namespace PracaMagisterska
         {
             this.currentConf = path;
             this.time = time;
-            double divider = ((double)1000 / (double)this.timerTimeSpan);
-            this.flow = flow / divider;
-            this.drainingVolume = drainingSpeed / divider;
+            this.setFlowAndDrainingVolume(flow, drainingSpeed);
             Console.WriteLine("In main Window" + path);
+        }
+
+        private void setFlowAndDrainingVolume(double flowValue, double drainingValue)
+        {
+            double divider = ((double)1000 / (double)this.timerTimeSpan);
+            this.flow = flowValue / divider;
+            this.drainingVolume = drainingValue / divider;
         }
 
         // apply the value of parameters from xml 
@@ -357,9 +379,8 @@ namespace PracaMagisterska
                 if (element_name == "General")
                 {
                     List<XElement> values_list = element.Elements().ToList();
-                    this.flow = double.Parse(values_list[0].Value.ToString());
+                    this.setFlowAndDrainingVolume(double.Parse(values_list[0].Value.ToString()), double.Parse(values_list[2].Value.ToString()));
                     this.time = double.Parse(values_list[1].Value.ToString());
-                    this.drainingVolume = double.Parse(values_list[2].Value.ToString());
                     this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
@@ -391,12 +412,13 @@ namespace PracaMagisterska
         // set params from xml to neuron, function is used by loadParams()
         private void setNeuronParams(Neuron neuron, List<double> params_list)
         {
+            double divider = ((double)1000 / (double)this.timerTimeSpan);
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
             int params_length = params_list.Count();
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("set params in neuron 0 ");
-                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false);
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
@@ -406,7 +428,7 @@ namespace PracaMagisterska
                     Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
                     denList.Add(denTuple);
                 }
-                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false);
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider);
             }
 
         }
@@ -431,7 +453,7 @@ namespace PracaMagisterska
         {
             foreach (Neuron neuron in new List<Neuron> { neuron1, neuron2 })
             {
-                double time = Math.Floor((neuron.minVolumeToOutflow / this.flow) * this.timerTimeSpan / 1000);
+                double time = Math.Ceiling((neuron.minVolumeToOutflow / this.flow)) * this.timerTimeSpan / 1000;
                 this.timeThresholdForMemoryStorage.Add(time);
             }
         }
@@ -444,8 +466,8 @@ namespace PracaMagisterska
             resultsWindow.outFlowTimeTextBlockM2.Text = this.startOutFlowTime.ContainsKey(neuron2) ? this.startOutFlowTime[neuron2].ToString() : "0";
             resultsWindow.outFlowVolumeTextBlockM1.Text = this.neuron1.outFlowVolume.ToString("0.00");
             resultsWindow.outFlowVolumeTextBlockM2.Text = this.neuron2.outFlowVolume.ToString("0.00");
-            resultsWindow.reminderOutFlowTimeTextBlockM1.Text = this.startOutFlowTime.ContainsKey(neuron1) ? this.timeBegginingOfOutflowInReminder[neuron1].ToString() : "0";
-            resultsWindow.reminderOutFlowTimeTextBlockM2.Text = this.startOutFlowTime.ContainsKey(neuron2) ? this.timeBegginingOfOutflowInReminder[neuron2].ToString() : "0";
+            resultsWindow.reminderOutFlowTimeTextBlockM1.Text = this.timeBegginingOfOutflowInReminder.ContainsKey(neuron1) ? this.timeBegginingOfOutflowInReminder[neuron1].ToString() : "0";
+            resultsWindow.reminderOutFlowTimeTextBlockM2.Text = this.timeBegginingOfOutflowInReminder.ContainsKey(neuron2) ? this.timeBegginingOfOutflowInReminder[neuron2].ToString() : "0";
             if (this.timeBegginingOfOutflowInReminder.Count() == 2 && this.timeThresholdForMemoryStorage.Count() == 2)
             {
                 resultsWindow.somethingRememberesTextBlockM1.Text = this.timeBegginingOfOutflowInReminder[neuron1] < this.timeThresholdForMemoryStorage[0] ? "True" : "False";
