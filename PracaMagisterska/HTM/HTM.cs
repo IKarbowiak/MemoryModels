@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NumSharp.Core;
 
 namespace PracaMagisterska.HTM
 {
     public class HTM
     {
         public int layer;
-        private const int inhibition_radius = HTM_parameters.INHIBITION_RADIUS; // Average connected receptive field size of the columns.
+        public int inhibition_radius = HTM_parameters.INHIBITION_RADIUS; // Average connected receptive field size of the columns.
         public int cells_per_column;
         private int[][] input_cells;
         private InputCell[][] proxy_cells;

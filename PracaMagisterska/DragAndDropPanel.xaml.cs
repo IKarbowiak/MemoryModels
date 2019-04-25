@@ -118,7 +118,7 @@ namespace PracaMagisterska
         // create neurons in the left panel, which can be click to create duplicated object in neuron panel
         private void createVieboxWithNeuron(int dendNumber)
         {
-            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + dendNumber };
+            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + (dendNumber + 1) };
             objectHandlerPanel.Children.Add(modelName);
 
             Viewbox viewbox = new Viewbox() { Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform };
@@ -746,6 +746,38 @@ namespace PracaMagisterska
             this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
         }
 
+        private void unloadNeurons()
+        {
+            List<NeuronViewbox> visited = new List<NeuronViewbox>();
+            if (this.neuronQueue.Count > 0)
+            {
+                foreach (List<NeuronViewbox> elList in this.neuronQueue)
+                {
+                    for (int i = elList.Count - 1; i >= 0; i--)
+                    {
+                        if (!visited.Contains(elList[i]))
+                        {
+                            elList[i].unloadNeuron(remindStarted);
+                            Thread.Sleep(100);
+                            visited.Add(elList[i]);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (NeuronViewbox viewboxObj in this.canvasElements.Keys)
+                {
+                    if (!visited.Contains(viewboxObj))
+                    {
+                        viewboxObj.unloadNeuron(remindStarted);
+                        Thread.Sleep(100);
+                        visited.Add(viewboxObj);
+                    }
+                }
+            }
+        }
+
         // stop flow after 'Stop' button clicked
         private void stop(bool fromTimer)
         {
@@ -763,20 +795,8 @@ namespace PracaMagisterska
                 // Unload all neurons
                 reminderButton.IsEnabled = true;
 
-                List<NeuronViewbox> visited = new List<NeuronViewbox>();
-                foreach (List<NeuronViewbox> elList in this.neuronQueue)
-                {
-                    for (int i = elList.Count - 1; i >= 0; i--)
-                    {
-                        if (!visited.Contains(elList[i]))
-                        {
-                            elList[i].unloadNeuron(remindStarted);
-                            Thread.Sleep(100);
-                            visited.Add(elList[i]);
-                        }
-                    }
-                }
-  
+                this.unloadNeurons();
+
                 // Block dendrite of neurons
                 Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();

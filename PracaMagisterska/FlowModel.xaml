@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         ResizeMode="CanResize"
-        Title="MainWindow" Height="500" Width="1000">
+        Title="PersonalSolution" Height="500" Width="1000">
     <Grid x:Name="Start" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20*"/>

@@ -193,7 +193,7 @@ namespace PracaMagisterska.PersonalSolution
                 foreach (Dendrite den in this.dendrites_list)
                 {
                     den.diameter = this.denDiam;
-                    den.length = this.dendriteLength;
+                    den.length = this.dendriteLength * 1000;
                     den.calculateParameters();
                 }
             }
@@ -206,7 +206,7 @@ namespace PracaMagisterska.PersonalSolution
                 this.soma.calculateParameters();
             }
             Console.WriteLine("Change axon");
-            this.axon.length = axonLen == 0 ? this.axonLength : axonLen;
+            this.axon.length = axonLen == 0 ? this.axonLength : axonLen * 1000;
             this.axon.diameter = axonDiam == 0 ? this.axDiam : axDiam;
             this.axon.blockTheEnd = blockAxon;
             axon.calculateParameters();
