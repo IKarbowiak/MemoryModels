@@ -49,6 +49,9 @@ namespace PracaMagisterska
         private double maxSomaVolumeInQueue = 0;
         private int queueNumberForReminder;
         private int somaAmount;
+        private int strengtheningFactor = 0;
+        private int simulationNumber = -1;
+        private int drainingCounter = 0;
 
         // set main parameters
         public DragAndDropPanel()
@@ -99,10 +102,12 @@ namespace PracaMagisterska
             drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             drainingTimer.Tick += (sender2, e1) =>
             {
+                this.drainingCounter += 1;
                 List<bool> emptyResults = new List<bool>();
                 foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 {
-                    bool empty = viewbox.drain(this.drainingVolume);
+                    double drainngValue = this.simulationNumber > 0 ? this.drainingVolume / ( this.strengtheningFactor * this.simulationNumber ) : this.drainingVolume;
+                    bool empty = viewbox.drain(drainingVolume);
                     emptyResults.Add(empty);
                 }
                 if (!emptyResults.Contains(false))
@@ -437,9 +442,11 @@ namespace PracaMagisterska
             }
             this.startOutFlowTime = 0;
             this.timeBegginingOfOutflowInReminder = 0;
+            this.drainingCounter = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
             this.blockAllViewboxMoving();
+            this.simulNumberBlock.Text = (this.simulationNumber + 2).ToString();
 
             // if flow was paused
             if (this.pauseFlow)
@@ -499,6 +506,7 @@ namespace PracaMagisterska
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
                     this.drainingVolume = double.Parse(values_list[2].Value.ToString());
                     this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
+                    this.strengtheningFactor = int.Parse(values_list[4].Value.ToString());
                 }
                 else if (element_name == "Model1")
                 {
@@ -800,6 +808,7 @@ namespace PracaMagisterska
                 // Block dendrite of neurons
                 Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();
+                this.simulationNumber += 1;
             }
 
             if (!remindStarted)
@@ -853,6 +862,7 @@ namespace PracaMagisterska
             this.minTimeToOutFlow = 0;
             this.somethingInNeuron = false;
             this.startOutFlowTime = 0;
+            this.drainingCounter = 0;
         }
 
         // reset flow and parameters after click 'Reset' button
@@ -863,6 +873,8 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             this.resetParams();
+            this.simulationNumber = -1;
+            this.simulNumberBlock.Text = "0";
         }
 
         // reset flow after click 'Reset flow' button
@@ -1006,10 +1018,16 @@ namespace PracaMagisterska
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
+            double drainingValue = this.simulationNumber > 0 ? this.drainingVolume / (this.strengtheningFactor * this.simulationNumber) : this.drainingVolume;
+            double drainingTime = this.drainingCounter * this.timerTimeSpan / 1000;
+
             resultsWindow.somethingRememberedTextBlock.Text = this.somethingInNeuron == true ? "True": "False";
             resultsWindow.reminderOutFlowTimeTextBlock.Text = this.timeBegginingOfOutflowInReminder.ToString();
             resultsWindow.outFlowTimeTextBlock.Text = this.startOutFlowTime.ToString();
             resultsWindow.outFlowVolumeTextBlock.Text = this.totalOutFlow.ToString("0.00");
+            resultsWindow.drainingVolumeTextBlock.Text = drainingValue.ToString("0.00");
+            resultsWindow.drainingTimeTextBlock.Text = drainingTime.ToString("0.00");
+            resultsWindow.sumulationNumInResTextBlock.Text = this.simulNumberBlock.Text;
             resultsWindow.ShowDialog();
         }
     }
