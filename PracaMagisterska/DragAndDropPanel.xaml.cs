@@ -123,7 +123,7 @@ namespace PracaMagisterska
         // create neurons in the left panel, which can be click to create duplicated object in neuron panel
         private void createVieboxWithNeuron(int dendNumber)
         {
-            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + (dendNumber + 1) };
+            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Neuron " + (dendNumber + 1) };
             objectHandlerPanel.Children.Add(modelName);
 
             Viewbox viewbox = new Viewbox() { Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform };

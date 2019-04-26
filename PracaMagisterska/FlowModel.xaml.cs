@@ -191,6 +191,10 @@ namespace PracaMagisterska
                     neuron.outFlowVolume += axRes.Item2;
                     Console.WriteLine("AXON $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + axRes.Item2);
                 }
+                if (axRes.Item2 > 0 && !this.startOutFlowTime.ContainsKey(neuron))
+                {
+                    this.startOutFlowTime[neuron] = ((double)counter * (double)this.timerTimeSpan) / 1000;
+                }
 
                 return;
             }
@@ -462,8 +466,10 @@ namespace PracaMagisterska
         private void resultsButton_Click(object sender, RoutedEventArgs e)
         {
             Results resultsWindow = new Results();
+            resultsWindow.outFlowTimeTextBlockM0.Text = this.startOutFlowTime.ContainsKey(neuron0) ? this.startOutFlowTime[neuron0].ToString() : "0";
             resultsWindow.outFlowTimeTextBlockM1.Text = this.startOutFlowTime.ContainsKey(neuron1) ? this.startOutFlowTime[neuron1].ToString() : "0";
             resultsWindow.outFlowTimeTextBlockM2.Text = this.startOutFlowTime.ContainsKey(neuron2) ? this.startOutFlowTime[neuron2].ToString() : "0";
+            resultsWindow.outFlowVolumeTextBlockM0.Text = this.neuron0.outFlowVolume.ToString("0.00");
             resultsWindow.outFlowVolumeTextBlockM1.Text = this.neuron1.outFlowVolume.ToString("0.00");
             resultsWindow.outFlowVolumeTextBlockM2.Text = this.neuron2.outFlowVolume.ToString("0.00");
             resultsWindow.reminderOutFlowTimeTextBlockM1.Text = this.timeBegginingOfOutflowInReminder.ContainsKey(neuron1) ? this.timeBegginingOfOutflowInReminder[neuron1].ToString() : "0";

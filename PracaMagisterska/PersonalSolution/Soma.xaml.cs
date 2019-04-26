@@ -80,7 +80,7 @@ namespace PracaMagisterska.PersonalSolution
                 return res;
             }
 
-            if (increase > this.threshold && this.volume >= increase && !axonIsFull)
+            if (increase > this.threshold && !axonIsFull)
             {
                 Console.WriteLine("Reach treshold");
 
