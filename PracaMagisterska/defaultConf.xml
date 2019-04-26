@@ -1,33 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <General>
-    <flowBox>25</flowBox>
+    <flowBox>250</flowBox>
     <timeBox>20</timeBox>
-    <drainingBox>10</drainingBox>
+    <drainingBox>5</drainingBox>
     <blockFlow>False</blockFlow>
-	<factorBox>2</factorBox>
+    <factorBox>2</factorBox>
   </General>
   <Model1>
-    <neuLenBoxM1>40</neuLenBoxM1>
-    <neuDiamBoxM1>0,4</neuDiamBoxM1>
-    <maxSpeedBoxM1>100</maxSpeedBoxM1>
+    <neuLenBoxM1>5</neuLenBoxM1>
+    <neuDiamBoxM1>1</neuDiamBoxM1>
+    <maxSpeedBoxM1>300</maxSpeedBoxM1>
   </Model1>
   <Model2>
-    <denLenBoxM2>2</denLenBoxM2>
-    <denDiamBoxM2>0,4</denDiamBoxM2>
-    <somaDiamBoxM2>20</somaDiamBoxM2>
-    <axonDiamM2>0,4</axonDiamM2>
-    <axonLenM2>8</axonLenM2>
-    <maxSpeedBoxM2>100</maxSpeedBoxM2>
+    <denLenBoxM2>60</denLenBoxM2>
+    <denDiamBoxM2>2</denDiamBoxM2>
+    <somaDiamBoxM2>21</somaDiamBoxM2>
+    <axonDiamM2>5</axonDiamM2>
+    <axonLenM2>1</axonLenM2>
+    <maxSpeedBoxM2>300</maxSpeedBoxM2>
   </Model2>
   <Model3>
-    <den1LenBoxM3>2</den1LenBoxM3>
-    <den1DiamBoxM3>0,4</den1DiamBoxM3>
-    <den2LenBoxM3>2</den2LenBoxM3>
-    <den2DiamBoxM3>0,4</den2DiamBoxM3>
-    <somaDiamBoxM3>20</somaDiamBoxM3>
-    <axonDiamM3>0,4</axonDiamM3>
-    <axonLenM3>8</axonLenM3>
-    <maxSpeedBoxM3>100</maxSpeedBoxM3>
+    <den1LenBoxM3>60</den1LenBoxM3>
+    <den1DiamBoxM3>2</den1DiamBoxM3>
+    <den2LenBoxM3>60</den2LenBoxM3>
+    <den2DiamBoxM3>2</den2DiamBoxM3>
+    <somaDiamBoxM3>21</somaDiamBoxM3>
+    <axonDiamM3>5</axonDiamM3>
+    <axonLenM3>1</axonLenM3>
+    <maxSpeedBoxM3>300</maxSpeedBoxM3>
   </Model3>
 </Configuration>
