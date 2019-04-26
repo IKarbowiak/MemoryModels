@@ -19,7 +19,7 @@
             <TextBlock Grid.Row="0" Text="Memory models" TextAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
             <StackPanel Grid.Row="1" Margin="0,10,0,0">
                 <TextBlock Margin="0,0,0,5" TextAlignment="Center">
-                Personal solution which try to model mmemory with use of liquid flow inside neurons.
+                Personal solution which try to model memory with use of liquid flow inside neurons.
                 </TextBlock>
                 <Button Width="100" Height="20" Click="personal_sulution_button">Personal solution</Button>
                 <TextBlock Margin="0,20,0,5" TextAlignment="Center">

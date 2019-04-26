@@ -26,17 +26,6 @@
             <Button x:Name="updateDefault" Margin="10,5" Click="updateDefault_Click">Update default configuration</Button>
             <Button x:Name="loadButton" Margin="10,5" Click="loadButton_Click">Load configurtation</Button>
         </StackPanel>
-        <!--<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <StackPanel>
-                
-            </StackPanel>
-            <WrapPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,0">
-                <Button Margin="0,10,10,10">Click for default configuration</Button>
-                <Button  Margin="10,10,0,0">Update default configuration</Button>
-                <Button Click="writeParametersToXML" Margin="10,10,10">Save as a new configuration</Button>
-                <Button x:Name="loadButton" Margin="10,10,0,0" Click="loadButton_Click">Load configurtation</Button>
-            </WrapPanel>
-        </Grid>-->
         <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,10,10,10">
             <TabItem Header="General parameters">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -52,6 +41,8 @@
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40" Padding="0,10,0,0"><Run Text="Draining speed "/><Run Text="Δ" /><Run Text="V / "/><Run Text="Δ" /><Run Text="t  "/>
                             <Run Text="["/><Run Text="μm" /><Run BaselineAlignment="Superscript" Text="2" FontSize="8"/><Run Text="/s]"/></TextBlock>
                             <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Block at the of flow end?"/></TextBlock>
+                            <TextBlock TextAlignment="Center" VerticalAlignment="Center" Height="40"><Run Text="Path strengthening factor"/><LineBreak/>
+                                <Run Text="( For drag and drop panel )" FontSize="9"/></TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" x:Name="generalParams">
                             <TextBox x:Name="flowBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
@@ -61,6 +52,7 @@
                                 <ComboBoxItem x:Name="trueItem" Content="True"/>
                                 <ComboBoxItem x:Name="falseItem" Content="False" IsSelected="True"/>
                             </ComboBox>
+                            <TextBox x:Name="factorBox" VerticalAlignment="Center" TextAlignment="Center" Height="20" Width="50" Margin="0,10,0,10"/>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
