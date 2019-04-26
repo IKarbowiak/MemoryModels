@@ -94,11 +94,11 @@ namespace PracaMagisterska
 
             timer.Tick += (sender2, e2) =>
             {
+                counter += 1;
                 this.myTimerTick(sender2, e2);
                 this.neuronFlow(sender2, e2, this.neuron0, this.flow);
                 this.neuronFlow(sender2, e2, this.neuron1, this.flow);
                 this.neuronFlow(sender2, e2, this.neuron2, this.flow);
-                counter += 1;
                 if (counter >= this.tickThreshold && !remindStarted)
                 {
                     this.showResults(sender2, e2);
@@ -131,6 +131,7 @@ namespace PracaMagisterska
             neuron0.outFlowVolume = 0;
             neuron1.outFlowVolume = 0;
             neuron2.outFlowVolume = 0;
+            this.clear_params();
 
             reminderButton.IsEnabled = false;
             counter = 0;
@@ -298,6 +299,19 @@ namespace PracaMagisterska
 
         }
 
+        private void clear_params()
+        {
+            this.newFlow = true;
+            this.remindStarted = false;
+            this.reminderButton.IsEnabled = true;
+            this.timeBegginingOfOutflowInReminder = new Dictionary<Neuron, double>();
+            this.startOutFlowTime = new Dictionary<Neuron, double>();
+
+            neuron0.reset();
+            neuron1.reset();
+            neuron2.reset();
+        }
+
         // reset flow and results table value after 'Reset' button click
         private void resetButton_Click(object sender, RoutedEventArgs e)
         {
@@ -311,13 +325,7 @@ namespace PracaMagisterska
 
             timerTextBlock.Text = "00:00";
 
-            neuron0.reset();
-            neuron1.reset();
-            neuron2.reset();
-
-            this.newFlow = true;
-            this.remindStarted = false;
-            this.reminderButton.IsEnabled = true;
+            this.clear_params();
         }
 
         // open drag and drop button click

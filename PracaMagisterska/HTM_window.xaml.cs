@@ -124,9 +124,10 @@ namespace PracaMagisterska
             result_panel.Children.Clear();
             iteration_panel.Children.Clear();
             input_marker_panel.Children.Clear();
+            layer_panel.Children.Clear();
 
             foreach (KeyValuePair<StackPanel, string> data in new Dictionary<StackPanel, string> { { iteration_panel, "Iteration number" },
-                { result_panel, "HTM layers" }, { input_marker_panel, "Input" } })
+                { result_panel, "HTM layers" }, { input_marker_panel, "Input" },  { layer_panel, "Layer" } })
             {
                 TextBlock info = new TextBlock()
                 {
@@ -373,6 +374,23 @@ namespace PracaMagisterska
                         fill_rectangle_with_data(row, rectangles_list);
                         row_counter++;
                     }
+
+                    double layer_info_height = 11 * row_number;
+                    if (layer_counter == 2)
+                        layer_info_height += 20;
+
+                    TextBlock layer = new TextBlock()
+                    {
+                        Text = (layer_counter + 1).ToString(),
+                        FontSize = 12,
+                        FontWeight = FontWeights.DemiBold,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextAlignment = TextAlignment.Center,
+                        Margin = new Thickness(15, 9, 0, 5),
+                        Height = layer_info_height,
+                    };
+                    this.layer_panel.Children.Add(layer);
                 }
 
                 Line line = new Line()

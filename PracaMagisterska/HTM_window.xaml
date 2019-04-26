@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="HTM_window" Height="750" Width="800">
+        Title="HTM_window" Height="750" Width="820">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -70,6 +70,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="6*"/>
                         <ColumnDefinition Width="0.5*"/>
+                        <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="iteration_panel" Grid.Column="0">
                         <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">Iteration number</TextBlock>
@@ -77,7 +78,10 @@
                     <StackPanel x:Name="result_panel" Grid.Column="1">
                         <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">HTM Layers</TextBlock>
                     </StackPanel>
-                    <StackPanel x:Name="input_marker_panel" Grid.Column="2">
+                    <StackPanel x:Name="layer_panel" Grid.Column="2">
+                        <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">Layer</TextBlock>
+                    </StackPanel>
+                    <StackPanel x:Name="input_marker_panel" Grid.Column="3">
                         <TextBlock TextAlignment="Center" FontSize="12" FontWeight="DemiBold" Margin="0,0,0,5">Input</TextBlock>
                     </StackPanel>
                 </Grid>

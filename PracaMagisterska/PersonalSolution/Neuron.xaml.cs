@@ -220,6 +220,7 @@ namespace PracaMagisterska.PersonalSolution
             this.axon.reset();
             this.isFull = false;
             this.volumeToPush = 0;
+            this.outFlowVolume = 0;
             if (this.soma != null)
             {
                 Console.WriteLine("Reset soma");
