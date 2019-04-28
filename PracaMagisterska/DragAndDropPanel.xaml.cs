@@ -38,7 +38,6 @@ namespace PracaMagisterska
         private int tickThreshold;
         private int timerTimeSpan;
         private List<NeuronViewbox> neuronsToCloseDendrites = new List<NeuronViewbox>();
-        private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
         private double timeBegginingOfOutflowInReminder;

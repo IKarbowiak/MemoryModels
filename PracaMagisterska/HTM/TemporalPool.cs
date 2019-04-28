@@ -37,7 +37,7 @@ namespace PracaMagisterska.HTM
                 bool is_cell_chosen = false;
                 foreach (Cell cell in column.cells)
                 {
-                    if (cell.was_predicted)
+                    if (cell.was_predicted && !cell.demage)
                     {
                         Segment segment = cell.get_active_segment();
                         if (segment != null && segment.distal)

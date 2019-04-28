@@ -19,15 +19,16 @@ namespace PracaMagisterska.HTM
         private int width;
         private int length;
         private UpdateSegments update_segments;
+        private Random rnd;
 
         public HTM(int cells_in_column=HTM_parameters.CELLS_PER_COLUMN)
         {
             this.cells_per_column = cells_in_column;
             this.update_segments = new UpdateSegments();
-            
+            rnd = new Random();
         }
 
-        public void initialize_input(List<List<int>> data, int layer, double compression_factor=1.0)
+        public void initialize_input(List<List<int>> data, int layer, double cell_demage, double compression_factor=1.0)
         {
             // compression_fctor: the ratio of input elements to columns
             this.data = data;
@@ -50,6 +51,37 @@ namespace PracaMagisterska.HTM
 
             this.wire_columns_to_input(input_width, input_length);
 
+            if (cell_demage > 0)
+            {
+                this.demageCells(cell_demage);
+            }
+        }
+
+        public void demageCells(double demage_cells)
+        {
+            int total_cell_num = this.width * this.length * this.cells_per_column - 1;
+            int cell_to_demage = (int)(total_cell_num * demage_cells / 100);
+            List<int> cells_list_to_demage = new List<int>();
+            int index;
+            for (int i = 0; i < cell_to_demage; i++)
+            {
+                do
+                {
+                    index = this.rnd.Next(0, total_cell_num);
+                } while (cells_list_to_demage.Contains(index));
+                
+                cells_list_to_demage.Add(index);
+            }
+
+            int counter = 0;
+            foreach( Cell cell in this.get_cells())
+            {
+                if (cells_list_to_demage.Contains(counter))
+                {
+                    cell.demage = true;
+                }
+                counter++;
+            }
         }
 
         private void create_columns()
@@ -109,13 +141,13 @@ namespace PracaMagisterska.HTM
 
             foreach (Column col in this.get_columns())
             {
-                Random r = new Random();
+
                 for (int i=0; i < HTM_parameters.SYNAPSES_PER_SEGMENT; i++)
                 {
-                    int inputx = r.Next(0, input_width - 1);
-                    int inputy = r.Next(0, input_length - 1);
+                    int inputx = this.rnd.Next(0, input_width - 1);
+                    int inputy = this.rnd.Next(0, input_length - 1);
                     InputCell proxy_cell = this.proxy_cells[inputx][inputy];
-                    double rand_permanence = this.SampleGaussian(r, HTM_parameters.CONNECTED_PERMANENCE, HTM_parameters.PERMANENCE_INCREMENT * 2);
+                    double rand_permanence = this.SampleGaussian(this.rnd, HTM_parameters.CONNECTED_PERMANENCE, HTM_parameters.PERMANENCE_INCREMENT * 2);
                     double distance = col.calculate_distance(inputx, inputy, input_compression);
                     // bias permanence up toward column center as a gaussian distribution
                     double locality_bias = ((double)HTM_parameters.INPUT_BIAS_PEAK / 0.4) 

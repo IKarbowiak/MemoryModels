@@ -37,7 +37,7 @@ namespace PracaMagisterska.HTM
             if (input_cell != null)
                 return this.input_cell.is_active() && ( this.connected() || !connection_required);
             else
-                return this.cell.active && ( this.connected() || !connection_required );
+                return (this.cell.active && !this.cell.demage) && ( this.connected() || !connection_required );
         }
 
         public bool connected()

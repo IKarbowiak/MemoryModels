@@ -19,6 +19,7 @@ namespace PracaMagisterska
         private System.Windows.Media.SolidColorBrush inactive_color = System.Windows.Media.Brushes.LightGoldenrodYellow;
         private System.Windows.Media.SolidColorBrush predicting_color = System.Windows.Media.Brushes.Turquoise;
         private System.Windows.Media.SolidColorBrush active_color = System.Windows.Media.Brushes.Teal;
+        private System.Windows.Media.SolidColorBrush demage_color = System.Windows.Media.Brushes.Brown;
 
         private List<PracaMagisterska.HTM.HTM> htm_layers;
         private List<HTM_excite_history> layers_excite_history;
@@ -36,7 +37,7 @@ namespace PracaMagisterska
             PracaMagisterska.HTM.HTM htm = new PracaMagisterska.HTM.HTM();
             htm_layers.Add(htm);
 
-            initialize_model(htm);
+            initialize_model(htm, 0);
 
             int width = (int)input_grid.Width;
             int height = (int)input_grid.Height;
@@ -63,6 +64,7 @@ namespace PracaMagisterska
 
             bool is_iteration_field_correct = this.validate_field(iteration_textbox);
             bool is_layer_filed_correct = this.validate_field(layer_textbox);
+            bool cell_demage_correct = this.validate_field(cellDemage_textbox);
 
             if (!is_iteration_field_correct || !is_layer_filed_correct)
             {
@@ -83,6 +85,13 @@ namespace PracaMagisterska
                 return;
             }
 
+            double cell_demage = Double.Parse(cellDemage_textbox.Text);
+            if (cell_demage < 0 || cell_demage > 100)
+            {
+                cellDemage_textbox.BorderBrush = Brushes.Red;
+                return;
+            }
+
             this.layers_excite_history.Clear();
             int start_iter = 1;
             if (after_reset)
@@ -99,12 +108,12 @@ namespace PracaMagisterska
 
             HTM.HTM HTM_layer_1 = this.htm_layers[0];
             if (after_reset)
-                initialize_model(HTM_layer_1);
+                initialize_model(HTM_layer_1, cell_demage);
 
             Tuple<int, int> grid_column_shape = HTM_layer_1.get_columns_grid_size();
             this.layers_excite_history.Add(new HTM_excite_history(HTM_layer_1.layer, HTM_layer_1.cells_per_column, grid_column_shape.Item1, grid_column_shape.Item2));
 
-            this.execute(this.layers_excite_history[0], this.data_generator, iteration_number);
+            this.execute(this.layers_excite_history[0], this.data_generator, iteration_number, cell_demage);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
 
             this.writeResToCSV();
@@ -153,9 +162,9 @@ namespace PracaMagisterska
             this.after_reset = true;
         }
 
-        public List<List<int>> data_generator(HTM.HTM HTM_layer_1)
+        public List<List<int>> data_generator(HTM.HTM HTM_layer)
         {
-            List<List<int>> old_data = HTM_layer_1.data;
+            List<List<int>> old_data = HTM_layer.data;
             List<List<int>> data = new List<List<int>>();
 
             for (int i = 0; i < old_data.Count; i++) 
@@ -166,6 +175,7 @@ namespace PracaMagisterska
                 for (int j = 0; j < row.Count; j++)
                 {
                     int value = row[j] == 1 ? 0 : 1;
+                    //int value = row[j] ;
                     new_row.Add(value);
                 }
 
@@ -176,7 +186,7 @@ namespace PracaMagisterska
         }
 
 
-        public void initialize_model(PracaMagisterska.HTM.HTM htm)
+        public void initialize_model(PracaMagisterska.HTM.HTM htm, double cell_demage)
         {
             List<List<int>> data = new List<List<int>>();
             data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 });
@@ -190,11 +200,11 @@ namespace PracaMagisterska
             data.Add(new List<int> { 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 });
             data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 0, 0, 1, 0 });
 
-            htm.initialize_input(data, 1);
+            htm.initialize_input(data, 1, cell_demage);
 
         }
 
-        public void execute(HTM_excite_history history, Func<HTM.HTM, List<List<int>>> data_generator, int iteration_number, bool learning = true)
+        public void execute(HTM_excite_history history, Func<HTM.HTM, List<List<int>>> data_generator, int iteration_number, double cell_demage, bool learning = true)
         {
             // data_generator: generate next input data sample
             // post_generator: function to call after each interation
@@ -202,6 +212,8 @@ namespace PracaMagisterska
             int iteration_counter = iteration_number;
             while (iteration_counter > 0)
             {
+                if (cell_demage > 0 && iteration_counter == iteration_number)
+                    this.htm_layers[0].demageCells(cell_demage);
                 List<List<int>> input_data = this.process_layer_1(this.htm_layers[0], this.layers_excite_history[0]);
                 if (input_data.Count() == 0)
                     return;
@@ -212,7 +224,7 @@ namespace PracaMagisterska
 
                     if (iteration_counter == iteration_number)
                     {
-                        next_layer.initialize_input(input_data, i + 1, compression_factor);
+                        next_layer.initialize_input(input_data, i + 1, cell_demage, compression_factor);
                         Tuple<int, int> layer_grid_column_shape = next_layer.get_columns_grid_size();
                         this.layers_excite_history.Add(new HTM_excite_history(next_layer.layer, next_layer.cells_per_column,
                             layer_grid_column_shape.Item1, layer_grid_column_shape.Item2));
@@ -308,6 +320,7 @@ namespace PracaMagisterska
             const int INACTIVE = 0;
             const int ACTIVE = 1;
             const int PREDICTING = 2;
+            const int DEMAGE = 3;
 
             for (int i = 0; i < data.Count; i++)
             {
@@ -317,6 +330,8 @@ namespace PracaMagisterska
                     rec_list[i].Fill = active_color;
                 else if (data[i] == PREDICTING)
                     rec_list[i].Fill = predicting_color;
+                else if (data[i] == DEMAGE)
+                    rec_list[i].Fill = demage_color;
             }
 
         }

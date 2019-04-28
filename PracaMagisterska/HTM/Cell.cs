@@ -19,6 +19,7 @@ namespace PracaMagisterska.HTM
         public bool was_learning = false;
         private bool predicting_next = false;
         private bool was_predicted_next = false;
+        public bool demage = false;
         public List<Segment> segments;
 
         public Cell(Column col, int layer)
@@ -43,6 +44,7 @@ namespace PracaMagisterska.HTM
             this.learning = false;
             this.predicting = false;
             this.predicting_next = false;
+            //this.demage = false;
         }
 
         public Segment get_active_segment()
