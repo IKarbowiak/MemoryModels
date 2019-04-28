@@ -9,8 +9,6 @@ namespace PracaMagisterska.HTM
     public class Cell
     {
         private const int segments_per_cell = HTM_parameters.SEGMENTS_PER_CELL;
-        private double synapse_activation_threshold = HTM_parameters.SYNAPSE_ACTIVATION_THRESHOLD; // thershold for a segment, segment is said to be active if the number of connected active synapses is above this value
-
         private Column column;
         private int layer;
         public bool active = false;

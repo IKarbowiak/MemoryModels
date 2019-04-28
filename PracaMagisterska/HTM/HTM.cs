@@ -118,7 +118,6 @@ namespace PracaMagisterska.HTM
                     double rand_permanence = this.SampleGaussian(r, HTM_parameters.CONNECTED_PERMANENCE, HTM_parameters.PERMANENCE_INCREMENT * 2);
                     double distance = col.calculate_distance(inputx, inputy, input_compression);
                     // bias permanence up toward column center as a gaussian distribution
-                    // TODO: Figure out why it is desribe by this equation, maybe try with other
                     double locality_bias = ((double)HTM_parameters.INPUT_BIAS_PEAK / 0.4) 
                         * Math.Exp(Math.Pow((distance / ((double)longer_side * HTM_parameters.INPUT_BIAS_STD_DEV)), 2) / (-2));
                     Synapse synapse = new Synapse(input_cell: proxy_cell, permanence: rand_permanence * locality_bias);

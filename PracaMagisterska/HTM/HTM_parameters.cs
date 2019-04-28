@@ -15,7 +15,7 @@ namespace PracaMagisterska.HTM
 
         // synapses parameters
         public const int SYNAPSE_ACTIVATION_THRESHOLD = 1;
-        public const double CONNECTED_PERMANENCE = 0.2;
+        public const double CONNECTED_PERMANENCE = 0.8;
         public const double PERMANENCE_INCREMENT = 0.04;
         public const double PERMANENCE_DECREMENT = 0.04;
         public const int MAX_NEW_SYNAPSES = 3;
@@ -25,8 +25,7 @@ namespace PracaMagisterska.HTM
 
         public const int CELLS_PER_COLUMN = 4;
         public const int INHIBITION_RADIUS = 5;
-        public const int MINIMUM_LOCAL_ACTIVITY = 2;
-        public const int DESIRED_LOCAL_ACTIVITY = 3;
+        public const int DESIRED_LOCAL_ACTIVITY = 50;
         
         public const int MIN_OVERLAP = 5;
         public const double AVG_SCALE = 0.995;

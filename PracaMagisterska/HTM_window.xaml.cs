@@ -1,7 +1,9 @@
 ﻿using PracaMagisterska.HTM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -104,6 +106,9 @@ namespace PracaMagisterska
 
             this.execute(this.layers_excite_history[0], this.data_generator, iteration_number);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
+
+            this.writeResToCSV();
+
         }
 
         private bool validate_field(TextBox textbox)
@@ -118,9 +123,8 @@ namespace PracaMagisterska
             return true;
         }
 
-        public void reset_button_click(object sender, RoutedEventArgs e)
+        private void reset_panels()
         {
-
             result_panel.Children.Clear();
             iteration_panel.Children.Clear();
             input_marker_panel.Children.Clear();
@@ -139,6 +143,12 @@ namespace PracaMagisterska
                 };
                 data.Key.Children.Add(info);
             }
+        }
+
+        public void reset_button_click(object sender, RoutedEventArgs e)
+        {
+
+            this.reset_panels();
 
             this.after_reset = true;
         }
@@ -175,6 +185,10 @@ namespace PracaMagisterska
             data.Add(new List<int> { 0, 1, 0, 0, 1, 1, 0, 1, 0, 1 });
             data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 0, 1 });
             data.Add(new List<int> { 0, 0, 0, 1, 1, 0, 0, 0, 1, 1 });
+            data.Add(new List<int> { 1, 1, 0, 1, 0, 0, 0, 0, 0, 1 });
+            data.Add(new List<int> { 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 });
+            data.Add(new List<int> { 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 });
+            data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 0, 0, 1, 0 });
 
             htm.initialize_input(data, 1);
 
@@ -328,10 +342,11 @@ namespace PracaMagisterska
         public void show_results(int rec_number)
         {
             string input_marker = " ";
+            int row_height = 11;
             for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
             {
                 int row_number = this.layers_excite_history[0].cell_excite_history[0].Count();
-                double height = 11 * row_number * this.htm_layers.Count + 10 * this.htm_layers.Count + 22 - 4; // 22 from Line margins
+                double height = row_height * row_number * this.htm_layers.Count + 10 * this.htm_layers.Count + 22 - 4; // 22 from Line margins
 
                 TextBlock iter_num = this.prepare_text_block((iter_counter + 1).ToString(), height);
                 iteration_panel.Children.Add(iter_num);
@@ -370,14 +385,14 @@ namespace PracaMagisterska
 
                         double width = this.rec_width == 0 ? 600 : this.rec_width * row.Count;
                         
-                        List<Rectangle> rectangles_list = this.split_rectangle(width, 11, row.Count, grid_for_rec);
+                        List<Rectangle> rectangles_list = this.split_rectangle(width, row_height, row.Count, grid_for_rec);
                         fill_rectangle_with_data(row, rectangles_list);
                         row_counter++;
                     }
 
-                    double layer_info_height = 11 * row_number;
-                    if (layer_counter == 2)
-                        layer_info_height += 20;
+                    double layer_info_height = row_height * row_number;
+                    if (layer_counter == htm_layers.Count() - 1)
+                        layer_info_height += 17;
 
                     TextBlock layer = new TextBlock()
                     {
@@ -387,7 +402,7 @@ namespace PracaMagisterska
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextAlignment = TextAlignment.Center,
-                        Margin = new Thickness(15, 9, 0, 5),
+                        Margin = new Thickness(15, 10, 0, 5),
                         Height = layer_info_height,
                     };
                     this.layer_panel.Children.Add(layer);
@@ -405,6 +420,47 @@ namespace PracaMagisterska
 
                 result_panel.Children.Add(line);
             }
+        }
+
+        public void writeResToCSV()
+        {
+            string filePath = "D:\\PWR\\Magisterka\\res1.csv";
+            var csv = new StringBuilder();
+
+            for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
+            {
+                string res = string.Format("{0}; ", iter_counter + 1);
+                for (int layer_counter = 0; layer_counter < this.htm_layers.Count; layer_counter++)
+                {
+                    int active_cells = 0;
+                    int inactive_cells = 0;
+                    int predictive_cells = 0;
+                    List<List<int>> iteration_result = this.layers_excite_history[layer_counter].cell_excite_history[iter_counter];
+                    foreach (List<int> row in iteration_result)
+                    {
+                        foreach (int element in row)
+                        {
+                            if (element == 0)
+                                inactive_cells += 1;
+                            else if (element == 1)
+                                active_cells += 1;
+                            else if (element == 2)
+                                predictive_cells += 1;
+
+                        }
+                    }
+                    res += string.Format("{0}; {1}; {2}; ", active_cells, predictive_cells, inactive_cells);
+
+                }
+
+                csv.AppendLine(res);
+
+            }
+
+            File.WriteAllText(filePath, csv.ToString());
+
+
+
         }
 
     }

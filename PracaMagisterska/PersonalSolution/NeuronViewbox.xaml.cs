@@ -225,15 +225,18 @@ namespace PracaMagisterska.PersonalSolution
             if (neuron.dendrites_list.Count() == 0)
             {
                 double flow = flowList[0];
-                if (neuron.axon.maxSpeed < flow)
+                double additionalVolume = 0;
+                if (!missMaxAxonSpeed && flow > neuron.axon.maxSpeed)
                 {
+                    additionalVolume = flow - neuron.axon.maxSpeed;
                     flow = neuron.axon.maxSpeed;
                 }
+
                 Tuple<bool, double> axonRes = neuron.axon.newFlow(sender, e, flow, color);
                 volumeToPushNext = axonRes.Item2;
                 this.parentWindow.setOutFlowParameters(this, axonRes.Item2);
                 neuron.volumeToPush = volumeToPushNext;
-                return volumeToPushNext;
+                return additionalVolume;
             }
 
             int counter = 0;
@@ -287,7 +290,7 @@ namespace PracaMagisterska.PersonalSolution
                     neuron.volumeToPush = somaRes.Item2;
                 }
             }
-            return volumeToPushNext;
+            return 0;
         }
 
         public void changePosition(double X, double Y, string site)

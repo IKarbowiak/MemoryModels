@@ -52,6 +52,8 @@ namespace PracaMagisterska
         private int strengtheningFactor = 0;
         private int simulationNumber = -1;
         private int drainingCounter = 0;
+        private double divider;
+
 
         // set main parameters
         public DragAndDropPanel()
@@ -62,6 +64,7 @@ namespace PracaMagisterska
             this.adjustTimer();
             this.flowTime = 40;
             this.flowVolume = 12;
+            this.divider = ((double)1000 / (double)this.timerTimeSpan);
             this.createVieboxWithNeuron(0);
             this.createVieboxWithNeuron(1);
             this.createVieboxWithNeuron(2);
@@ -106,8 +109,8 @@ namespace PracaMagisterska
                 List<bool> emptyResults = new List<bool>();
                 foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 {
-                    double drainngValue = this.simulationNumber > 0 ? this.drainingVolume / ( this.strengtheningFactor * this.simulationNumber ) : this.drainingVolume;
-                    bool empty = viewbox.drain(drainingVolume);
+                    double drainngValue = this.simulationNumber > 0 ? (double)this.drainingVolume / (double)(this.strengtheningFactor * this.simulationNumber ) : this.drainingVolume;
+                    bool empty = viewbox.drain(drainngValue);
                     emptyResults.Add(empty);
                 }
                 if (!emptyResults.Contains(false))
@@ -472,9 +475,6 @@ namespace PracaMagisterska
             Console.WriteLine(this.flowVolume);
 
             counter = 0;
-            //double divider = ((double)1000 / (double)this.timerTimeSpan);
-            //this.flowVolume = this.flowVolume / divider;
-            //this.drainingVolume = this.drainingVolume / divider;
 
             this.calculateTimeOfOutFlow();
 
@@ -490,9 +490,8 @@ namespace PracaMagisterska
 
         private void setFlowAndDrainingVolume(double flowValue, double drainingValue)
         {
-            double divider = ((double)1000 / (double)this.timerTimeSpan);
-            this.flowVolume = flowValue / divider;
-            this.drainingVolume = drainingValue / divider;
+            this.flowVolume = flowValue / this.divider;
+            this.drainingVolume = drainingValue / this.divider;
         }
 
         // apply value of parameters from xml file
@@ -528,7 +527,6 @@ namespace PracaMagisterska
                 }
             }
 
-            double divider = ((double)1000 / (double)this.timerTimeSpan);
             foreach (NeuronViewbox element in canvasElements.Keys)
             {
                 double numberOfDendrites = element.getNumberOfDendrites();
@@ -601,7 +599,6 @@ namespace PracaMagisterska
                 {
                     continue;
                 }
-                Console.WriteLine("In flow 2");
                 if (this.neuronQueue[i].Count() > 0)
                 {
                     NeuronViewbox first_el = this.neuronQueue[i][0];
@@ -683,12 +680,45 @@ namespace PracaMagisterska
             }
 
             // push volume to neuron
-            foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
+            for (int index = 0; index < whatToPush.Count(); index++)
             {
+                KeyValuePair<NeuronViewbox, List<double>> element = whatToPush.ElementAt(index);
                 NeuronViewbox viewboxObj = element.Key;
-                bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false; 
-                viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
+                bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false;
+                double additionalVolume = viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
+
+                if (additionalVolume > 0)
+                {
+                    for (int j = index - 1; j >= 0; j++)
+                    {
+                        bool push_done = this.pushAdditionalVolume(sender, e, additionalVolume, whatToPush, j);
+                        if (push_done)
+                            break;
+                    }
+                }
+        
             }
+            //foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
+            //{
+            //    NeuronViewbox viewboxObj = element.Key;
+            //    bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false; 
+            //    double additionalVolume = viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
+            //}
+        }
+
+        private bool pushAdditionalVolume(object sender, EventArgs e, double additionalVolume, Dictionary<NeuronViewbox, List<double>> whatToPush, int index)
+        {
+            if (additionalVolume > 0 && index >= 0)
+            {
+                KeyValuePair<NeuronViewbox, List<double>> element_prev = whatToPush.ElementAt(index);
+                NeuronViewbox viewboxObj_prev = element_prev.Key;
+                if (viewboxObj_prev.neuron.soma != null)
+                {
+                    viewboxObj_prev.neuron.soma.newFlow(sender, e, additionalVolume, true, color);
+                    return true;
+                }
+            }
+            return false;
         }
 
         // add volume to up or down dendrite
@@ -1031,14 +1061,14 @@ namespace PracaMagisterska
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
-            double drainingValue = this.simulationNumber > 0 ? this.drainingVolume / (this.strengtheningFactor * this.simulationNumber) : this.drainingVolume;
+            double drainingValue = this.simulationNumber > 0 ? (this.drainingVolume / (this.strengtheningFactor * this.simulationNumber)): this.drainingVolume;
             double drainingTime = this.drainingCounter * this.timerTimeSpan / 1000;
 
             resultsWindow.somethingRememberedTextBlock.Text = this.somethingInNeuron == true ? "True": "False";
             resultsWindow.reminderOutFlowTimeTextBlock.Text = this.timeBegginingOfOutflowInReminder.ToString();
             resultsWindow.outFlowTimeTextBlock.Text = this.startOutFlowTime.ToString();
             resultsWindow.outFlowVolumeTextBlock.Text = this.totalOutFlow.ToString("0.00");
-            resultsWindow.drainingVolumeTextBlock.Text = drainingValue.ToString("0.00");
+            resultsWindow.drainingVolumeTextBlock.Text = (drainingValue * divider).ToString("0.00");
             resultsWindow.drainingTimeTextBlock.Text = drainingTime.ToString("0.00");
             resultsWindow.sumulationNumInResTextBlock.Text = this.simulNumberBlock.Text;
             resultsWindow.ShowDialog();

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="HTM_window" Height="750" Width="840">
+        Title="HTM_window" Height="750" Width="1100">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -37,8 +37,8 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="6*"/>
-                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="7*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="70" FontSize="15" 
@@ -59,16 +59,16 @@
             <Line Grid.Row="2" Grid.ColumnSpan="3" Stretch="Fill" VerticalAlignment="Top" Stroke="Black" X2="2" Margin="0,1,0,0"/>
 
             <TextBlock Grid.Column="0" Grid.Row="1" Width="80" Height="20" FontSize="12" TextAlignment="Center" VerticalAlignment="Top" Margin="0,7,0,0">Input data</TextBlock>
-            <Grid x:Name="input_grid" Grid.Row="1" Grid.Column="1"  Width="600" Height="11" VerticalAlignment="Top" Margin="0,10,0,0"></Grid>
+            <Grid x:Name="input_grid" Grid.Row="1" Grid.Column="1" Width="800" Height="11" VerticalAlignment="Top" Margin="0,10,0,0"></Grid>
 
             <TextBlock Grid.Column="0" Grid.Row="1" Width="100" Height="20" FontSize="12" TextAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,7">Reverse input data</TextBlock>
-            <Grid x:Name="input_grid_reverse" Grid.Row="1" Grid.Column="1"  Width="600" Height="11" VerticalAlignment="Bottom" Margin="0,0,0,10"></Grid>
+            <Grid x:Name="input_grid_reverse" Grid.Row="1" Grid.Column="1" Width="800" Height="11" VerticalAlignment="Bottom" Margin="0,0,0,10"></Grid>
 
             <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
                 <Grid Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="6.5*"/>
+                        <ColumnDefinition Width="7*"/>
                         <ColumnDefinition Width="0.5*"/>
                         <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
