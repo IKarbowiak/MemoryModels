@@ -45,6 +45,7 @@ namespace PracaMagisterska
             this.active_legend.Fill = active_color;
             this.inactive_legend.Fill = inactive_color;
             this.predictive_legend.Fill = predicting_color;
+            this.demage_legend.Fill = demage_color;
 
             int total_data_length = htm.data.Count * htm.data[0].Count;
 
