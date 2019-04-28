@@ -368,9 +368,9 @@ namespace PracaMagisterska.PersonalSolution
             return parameters;
         }
 
-        public bool drain(double drainingVolume)
+        public bool drain(double remainingMemory)
         {
-            return neuron.draining(drainingVolume);
+            return neuron.draining(remainingMemory);
         }
 
         public void blockAxonEnd()

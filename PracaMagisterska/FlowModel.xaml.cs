@@ -35,13 +35,14 @@ namespace PracaMagisterska
         private int counter = 0;
         private int tickThreshold;
         private int timerTimeSpan;
-        private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
         private bool blockTheEnd;
         private List<double> timeThresholdForMemoryStorage = new List<double>();
         private Dictionary<Neuron, double> timeBegginingOfOutflowInReminder = new Dictionary<Neuron, double>();
         private Dictionary<Neuron, double> startOutFlowTime = new Dictionary<Neuron, double>();
+        private int drainingCounter = 0;
+        private int simulationNumber = 0;
 
         // set main parameters and create neurons objects
         public FlowModel()
@@ -78,9 +79,11 @@ namespace PracaMagisterska
             drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             drainingTimer.Tick += (sender2, e1) =>
             {
-                bool empty1 = neuron0.draining(this.drainingVolume);
-                bool empty2 = neuron1.draining(this.drainingVolume);
-                bool empty3 = neuron2.draining(this.drainingVolume);
+                this.drainingCounter += 1;
+                double remainingMemory = this.getRemainingMemory();
+                bool empty1 = neuron0.draining(remainingMemory);
+                bool empty2 = neuron1.draining(remainingMemory);
+                bool empty3 = neuron2.draining(remainingMemory);
                 if (empty1 && empty2 && empty3)
                 {
                     Console.WriteLine("Stop draining timer");
@@ -114,6 +117,14 @@ namespace PracaMagisterska
             };
         }
 
+        public double getRemainingMemory()
+        {
+            double remainingMemory = Math.Exp(-((double)this.drainingCounter * (double)this.timerTimeSpan / 1000) / (double)this.simulationNumber);
+            if (remainingMemory < 0.01)
+                remainingMemory = 0;
+            return remainingMemory;
+        }
+
         private void setCurrentConf()
         {
             Regex pattern = new Regex("(.*)(\\\\bin\\\\Debug)", RegexOptions.Compiled);
@@ -128,6 +139,7 @@ namespace PracaMagisterska
             double newTime;
             int delay;
             this.color = System.Windows.Media.Brushes.DodgerBlue;
+            this.simulationNumber += 1;
             neuron0.outFlowVolume = 0;
             neuron1.outFlowVolume = 0;
             neuron2.outFlowVolume = 0;
@@ -301,6 +313,7 @@ namespace PracaMagisterska
 
         private void clear_params()
         {
+            this.drainingCounter = 0;
             this.newFlow = true;
             this.remindStarted = false;
             this.reminderButton.IsEnabled = true;
@@ -324,6 +337,7 @@ namespace PracaMagisterska
             M3VolumeTotalBlock.Text = "0";
 
             timerTextBlock.Text = "00:00";
+            this.simulationNumber = 0;
 
             this.clear_params();
         }
@@ -364,19 +378,18 @@ namespace PracaMagisterska
         }
 
         // function which is used after closing window with parametersm adjust time and speed of flow
-        private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
+        private void getConfParamsXML(string path, double time, double flow)
         {
             this.currentConf = path;
             this.time = time;
-            this.setFlowAndDrainingVolume(flow, drainingSpeed);
+            this.setFlowVolume(flow);
             Console.WriteLine("In main Window" + path);
         }
 
-        private void setFlowAndDrainingVolume(double flowValue, double drainingValue)
+        private void setFlowVolume(double flowValue)
         {
             double divider = ((double)1000 / (double)this.timerTimeSpan);
             this.flow = flowValue / divider;
-            this.drainingVolume = drainingValue / divider;
         }
 
         // apply the value of parameters from xml 
@@ -391,9 +404,9 @@ namespace PracaMagisterska
                 if (element_name == "General")
                 {
                     List<XElement> values_list = element.Elements().ToList();
-                    this.setFlowAndDrainingVolume(double.Parse(values_list[0].Value.ToString()), double.Parse(values_list[2].Value.ToString()));
+                    this.setFlowVolume(double.Parse(values_list[0].Value.ToString()));
                     this.time = double.Parse(values_list[1].Value.ToString());
-                    this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
+                    this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
                 {

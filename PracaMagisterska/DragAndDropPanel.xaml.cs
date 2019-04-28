@@ -50,7 +50,7 @@ namespace PracaMagisterska
         private int queueNumberForReminder;
         private int somaAmount;
         private int strengtheningFactor = 0;
-        private int simulationNumber = -1;
+        private int simulationNumber = 0;
         private int drainingCounter = 0;
         private double divider;
 
@@ -109,8 +109,8 @@ namespace PracaMagisterska
                 List<bool> emptyResults = new List<bool>();
                 foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 {
-                    double drainngValue = this.simulationNumber > 0 ? (double)this.drainingVolume / (double)(this.strengtheningFactor * this.simulationNumber ) : this.drainingVolume;
-                    bool empty = viewbox.drain(drainngValue);
+                    double remainingMemory = this.getRemainingMemory();
+                    bool empty = viewbox.drain(remainingMemory);
                     emptyResults.Add(empty);
                 }
                 if (!emptyResults.Contains(false))
@@ -121,6 +121,14 @@ namespace PracaMagisterska
                     this.enableViewboxInQueuMoving();
                 }
             };
+        }
+
+        public double getRemainingMemory()
+        {
+            double remainingMemory = Math.Exp(-((double)this.drainingCounter * (double)this.timerTimeSpan / 1000) / ((double)this.simulationNumber * this.strengtheningFactor));
+            if (remainingMemory < 0.01)
+                remainingMemory = 0;
+            return remainingMemory;
         }
 
         // create neurons in the left panel, which can be click to create duplicated object in neuron panel
@@ -443,13 +451,14 @@ namespace PracaMagisterska
             {
                 return;
             }
+            this.simulationNumber += 1;
             this.startOutFlowTime = 0;
             this.timeBegginingOfOutflowInReminder = 0;
             this.drainingCounter = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
             this.blockAllViewboxMoving();
-            this.simulNumberBlock.Text = (this.simulationNumber + 2).ToString();
+            this.simulNumberBlock.Text = this.simulationNumber.ToString();
 
             // if flow was paused
             if (this.pauseFlow)
@@ -488,12 +497,6 @@ namespace PracaMagisterska
             }
         }
 
-        private void setFlowAndDrainingVolume(double flowValue, double drainingValue)
-        {
-            this.flowVolume = flowValue / this.divider;
-            this.drainingVolume = drainingValue / this.divider;
-        }
-
         // apply value of parameters from xml file
         private void loadParams()
         {
@@ -508,10 +511,10 @@ namespace PracaMagisterska
                 if (element_name == "General")
                 {
                     List<XElement> values_list = element.Elements().ToList();
-                    this.setFlowAndDrainingVolume(double.Parse(values_list[0].Value.ToString()), double.Parse(values_list[2].Value.ToString()));
+                    this.flowVolume = double.Parse(values_list[0].Value.ToString()) / this.divider;
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
-                    this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
-                    this.strengtheningFactor = int.Parse(values_list[4].Value.ToString());
+                    this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
+                    this.strengtheningFactor = int.Parse(values_list[3].Value.ToString());
                 }
                 else if (element_name == "Model1")
                 {
@@ -846,7 +849,6 @@ namespace PracaMagisterska
                 // Block dendrite of neurons
                 Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();
-                this.simulationNumber += 1;
             }
 
             if (!remindStarted)
@@ -912,7 +914,7 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             this.resetParams();
-            this.simulationNumber = -1;
+            this.simulationNumber = 0;
             this.simulNumberBlock.Text = "0";
         }
 
@@ -957,7 +959,7 @@ namespace PracaMagisterska
         }
 
         // set value of current configuration xml file
-        private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
+        private void getConfParamsXML(string path, double time, double flow)
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);
@@ -1061,14 +1063,14 @@ namespace PracaMagisterska
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
-            double drainingValue = this.simulationNumber > 0 ? (this.drainingVolume / (this.strengtheningFactor * this.simulationNumber)): this.drainingVolume;
+            double remainingMemory = this.getRemainingMemory() * 100;
             double drainingTime = this.drainingCounter * this.timerTimeSpan / 1000;
 
             resultsWindow.somethingRememberedTextBlock.Text = this.somethingInNeuron == true ? "True": "False";
             resultsWindow.reminderOutFlowTimeTextBlock.Text = this.timeBegginingOfOutflowInReminder.ToString();
             resultsWindow.outFlowTimeTextBlock.Text = this.startOutFlowTime.ToString();
             resultsWindow.outFlowVolumeTextBlock.Text = this.totalOutFlow.ToString("0.00");
-            resultsWindow.drainingVolumeTextBlock.Text = (drainingValue * divider).ToString("0.00");
+            resultsWindow.drainingVolumeTextBlock.Text = (remainingMemory).ToString("0.00");
             resultsWindow.drainingTimeTextBlock.Text = drainingTime.ToString("0.00");
             resultsWindow.sumulationNumInResTextBlock.Text = this.simulNumberBlock.Text;
             resultsWindow.ShowDialog();

@@ -3,9 +3,8 @@
   <General>
     <flowBox>250</flowBox>
     <timeBox>20</timeBox>
-    <drainingBox>5</drainingBox>
     <blockFlow>False</blockFlow>
-    <factorBox>2</factorBox>
+	<factorBox>2</factorBox>
   </General>
   <Model1>
     <neuLenBoxM1>5</neuLenBoxM1>

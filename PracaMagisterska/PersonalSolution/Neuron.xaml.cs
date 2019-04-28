@@ -231,13 +231,12 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // partial empty the soma of neuron
-        public bool draining(double volumeToEmpty)
+        public bool draining(double remainingMemory)
         {
-            Console.WriteLine("In Neron draining " + volumeToEmpty);
             bool empty = true;
             if (this.soma != null)
             {
-                empty = this.soma.partialEmpty(volumeToEmpty);
+                empty = this.soma.partialEmpty(remainingMemory);
             }
             Console.WriteLine("Neron draining return: " + empty);
             return empty;
