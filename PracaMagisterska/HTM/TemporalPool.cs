@@ -35,9 +35,9 @@ namespace PracaMagisterska.HTM
             {
                 bool bu_predicted = false;
                 bool is_cell_chosen = false;
-                foreach (Cell cell in column.cells)
+                foreach (Cell cell in column.get_cells())
                 {
-                    if (cell.was_predicted)
+                    if (cell.was_predicted && !cell.demage)
                     {
                         Segment segment = cell.get_active_segment();
                         if (segment != null && segment.distal)
@@ -57,7 +57,7 @@ namespace PracaMagisterska.HTM
                 // active all cells if any of them was predicted
                 if (!bu_predicted)
                 {
-                    foreach (Cell cell in column.cells)
+                    foreach (Cell cell in column.get_cells())
                         cell.active = true;
                 }
 

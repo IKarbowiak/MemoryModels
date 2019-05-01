@@ -76,11 +76,11 @@ namespace PracaMagisterska.PersonalSolution
             if (this.isFull)
             {
                 push = true;
-                Tuple<bool, double> res = new Tuple<bool, double>(push, volumeToPush);
+                Tuple<bool, double> res = new Tuple<bool, double>(push, volumeIncrease);
                 return res;
             }
 
-            if (increase > this.threshold && this.volume >= increase && !axonIsFull)
+            if (increase > this.threshold && !axonIsFull)
             {
                 Console.WriteLine("Reach treshold");
 
@@ -140,10 +140,13 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // reset parameters and empty soma to the level below treshold
-        public bool partialEmpty(double volumeToEmpty)
+        public bool partialEmpty(double remainingMemory)
         {
             bool empty = false;
-            this.liquidVolume -= volumeToEmpty;
+            double restVolume = this.threshold * remainingMemory;
+            if (restVolume > this.threshold)
+                restVolume = this.threshold;
+            this.liquidVolume = restVolume;
             double rowToEmpty = ((double)somaRec.Height * this.liquidVolume / this.volume);
             unloadFunc(false, rowToEmpty);
             if (this.liquidVolume <= 0)

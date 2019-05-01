@@ -9,8 +9,6 @@ namespace PracaMagisterska.HTM
     public class Cell
     {
         private const int segments_per_cell = HTM_parameters.SEGMENTS_PER_CELL;
-        private double synapse_activation_threshold = HTM_parameters.SYNAPSE_ACTIVATION_THRESHOLD; // thershold for a segment, segment is said to be active if the number of connected active synapses is above this value
-
         private Column column;
         private int layer;
         public bool active = false;
@@ -21,6 +19,7 @@ namespace PracaMagisterska.HTM
         public bool was_learning = false;
         private bool predicting_next = false;
         private bool was_predicted_next = false;
+        public bool demage = false;
         public List<Segment> segments;
 
         public Cell(Column col, int layer)
@@ -45,6 +44,7 @@ namespace PracaMagisterska.HTM
             this.learning = false;
             this.predicting = false;
             this.predicting_next = false;
+            //this.demage = false;
         }
 
         public Segment get_active_segment()

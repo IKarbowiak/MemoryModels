@@ -38,7 +38,6 @@ namespace PracaMagisterska
         private int tickThreshold;
         private int timerTimeSpan;
         private List<NeuronViewbox> neuronsToCloseDendrites = new List<NeuronViewbox>();
-        private double drainingVolume;
         private System.Windows.Media.SolidColorBrush color = System.Windows.Media.Brushes.DodgerBlue;
         private bool remindStarted = false;
         private double timeBegginingOfOutflowInReminder;
@@ -49,6 +48,11 @@ namespace PracaMagisterska
         private double maxSomaVolumeInQueue = 0;
         private int queueNumberForReminder;
         private int somaAmount;
+        private int strengtheningFactor = 0;
+        private int simulationNumber = 0;
+        private int drainingCounter = 0;
+        private double divider;
+
 
         // set main parameters
         public DragAndDropPanel()
@@ -59,6 +63,7 @@ namespace PracaMagisterska
             this.adjustTimer();
             this.flowTime = 40;
             this.flowVolume = 12;
+            this.divider = ((double)1000 / (double)this.timerTimeSpan);
             this.createVieboxWithNeuron(0);
             this.createVieboxWithNeuron(1);
             this.createVieboxWithNeuron(2);
@@ -99,10 +104,12 @@ namespace PracaMagisterska
             drainingTimer.Interval = TimeSpan.FromMilliseconds(this.timerTimeSpan);
             drainingTimer.Tick += (sender2, e1) =>
             {
+                this.drainingCounter += 1;
                 List<bool> emptyResults = new List<bool>();
                 foreach (NeuronViewbox viewbox in this.canvasElements.Keys)
                 {
-                    bool empty = viewbox.drain(this.drainingVolume);
+                    double remainingMemory = this.getRemainingMemory();
+                    bool empty = viewbox.drain(remainingMemory);
                     emptyResults.Add(empty);
                 }
                 if (!emptyResults.Contains(false))
@@ -115,10 +122,18 @@ namespace PracaMagisterska
             };
         }
 
+        public double getRemainingMemory()
+        {
+            double remainingMemory = Math.Exp(-((double)this.drainingCounter * (double)this.timerTimeSpan / 1000) / ((double)this.simulationNumber * this.strengtheningFactor));
+            if (remainingMemory < 0.01)
+                remainingMemory = 0;
+            return remainingMemory;
+        }
+
         // create neurons in the left panel, which can be click to create duplicated object in neuron panel
         private void createVieboxWithNeuron(int dendNumber)
         {
-            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Model " + (dendNumber + 1) };
+            TextBlock modelName = new TextBlock() { TextAlignment = TextAlignment.Center, Text = "Neuron " + (dendNumber + 1) };
             objectHandlerPanel.Children.Add(modelName);
 
             Viewbox viewbox = new Viewbox() { Name = "n" + dendNumber, StretchDirection = StretchDirection.Both, Stretch = Stretch.Uniform };
@@ -435,11 +450,14 @@ namespace PracaMagisterska
             {
                 return;
             }
+            this.simulationNumber += 1;
             this.startOutFlowTime = 0;
             this.timeBegginingOfOutflowInReminder = 0;
+            this.drainingCounter = 0;
             this.reminderButton.IsEnabled = false;
             this.somethingInNeuron = false;
             this.blockAllViewboxMoving();
+            this.simulNumberBlock.Text = this.simulationNumber.ToString();
 
             // if flow was paused
             if (this.pauseFlow)
@@ -465,9 +483,6 @@ namespace PracaMagisterska
             Console.WriteLine(this.flowVolume);
 
             counter = 0;
-            double divider = ((double)1000 / (double)this.timerTimeSpan);
-            this.flowVolume = this.flowVolume / divider;
-            this.drainingVolume = this.drainingVolume / divider;
 
             this.calculateTimeOfOutFlow();
 
@@ -495,10 +510,10 @@ namespace PracaMagisterska
                 if (element_name == "General")
                 {
                     List<XElement> values_list = element.Elements().ToList();
-                    this.flowVolume = double.Parse(values_list[0].Value.ToString());
+                    this.flowVolume = double.Parse(values_list[0].Value.ToString()) / this.divider;
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
-                    this.drainingVolume = double.Parse(values_list[2].Value.ToString());
-                    this.blockTheEnd = values_list[3].Value.ToString() == "True" ? true : false;
+                    this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
+                    this.strengtheningFactor = int.Parse(values_list[3].Value.ToString());
                 }
                 else if (element_name == "Model1")
                 {
@@ -518,11 +533,11 @@ namespace PracaMagisterska
             {
                 double numberOfDendrites = element.getNumberOfDendrites();
                 if (numberOfDendrites == 0)
-                     element.setNeuronParams(neuron0_params);
+                     element.setNeuronParams(neuron0_params, divider);
                 else if (numberOfDendrites == 1)
-                    element.setNeuronParams(neuron1_params);
+                    element.setNeuronParams(neuron1_params, divider);
                 else if (numberOfDendrites == 2)
-                    element.setNeuronParams(neuron2_params);
+                    element.setNeuronParams(neuron2_params, divider);
             }
 
             Console.WriteLine("Drag and drop " + this.blockTheEnd);
@@ -586,7 +601,6 @@ namespace PracaMagisterska
                 {
                     continue;
                 }
-                Console.WriteLine("In flow 2");
                 if (this.neuronQueue[i].Count() > 0)
                 {
                     NeuronViewbox first_el = this.neuronQueue[i][0];
@@ -668,11 +682,45 @@ namespace PracaMagisterska
             }
 
             // push volume to neuron
-            foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
+            for (int index = 0; index < whatToPush.Count(); index++)
             {
+                KeyValuePair<NeuronViewbox, List<double>> element = whatToPush.ElementAt(index);
                 NeuronViewbox viewboxObj = element.Key;
-                viewboxObj.neuronFlow(sender, e, element.Value, color);
+                bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false;
+                double additionalVolume = viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
+
+                if (additionalVolume > 0)
+                {
+                    for (int j = index - 1; j >= 0; j++)
+                    {
+                        bool push_done = this.pushAdditionalVolume(sender, e, additionalVolume, whatToPush, j);
+                        if (push_done)
+                            break;
+                    }
+                }
+        
             }
+            //foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
+            //{
+            //    NeuronViewbox viewboxObj = element.Key;
+            //    bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false; 
+            //    double additionalVolume = viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
+            //}
+        }
+
+        private bool pushAdditionalVolume(object sender, EventArgs e, double additionalVolume, Dictionary<NeuronViewbox, List<double>> whatToPush, int index)
+        {
+            if (additionalVolume > 0 && index >= 0)
+            {
+                KeyValuePair<NeuronViewbox, List<double>> element_prev = whatToPush.ElementAt(index);
+                NeuronViewbox viewboxObj_prev = element_prev.Key;
+                if (viewboxObj_prev.neuron.soma != null)
+                {
+                    viewboxObj_prev.neuron.soma.newFlow(sender, e, additionalVolume, true, color);
+                    return true;
+                }
+            }
+            return false;
         }
 
         // add volume to up or down dendrite
@@ -820,8 +868,9 @@ namespace PracaMagisterska
                 else if (this.startOutFlowTime == 0)
                 {
                     double timedifference = this.timeBegginingOfOutflowInReminder - this.minTimeToOutFlow + (double)(this.somaAmount * this.timerTimeSpan)/1000;
+                    timedifference = Math.Floor(timedifference * 10) / 10;
                     double additionalVolume = (timedifference / 0.2) * (this.flowVolume);
-                    this.somethingInNeuron = (this.maxSomaVolumeInQueue <= additionalVolume || this.maxSomaVolumeInQueue < (additionalVolume + this.flowVolume)) ? false : true;
+                    this.somethingInNeuron = (this.maxSomaVolumeInQueue <= additionalVolume) ? false : true;
                 }
                 else
                 {
@@ -853,6 +902,7 @@ namespace PracaMagisterska
             this.minTimeToOutFlow = 0;
             this.somethingInNeuron = false;
             this.startOutFlowTime = 0;
+            this.drainingCounter = 0;
         }
 
         // reset flow and parameters after click 'Reset' button
@@ -863,6 +913,8 @@ namespace PracaMagisterska
             this.neuronQueue.Clear();
             this.canvasElements.Clear();
             this.resetParams();
+            this.simulationNumber = 0;
+            this.simulNumberBlock.Text = "0";
         }
 
         // reset flow after click 'Reset flow' button
@@ -906,7 +958,7 @@ namespace PracaMagisterska
         }
 
         // set value of current configuration xml file
-        private void getConfParamsXML(string path, double time, double flow, double drainingSpeed)
+        private void getConfParamsXML(string path, double time, double flow)
         {
             this.currentConf = path;
             Console.WriteLine("In main Window" + path);
@@ -960,45 +1012,49 @@ namespace PracaMagisterska
                 return;
             List<Double> resList = new List<double>();
             List<int> somaCounter = new List<int>();
+            List<int> elementsList = new List<int>();
             List<Double> sumOfSomaVolume = new List<double>();
             int elements = 0;
             foreach (List<NeuronViewbox> neuronList in this.neuronQueue)
             {
-                double timeForNeuron = 0;
+                double volumeForNeuron = 0;
                 int somaC = 0;
-                int listAmountElements = 0;
+                int elementsAmount = 0;
                 double somaVol = 0;
                 foreach (NeuronViewbox viewbox in neuronList)
                 {
-                    timeForNeuron += viewbox.getVolumeToOutflowWhenNeuronIsFull();
+                    volumeForNeuron += viewbox.getVolumeToOutflowWhenNeuronIsFull();
                     if (!viewbox.somaIsNull())
                     {
                         somaC += 1;
-                        listAmountElements += 2;
+                        elementsAmount += 2;
                         somaVol += viewbox.getSomaThreshold();
                     }
                     else
                     {
-                        listAmountElements += 1;
+                        elementsAmount += 1;
                     }
                 }
-                elements = elements == 0 ? listAmountElements: elements;
-                elements = elements > listAmountElements ? listAmountElements : elements;
-                Console.WriteLine("Single neuron volume" + timeForNeuron);
-                resList.Add(timeForNeuron);
+                //elements = elements == 0 ? elementsAmount: elements;
+                //elements = elements > elementsAmount ? elementsAmount : elements;
+                Console.WriteLine("Single neuron volume" + volumeForNeuron);
+                resList.Add(volumeForNeuron);
                 somaCounter.Add(somaC);
                 sumOfSomaVolume.Add(somaVol);
+                elementsList.Add(elementsAmount);
 
             }
             this.maxSomaVolumeInQueue = sumOfSomaVolume.Max();
             int index = sumOfSomaVolume.FindIndex(el => el == this.maxSomaVolumeInQueue);
             this.somaAmount = somaCounter[index];
-            double max = resList[index];
+            double maxVolume = resList[index];
+            elements = elementsList[index];
             this.queueNumberForReminder = index;
-            double minVolumeForQueue = (((double)max / ((double)this.flowVolume * elements)) * (double)this.timerTimeSpan) / (double)1000;
-            if (minVolumeForQueue * 1000 < elements * this.timerTimeSpan)
-                minVolumeForQueue = this.timerTimeSpan * elements / (double)1000;
-            this.minTimeToOutFlow = minVolumeForQueue + ((double)this.timerTimeSpan * (double)somaAmount) / (double)1000;
+            double minTimeForQueue = (((double)maxVolume / ((double)this.flowVolume)) * (double)this.timerTimeSpan) / (double)1000;
+            if (minTimeForQueue * 1000 < elements * this.timerTimeSpan)
+                minTimeForQueue = this.timerTimeSpan * elements / (double)1000;
+            double round = Math.Floor(minTimeForQueue * 10) / 10;
+            this.minTimeToOutFlow = Math.Floor(minTimeForQueue * 10) / 10 + ((double)this.timerTimeSpan * (double)somaAmount) / (double)1000;
             Console.WriteLine("Test time: " + this.minTimeToOutFlow);
         }
 
@@ -1006,10 +1062,16 @@ namespace PracaMagisterska
         private void resultButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsDragAndDropWindow resultsWindow = new ResultsDragAndDropWindow();
+            double remainingMemory = this.getRemainingMemory() * 100;
+            double drainingTime = this.drainingCounter * this.timerTimeSpan / 1000;
+
             resultsWindow.somethingRememberedTextBlock.Text = this.somethingInNeuron == true ? "True": "False";
             resultsWindow.reminderOutFlowTimeTextBlock.Text = this.timeBegginingOfOutflowInReminder.ToString();
             resultsWindow.outFlowTimeTextBlock.Text = this.startOutFlowTime.ToString();
             resultsWindow.outFlowVolumeTextBlock.Text = this.totalOutFlow.ToString("0.00");
+            resultsWindow.drainingVolumeTextBlock.Text = (remainingMemory).ToString("0.00");
+            resultsWindow.drainingTimeTextBlock.Text = drainingTime.ToString("0.00");
+            resultsWindow.sumulationNumInResTextBlock.Text = this.simulNumberBlock.Text;
             resultsWindow.ShowDialog();
         }
     }

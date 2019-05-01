@@ -120,10 +120,8 @@ namespace PracaMagisterska.PersonalSolution
         // claculate volume when flow will out flow
         private void calculateVolumeToOutFlow()
         {
-            this.minVolumeToOutflow = 0;
-            this.volumeToOutFlowWhenNeuronFull = 0;
-            this.minVolumeToOutflow += axon.volume;
-            this.volumeToOutFlowWhenNeuronFull += axon.volume;
+            this.minVolumeToOutflow = axon.volume;
+            this.volumeToOutFlowWhenNeuronFull = axon.volume;
             if (this.soma != null)
             {
                 this.minVolumeToOutflow += this.soma.threshold;
@@ -163,7 +161,7 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // set neuron parameter - update axon, soma, dendrite parameters
-        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon)
+        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon, double axonMaxSpeed)
         {
             if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
             {
@@ -193,7 +191,7 @@ namespace PracaMagisterska.PersonalSolution
                 foreach (Dendrite den in this.dendrites_list)
                 {
                     den.diameter = this.denDiam;
-                    den.length = this.dendriteLength * 1000;
+                    den.length = this.dendriteLength;
                     den.calculateParameters();
                 }
             }
@@ -207,8 +205,9 @@ namespace PracaMagisterska.PersonalSolution
             }
             Console.WriteLine("Change axon");
             this.axon.length = axonLen == 0 ? this.axonLength : axonLen * 1000;
-            this.axon.diameter = axonDiam == 0 ? this.axDiam : axDiam;
+            this.axon.diameter = axonDiam == 0 ? this.axDiam : axonDiam;
             this.axon.blockTheEnd = blockAxon;
+            this.axon.maxSpeed = axonMaxSpeed;
             axon.calculateParameters();
 
             this.calculateVolumeToOutFlow();
@@ -221,6 +220,7 @@ namespace PracaMagisterska.PersonalSolution
             this.axon.reset();
             this.isFull = false;
             this.volumeToPush = 0;
+            this.outFlowVolume = 0;
             if (this.soma != null)
             {
                 Console.WriteLine("Reset soma");
@@ -231,13 +231,12 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // partial empty the soma of neuron
-        public bool draining(double volumeToEmpty)
+        public bool draining(double remainingMemory)
         {
-            Console.WriteLine("In Neron draining " + volumeToEmpty);
             bool empty = true;
             if (this.soma != null)
             {
-                empty = this.soma.partialEmpty(volumeToEmpty);
+                empty = this.soma.partialEmpty(remainingMemory);
             }
             Console.WriteLine("Neron draining return: " + empty);
             return empty;

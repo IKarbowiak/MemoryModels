@@ -1,7 +1,9 @@
 ﻿using PracaMagisterska.HTM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,6 +19,7 @@ namespace PracaMagisterska
         private System.Windows.Media.SolidColorBrush inactive_color = System.Windows.Media.Brushes.LightGoldenrodYellow;
         private System.Windows.Media.SolidColorBrush predicting_color = System.Windows.Media.Brushes.Turquoise;
         private System.Windows.Media.SolidColorBrush active_color = System.Windows.Media.Brushes.Teal;
+        private System.Windows.Media.SolidColorBrush demage_color = System.Windows.Media.Brushes.Brown;
 
         private List<PracaMagisterska.HTM.HTM> htm_layers;
         private List<HTM_excite_history> layers_excite_history;
@@ -34,7 +37,7 @@ namespace PracaMagisterska
             PracaMagisterska.HTM.HTM htm = new PracaMagisterska.HTM.HTM();
             htm_layers.Add(htm);
 
-            initialize_model(htm);
+            initialize_model(htm, 0);
 
             int width = (int)input_grid.Width;
             int height = (int)input_grid.Height;
@@ -42,6 +45,7 @@ namespace PracaMagisterska
             this.active_legend.Fill = active_color;
             this.inactive_legend.Fill = inactive_color;
             this.predictive_legend.Fill = predicting_color;
+            this.demage_legend.Fill = demage_color;
 
             int total_data_length = htm.data.Count * htm.data[0].Count;
 
@@ -61,6 +65,7 @@ namespace PracaMagisterska
 
             bool is_iteration_field_correct = this.validate_field(iteration_textbox);
             bool is_layer_filed_correct = this.validate_field(layer_textbox);
+            bool cell_demage_correct = this.validate_field(cellDemage_textbox);
 
             if (!is_iteration_field_correct || !is_layer_filed_correct)
             {
@@ -81,6 +86,13 @@ namespace PracaMagisterska
                 return;
             }
 
+            double cell_demage = Double.Parse(cellDemage_textbox.Text);
+            if (cell_demage < 0 || cell_demage > 100)
+            {
+                cellDemage_textbox.BorderBrush = Brushes.Red;
+                return;
+            }
+
             this.layers_excite_history.Clear();
             int start_iter = 1;
             if (after_reset)
@@ -97,13 +109,16 @@ namespace PracaMagisterska
 
             HTM.HTM HTM_layer_1 = this.htm_layers[0];
             if (after_reset)
-                initialize_model(HTM_layer_1);
+                initialize_model(HTM_layer_1, cell_demage);
 
             Tuple<int, int> grid_column_shape = HTM_layer_1.get_columns_grid_size();
             this.layers_excite_history.Add(new HTM_excite_history(HTM_layer_1.layer, HTM_layer_1.cells_per_column, grid_column_shape.Item1, grid_column_shape.Item2));
 
-            this.execute(this.layers_excite_history[0], this.data_generator, iteration_number);
+            this.execute(this.layers_excite_history[0], this.data_generator, iteration_number, cell_demage);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
+
+            this.writeResToCSV();
+
         }
 
         private bool validate_field(TextBox textbox)
@@ -118,15 +133,15 @@ namespace PracaMagisterska
             return true;
         }
 
-        public void reset_button_click(object sender, RoutedEventArgs e)
+        private void reset_panels()
         {
-
             result_panel.Children.Clear();
             iteration_panel.Children.Clear();
             input_marker_panel.Children.Clear();
+            layer_panel.Children.Clear();
 
             foreach (KeyValuePair<StackPanel, string> data in new Dictionary<StackPanel, string> { { iteration_panel, "Iteration number" },
-                { result_panel, "HTM layers" }, { input_marker_panel, "Input" } })
+                { result_panel, "HTM layers" }, { input_marker_panel, "Input" },  { layer_panel, "Layer" } })
             {
                 TextBlock info = new TextBlock()
                 {
@@ -138,13 +153,19 @@ namespace PracaMagisterska
                 };
                 data.Key.Children.Add(info);
             }
+        }
+
+        public void reset_button_click(object sender, RoutedEventArgs e)
+        {
+
+            this.reset_panels();
 
             this.after_reset = true;
         }
 
-        public List<List<int>> data_generator(HTM.HTM HTM_layer_1)
+        public List<List<int>> data_generator(HTM.HTM HTM_layer)
         {
-            List<List<int>> old_data = HTM_layer_1.data;
+            List<List<int>> old_data = HTM_layer.data;
             List<List<int>> data = new List<List<int>>();
 
             for (int i = 0; i < old_data.Count; i++) 
@@ -154,7 +175,8 @@ namespace PracaMagisterska
 
                 for (int j = 0; j < row.Count; j++)
                 {
-                    int value = row[j] == 1 ? 0 : 1;
+                    //int value = row[j] == 1 ? 0 : 1;
+                    int value = row[j];
                     new_row.Add(value);
                 }
 
@@ -165,7 +187,7 @@ namespace PracaMagisterska
         }
 
 
-        public void initialize_model(PracaMagisterska.HTM.HTM htm)
+        public void initialize_model(PracaMagisterska.HTM.HTM htm, double cell_demage)
         {
             List<List<int>> data = new List<List<int>>();
             data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 });
@@ -174,12 +196,16 @@ namespace PracaMagisterska
             data.Add(new List<int> { 0, 1, 0, 0, 1, 1, 0, 1, 0, 1 });
             data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 0, 1 });
             data.Add(new List<int> { 0, 0, 0, 1, 1, 0, 0, 0, 1, 1 });
+            data.Add(new List<int> { 1, 1, 0, 1, 0, 0, 0, 0, 0, 1 });
+            data.Add(new List<int> { 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 });
+            data.Add(new List<int> { 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 });
+            data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 0, 0, 1, 0 });
 
-            htm.initialize_input(data, 1);
+            htm.initialize_input(data, 1, cell_demage);
 
         }
 
-        public void execute(HTM_excite_history history, Func<HTM.HTM, List<List<int>>> data_generator, int iteration_number, bool learning = true)
+        public void execute(HTM_excite_history history, Func<HTM.HTM, List<List<int>>> data_generator, int iteration_number, double cell_demage, bool learning = true)
         {
             // data_generator: generate next input data sample
             // post_generator: function to call after each interation
@@ -187,6 +213,8 @@ namespace PracaMagisterska
             int iteration_counter = iteration_number;
             while (iteration_counter > 0)
             {
+                if (cell_demage > 0 && iteration_counter == iteration_number)
+                    this.htm_layers[0].demageCells(cell_demage);
                 List<List<int>> input_data = this.process_layer_1(this.htm_layers[0], this.layers_excite_history[0]);
                 if (input_data.Count() == 0)
                     return;
@@ -197,7 +225,7 @@ namespace PracaMagisterska
 
                     if (iteration_counter == iteration_number)
                     {
-                        next_layer.initialize_input(input_data, i + 1, compression_factor);
+                        next_layer.initialize_input(input_data, i + 1, cell_demage, compression_factor);
                         Tuple<int, int> layer_grid_column_shape = next_layer.get_columns_grid_size();
                         this.layers_excite_history.Add(new HTM_excite_history(next_layer.layer, next_layer.cells_per_column,
                             layer_grid_column_shape.Item1, layer_grid_column_shape.Item2));
@@ -211,13 +239,31 @@ namespace PracaMagisterska
 
                     HTM_excite_history layer_history = this.layers_excite_history[i];
                     layer_history.update_history(next_layer);
-                    input_data = layer_history.cell_excite_history.Last();
+                    input_data = this.prepare_input_data(layer_history.cell_excite_history.Last());
 
                 }
 
                 iteration_counter -= 1;
             }
 
+        }
+
+        private List<List<int>> prepare_input_data(List<List<int>> prev_layer_data)
+        {
+            List<List<int>> input_data = new List<List<int>>();
+            foreach (List<int> row in prev_layer_data)
+            {
+                List<int> new_row = new List<int>();
+                foreach (int value in row)
+                {
+                    if (value == 1 || value == 2)
+                        new_row.Add(1);
+                    else
+                        new_row.Add(0);
+                }
+                input_data.Add(new_row);
+            }
+            return input_data;
         }
 
         private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, HTM_excite_history HTM_history)
@@ -235,7 +281,7 @@ namespace PracaMagisterska
             HTM_layer_1.execute();
             HTM_history.update_history(HTM_layer_1);
             layer_one_data = HTM_history.cell_excite_history.Last();
-            return layer_one_data;
+            return this.prepare_input_data(layer_one_data);
         }
 
         // windwow functions
@@ -293,6 +339,7 @@ namespace PracaMagisterska
             const int INACTIVE = 0;
             const int ACTIVE = 1;
             const int PREDICTING = 2;
+            const int DEMAGE = 3;
 
             for (int i = 0; i < data.Count; i++)
             {
@@ -302,6 +349,8 @@ namespace PracaMagisterska
                     rec_list[i].Fill = active_color;
                 else if (data[i] == PREDICTING)
                     rec_list[i].Fill = predicting_color;
+                else if (data[i] == DEMAGE)
+                    rec_list[i].Fill = demage_color;
             }
 
         }
@@ -327,10 +376,11 @@ namespace PracaMagisterska
         public void show_results(int rec_number)
         {
             string input_marker = " ";
+            int row_height = 11;
             for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
             {
                 int row_number = this.layers_excite_history[0].cell_excite_history[0].Count();
-                double height = 11 * row_number * this.htm_layers.Count + 10 * this.htm_layers.Count + 22 - 4; // 22 from Line margins
+                double height = row_height * row_number * this.htm_layers.Count + 10 * this.htm_layers.Count + 22 - 4; // 22 from Line margins
 
                 TextBlock iter_num = this.prepare_text_block((iter_counter + 1).ToString(), height);
                 iteration_panel.Children.Add(iter_num);
@@ -369,10 +419,27 @@ namespace PracaMagisterska
 
                         double width = this.rec_width == 0 ? 600 : this.rec_width * row.Count;
                         
-                        List<Rectangle> rectangles_list = this.split_rectangle(width, 11, row.Count, grid_for_rec);
+                        List<Rectangle> rectangles_list = this.split_rectangle(width, row_height, row.Count, grid_for_rec);
                         fill_rectangle_with_data(row, rectangles_list);
                         row_counter++;
                     }
+
+                    double layer_info_height = row_height * row_number;
+                    if (layer_counter == htm_layers.Count() - 1)
+                        layer_info_height += 32;
+
+                    TextBlock layer = new TextBlock()
+                    {
+                        Text = (layer_counter + 1).ToString(),
+                        FontSize = 12,
+                        FontWeight = FontWeights.DemiBold,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextAlignment = TextAlignment.Center,
+                        Margin = new Thickness(15, 10, 0, 0),
+                        Height = layer_info_height,
+                    };
+                    this.layer_panel.Children.Add(layer);
                 }
 
                 Line line = new Line()
@@ -387,6 +454,47 @@ namespace PracaMagisterska
 
                 result_panel.Children.Add(line);
             }
+        }
+
+        public void writeResToCSV()
+        {
+            string filePath = "D:\\PWR\\Magisterka\\res1.csv";
+            var csv = new StringBuilder();
+
+            for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
+            {
+                string res = string.Format("{0}; ", iter_counter + 1);
+                for (int layer_counter = 0; layer_counter < this.htm_layers.Count; layer_counter++)
+                {
+                    int active_cells = 0;
+                    int inactive_cells = 0;
+                    int predictive_cells = 0;
+                    List<List<int>> iteration_result = this.layers_excite_history[layer_counter].cell_excite_history[iter_counter];
+                    foreach (List<int> row in iteration_result)
+                    {
+                        foreach (int element in row)
+                        {
+                            if (element == 0)
+                                inactive_cells += 1;
+                            else if (element == 1)
+                                active_cells += 1;
+                            else if (element == 2)
+                                predictive_cells += 1;
+
+                        }
+                    }
+                    res += string.Format("{0}; {1}; {2}; ", active_cells, predictive_cells, inactive_cells);
+
+                }
+
+                csv.AppendLine(res);
+
+            }
+
+            File.WriteAllText(filePath, csv.ToString());
+
+
+
         }
 
     }
