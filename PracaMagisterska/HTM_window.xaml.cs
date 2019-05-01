@@ -175,8 +175,8 @@ namespace PracaMagisterska
 
                 for (int j = 0; j < row.Count; j++)
                 {
-                    int value = row[j] == 1 ? 0 : 1;
-                    //int value = row[j] ;
+                    //int value = row[j] == 1 ? 0 : 1;
+                    int value = row[j];
                     new_row.Add(value);
                 }
 

@@ -22,6 +22,8 @@ namespace PracaMagisterska.HTM
         public double active_duty_cycle; // doc numenta: A sliding average representing how often column c has been active after inhibition
         public double overlap_duty_cycle; // doc numenta: A sliding average representing how often column c has had significant overlap (i.e. greater than minOverlap) with its inputs
         private const double avg_scale = HTM_parameters.AVG_SCALE;
+        private Random rnd = new Random(Guid.NewGuid().GetHashCode());
+        // private Random rnd = new Random();
 
         public Column(HTM htm_obj, int x, int y, int cells_in_column)
         {
@@ -53,18 +55,18 @@ namespace PracaMagisterska.HTM
             return Math.Sqrt(Math.Pow((double)inputx - x_range, 2) + Math.Pow((double)inputy - y_range, 2));
         }
 
-        public double old_firing_synapses()
+        public double old_firing_synapses(bool connection_required = true)
         {
-            return this.segment.old_firing_synapses().Count();
+            return this.segment.old_firing_synapses(connection_required).Count();
         }
 
         // Numenta docs: Given the list of columns, return the k'th highest overlap value.
         public double kth_score(int k)
         {
             List<Column> neighbors = htm.neighbors(this);
-            neighbors.OrderByDescending(col => col.overlap);
-            int kth_element_index = Math.Min(k - 1, neighbors.Count() - 1);
-            return neighbors[kth_element_index].overlap;
+            List<Column> ordered_neighobors = neighbors.OrderByDescending(col => col.overlap).ToList();
+            int kth_element_index = Math.Min(k - 1, ordered_neighobors.Count() - 1);
+            return ordered_neighobors[kth_element_index].overlap;
         }
 
         public List<Synapse> get_synapses()
@@ -150,8 +152,9 @@ namespace PracaMagisterska.HTM
             // if best_cell is none, choose cell with the fewest segments
             if (best_cell == null)
             {
-                int fewest_segment = this.cells[0].segments.Count();
-                best_cell = this.cells[0];
+                int index = rnd.Next(0, this.cells.Count);
+                int fewest_segment = this.cells[index].segments.Count();
+                best_cell = this.cells[index];
                 foreach (Cell cell in this.cells)
                 {
                     if (best_cell == cell)

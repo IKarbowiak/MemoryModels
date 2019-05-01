@@ -24,8 +24,8 @@ namespace PracaMagisterska.HTM
         public const double INPUT_BIAS_STD_DEV = 0.25;
 
         public const int CELLS_PER_COLUMN = 4;
-        public const int INHIBITION_RADIUS = 5;
-        public const int DESIRED_LOCAL_ACTIVITY = 50;
+        public const int INHIBITION_RADIUS = 4;
+        public const int DESIRED_LOCAL_ACTIVITY = 3;
         
         public const int MIN_OVERLAP = 5;
         public const double AVG_SCALE = 0.995;

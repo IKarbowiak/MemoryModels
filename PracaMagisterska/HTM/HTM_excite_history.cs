@@ -48,10 +48,11 @@ namespace PracaMagisterska.HTM
                     int state = INACTIVE;
                     if (cell.demage)
                         state = DEMAGE;
-                    else if (cell.predicting)
-                        state = PREDICTING;
                     else if (cell.active)
                         state = ACTIVE;
+                    else if (cell.predicting)
+                        state = PREDICTING;
+
                         
                     cell_exicte_time_slice[cell_num].Add(state);
                     cell_num++;
