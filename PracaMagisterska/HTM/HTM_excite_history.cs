@@ -43,15 +43,15 @@ namespace PracaMagisterska.HTM
             foreach (Column column in htm.get_columns())
             {
                 int cell_num = 0;
-                foreach (Cell cell in column.cells)
+                foreach (Cell cell in column.get_cells(false))
                 {
                     int state = INACTIVE;
                     if (cell.demage)
                         state = DEMAGE;
-                    else if (cell.active)
-                        state = ACTIVE;
                     else if (cell.predicting)
                         state = PREDICTING;
+                    else if (cell.active)
+                        state = ACTIVE;
                         
                     cell_exicte_time_slice[cell_num].Add(state);
                     cell_num++;

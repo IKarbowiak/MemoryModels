@@ -239,13 +239,31 @@ namespace PracaMagisterska
 
                     HTM_excite_history layer_history = this.layers_excite_history[i];
                     layer_history.update_history(next_layer);
-                    input_data = layer_history.cell_excite_history.Last();
+                    input_data = this.prepare_input_data(layer_history.cell_excite_history.Last());
 
                 }
 
                 iteration_counter -= 1;
             }
 
+        }
+
+        private List<List<int>> prepare_input_data(List<List<int>> prev_layer_data)
+        {
+            List<List<int>> input_data = new List<List<int>>();
+            foreach (List<int> row in prev_layer_data)
+            {
+                List<int> new_row = new List<int>();
+                foreach (int value in row)
+                {
+                    if (value == 1 || value == 2)
+                        new_row.Add(1);
+                    else
+                        new_row.Add(0);
+                }
+                input_data.Add(new_row);
+            }
+            return input_data;
         }
 
         private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, HTM_excite_history HTM_history)
@@ -263,7 +281,7 @@ namespace PracaMagisterska
             HTM_layer_1.execute();
             HTM_history.update_history(HTM_layer_1);
             layer_one_data = HTM_history.cell_excite_history.Last();
-            return layer_one_data;
+            return this.prepare_input_data(layer_one_data);
         }
 
         // windwow functions
@@ -408,7 +426,7 @@ namespace PracaMagisterska
 
                     double layer_info_height = row_height * row_number;
                     if (layer_counter == htm_layers.Count() - 1)
-                        layer_info_height += 17;
+                        layer_info_height += 32;
 
                     TextBlock layer = new TextBlock()
                     {
@@ -418,7 +436,7 @@ namespace PracaMagisterska
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextAlignment = TextAlignment.Center,
-                        Margin = new Thickness(15, 10, 0, 5),
+                        Margin = new Thickness(15, 10, 0, 0),
                         Height = layer_info_height,
                     };
                     this.layer_panel.Children.Add(layer);

@@ -16,7 +16,7 @@ namespace PracaMagisterska.HTM
         public double overlap;
         private HTM htm;
         public Segment segment { get; set; }
-        public Cell[] cells { get; set; }
+        private List<Cell> cells;
         public double boost;
         public double min_duty_cycle; // doc numenta: A variable representing the minimum desired firing rate for a cell. If a cell's firing rate falls below this value, it will be boosted.
         public double active_duty_cycle; // doc numenta: A sliding average representing how often column c has been active after inhibition
@@ -38,10 +38,10 @@ namespace PracaMagisterska.HTM
             this.overlap_duty_cycle = 0;
 
 
-            this.cells = new Cell[cells_in_column];
-            for (int i=0; i < cells_in_column; i++)
+            this.cells = new List<Cell>();
+            for (int i = 0; i < cells_in_column; i++)
             {
-                this.cells[i] = new Cell(this, i);
+                this.cells.Add(new Cell(this, i));
             }
         }
 
@@ -50,7 +50,7 @@ namespace PracaMagisterska.HTM
             double x_range = (double)this.x * input_compression;
             double y_range = (double)this.y * input_compression;
             // calculate distance between cell in localization x, y and this column
-            return Math.Sqrt( Math.Pow((double)inputx - x_range, 2) + Math.Pow((double)inputy - y_range, 2));
+            return Math.Sqrt(Math.Pow((double)inputx - x_range, 2) + Math.Pow((double)inputy - y_range, 2));
         }
 
         public double old_firing_synapses()
@@ -61,7 +61,7 @@ namespace PracaMagisterska.HTM
         // Numenta docs: Given the list of columns, return the k'th highest overlap value.
         public double kth_score(int k)
         {
-            List <Column> neighbors = htm.neighbors(this);
+            List<Column> neighbors = htm.neighbors(this);
             neighbors.OrderByDescending(col => col.overlap);
             int kth_element_index = Math.Min(k - 1, neighbors.Count() - 1);
             return neighbors[kth_element_index].overlap;
@@ -135,7 +135,7 @@ namespace PracaMagisterska.HTM
             int best_cell_firing_synapse_count = 0;
             Segment best_segment = null;
 
-            foreach (Cell cell in this.cells)
+            foreach (Cell cell in this.get_cells())
             {
                 Segment segment = cell.get_best_matching_segment(next_step);
                 int synapses_count = segment != null ? segment.old_firing_synapses(connection_required: false).Count() : 0;
@@ -167,5 +167,16 @@ namespace PracaMagisterska.HTM
 
             return Tuple.Create(best_cell, best_segment);
         }
+
+        public List<Cell> get_cells(bool shuffle_cells = true)
+        {
+            List<Cell> cells_to_return = this.cells.ToList();
+            if (shuffle_cells)
+            {
+                cells_to_return.shuffle();
+            }
+            return cells_to_return;
+        }
     }
+
 }

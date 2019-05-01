@@ -109,15 +109,18 @@ namespace PracaMagisterska.HTM
             } 
         }
 
-        public IEnumerable<Cell> get_cells()
+        public List<Cell> get_cells()
         {
+            List<Cell> cells_list = new List<Cell>(); 
             foreach (Column column in this.get_columns())
             {
-                foreach (Cell cell in column.cells)
+                foreach (Cell cell in column.get_cells())
                 {
-                    yield return cell;
+                    cells_list.Add(cell);
+                    //yield return cell;
                 }
             }
+            return cells_list;
         }
 
         public Tuple<int, int> get_columns_grid_size()
@@ -256,5 +259,22 @@ namespace PracaMagisterska.HTM
             return radius_list.Sum() / radius_list.Count();
         }
 
+    }
+
+    static class MyExtensions
+    {
+        private static Random rnd = new Random();
+        public static void shuffle<T>(this IList<T> list)
+        {
+            int n = list.Count();
+            while (n > 1)
+            {
+                n--;
+                int k = rnd.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
     }
 }
