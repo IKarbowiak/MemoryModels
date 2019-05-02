@@ -136,7 +136,7 @@ namespace PracaMagisterska.HTM
                 this.proxy_cells[i] = new InputCell[input_length];
                 for (int j=0; j < input_length; j++)
                 {
-                    this.proxy_cells[i][j] = new InputCell(i, j, this.data);
+                    this.proxy_cells[i][j] = new InputCell(i, j, this.data[i][j]);
                 }
             }
 
@@ -179,9 +179,23 @@ namespace PracaMagisterska.HTM
             if (new_data.Count == this.data.Count && new_data[0].Count == this.data[0].Count)
             {
                 this.data = new_data;
+                this.update_proxy_data(new_data);
                 return true;
             }
             return false;
+        }
+
+        private void update_proxy_data(List<List<int>> new_data)
+        {
+            int input_width = new_data.Count;
+            int input_length = new_data[0].Count;
+            for (int i = 0; i < input_width; i++)
+            {
+                for (int j = 0; j < input_length; j++)
+                {
+                    this.proxy_cells[i][j].value = new_data[i][j];
+                }
+            }
         }
 
         public int lower_limit(int value)
@@ -237,7 +251,7 @@ namespace PracaMagisterska.HTM
             SpatialPool spatial_pool = new SpatialPool();
             spatial_pool.perform(this);
 
-            TemporalPool temporal_pool = new TemporalPool(this, learning, this.update_segments);
+            TemporalPool temporal_pool = new TemporalPool(this, false, this.update_segments);
             UpdateSegments update_segments = temporal_pool.perform();
 
         }

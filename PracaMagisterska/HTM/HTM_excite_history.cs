@@ -17,8 +17,10 @@ namespace PracaMagisterska.HTM
         private int cells_per_column;
         private int column_width;
         private int column_length;
-        public List<List<int>> column_excite_history;
+        //public List<List<int>> column_excite_history;
         public List<List<List<int>>> cell_excite_history;
+        public Dictionary<int, List<int>> column_excite_history;
+
 
         public HTM_excite_history(int layer, int cells_in_column, int column_width, int column_length)
         {
@@ -26,12 +28,12 @@ namespace PracaMagisterska.HTM
             this.cells_per_column = cells_in_column;
             this.column_width = column_width;
             this.column_length = column_length;
-            this.column_excite_history = new List<List<int>>();
+            this.column_excite_history = new Dictionary<int, List<int>>();
             this.cell_excite_history = new List<List<List<int>>>();
         }
 
 
-        public void update_history(HTM htm)
+        public void update_history(HTM htm, int input_value)
         {
             List<List<int>> cell_exicte_time_slice = new List<List<int>>();
             
@@ -60,17 +62,55 @@ namespace PracaMagisterska.HTM
 
             }
 
+
             List<int> column_exicte_time_slice = new List<int>();
+            int column_counter = 0;
 
             foreach (Column column in htm.get_columns())
             {
-                int state = column.active ? ACTIVE : INACTIVE;
-                column_exicte_time_slice.Add(state);
+                if (column.active)
+                    column_exicte_time_slice.Add(column_counter);
+                column_counter++;
             }
 
+            this.column_excite_history[input_value] = column_exicte_time_slice;
             this.cell_excite_history.Add(cell_exicte_time_slice);
-            this.column_excite_history.Add(column_exicte_time_slice);
 
+        }
+
+        public int find_similarities(int input_value)
+        {
+            List<int> active_columns = this.column_excite_history[input_value];
+            List<int> matching_input_list = new List<int>();
+            int best_matching_input = 0;
+            int differs_columns_num = active_columns.Count() + 1;
+            foreach (KeyValuePair<int, List<int>> key_value in this.column_excite_history)
+            {
+                if (key_value.Key == input_value)
+                    continue;
+                List<int> list_difference = active_columns.Except(key_value.Value).ToList();
+                if (list_difference.Count < differs_columns_num)
+                {
+                    differs_columns_num = list_difference.Count();
+                    best_matching_input = key_value.Key;
+                    matching_input_list = new List<int> { best_matching_input};
+                }
+                else if (list_difference.Count == differs_columns_num)
+                {
+                    matching_input_list.Add(key_value.Key);
+                }
+                 
+            }
+            if (matching_input_list.Count > 1)
+            {
+                List<int> sorted_input = new List<int>() ;
+                sorted_input = matching_input_list.FindAll(x => x < input_value).ToList();
+                if (sorted_input.Count > 0)
+                    best_matching_input = sorted_input.Max();
+                else
+                    best_matching_input = matching_input_list.Min();
+            }
+            return best_matching_input;
         }
 
     }

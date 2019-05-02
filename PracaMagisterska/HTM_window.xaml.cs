@@ -34,29 +34,29 @@ namespace PracaMagisterska
             this.htm_layers = new List<HTM.HTM>();
             this.layers_excite_history = new List<HTM_excite_history>();
 
-            PracaMagisterska.HTM.HTM htm = new PracaMagisterska.HTM.HTM();
-            htm_layers.Add(htm);
+            //PracaMagisterska.HTM.HTM htm = new PracaMagisterska.HTM.HTM();
+            //htm_layers.Add(htm);
 
-            initialize_model(htm, 0);
+            //initialize_model(htm, 0);
 
-            int width = (int)input_grid.Width;
-            int height = (int)input_grid.Height;
+            //int width = (int)input_grid.Width;
+            //int height = (int)input_grid.Height;
 
             this.active_legend.Fill = active_color;
             this.inactive_legend.Fill = inactive_color;
             this.predictive_legend.Fill = predicting_color;
             this.demage_legend.Fill = demage_color;
 
-            int total_data_length = htm.data.Count * htm.data[0].Count;
+            //int total_data_length = htm.data.Count * htm.data[0].Count;
 
-            List<Rectangle> input_rectangle_list = this.split_rectangle(width, height, total_data_length, input_grid);
-            List<Rectangle> reverse_input_rectangle_list = this.split_rectangle(width, height, total_data_length, input_grid_reverse);
+            //List<Rectangle> input_rectangle_list = this.split_rectangle(width, height, total_data_length, input_grid);
+            //List<Rectangle> reverse_input_rectangle_list = this.split_rectangle(width, height, total_data_length, input_grid_reverse);
 
-            List<int> input_data_for_filling = this.prepare_data_for_filling_rectangles(htm.data);
-            fill_rectangle_with_data(input_data_for_filling, input_rectangle_list);
+            //List<int> input_data_for_filling = this.prepare_data_for_filling_rectangles(htm.data);
+            //fill_rectangle_with_data(input_data_for_filling, input_rectangle_list);
 
-            List<int> reverse_input_data_for_filling = this.prepare_data_for_filling_rectangles(htm.data, true);
-            fill_rectangle_with_data(reverse_input_data_for_filling, reverse_input_rectangle_list);
+            //List<int> reverse_input_data_for_filling = this.prepare_data_for_filling_rectangles(htm.data, true);
+            //fill_rectangle_with_data(reverse_input_data_for_filling, reverse_input_rectangle_list);
 
         }
 
@@ -94,30 +94,18 @@ namespace PracaMagisterska
             }
 
             this.layers_excite_history.Clear();
-            int start_iter = 1;
-            if (after_reset)
-            {
-                start_iter = 0;
-                this.htm_layers.Clear();
-            }
+            this.htm_layers.Clear();
 
-            for (int i = start_iter ; i < layer_number; i++)
+            for (int i = 0 ; i < layer_number; i++)
             {
                 HTM.HTM htm_layer = new HTM.HTM();
                 this.htm_layers.Add(htm_layer);
             }
 
-            HTM.HTM HTM_layer_1 = this.htm_layers[0];
-            if (after_reset)
-                initialize_model(HTM_layer_1, cell_demage);
-
-            Tuple<int, int> grid_column_shape = HTM_layer_1.get_columns_grid_size();
-            this.layers_excite_history.Add(new HTM_excite_history(HTM_layer_1.layer, HTM_layer_1.cells_per_column, grid_column_shape.Item1, grid_column_shape.Item2));
-
-            this.execute(this.layers_excite_history[0], this.data_generator, iteration_number, cell_demage);
+            this.execute(iteration_number, cell_demage);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
 
-            this.writeResToCSV();
+            //this.writeResToCSV();
 
         }
 
@@ -141,7 +129,7 @@ namespace PracaMagisterska
             layer_panel.Children.Clear();
 
             foreach (KeyValuePair<StackPanel, string> data in new Dictionary<StackPanel, string> { { iteration_panel, "Iteration number" },
-                { result_panel, "HTM layers" }, { input_marker_panel, "Input" },  { layer_panel, "Layer" } })
+                { result_panel, "HTM layers" }, { input_marker_panel, "Best matching" },  { layer_panel, "Layer" } })
             {
                 TextBlock info = new TextBlock()
                 {
@@ -186,36 +174,17 @@ namespace PracaMagisterska
             return data;
         }
 
-
-        public void initialize_model(PracaMagisterska.HTM.HTM htm, double cell_demage)
-        {
-            List<List<int>> data = new List<List<int>>();
-            data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 });
-            data.Add(new List<int> { 0, 0, 0, 0, 1, 0, 1, 0, 1, 1 });
-            data.Add(new List<int> { 0, 0, 1, 0, 1, 0, 0, 0, 0, 1 });
-            data.Add(new List<int> { 0, 1, 0, 0, 1, 1, 0, 1, 0, 1 });
-            data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 1, 0, 0, 1 });
-            data.Add(new List<int> { 0, 0, 0, 1, 1, 0, 0, 0, 1, 1 });
-            data.Add(new List<int> { 1, 1, 0, 1, 0, 0, 0, 0, 0, 1 });
-            data.Add(new List<int> { 1, 0, 0, 1, 1, 0, 0, 0, 0, 1 });
-            data.Add(new List<int> { 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 });
-            data.Add(new List<int> { 1, 0, 1, 0, 1, 0, 0, 0, 1, 0 });
-
-            htm.initialize_input(data, 1, cell_demage);
-
-        }
-
-        public void execute(HTM_excite_history history, Func<HTM.HTM, List<List<int>>> data_generator, int iteration_number, double cell_demage, bool learning = true)
+        public void execute(int iteration_number, double cell_demage, bool learning = true, bool check_coding = false)
         {
             // data_generator: generate next input data sample
             // post_generator: function to call after each interation
             double compression_factor = 2.1;
             int iteration_counter = iteration_number;
+            int counter = 1;
             while (iteration_counter > 0)
             {
-                if (cell_demage > 0 && iteration_counter == iteration_number)
-                    this.htm_layers[0].demageCells(cell_demage);
-                List<List<int>> input_data = this.process_layer_1(this.htm_layers[0], this.layers_excite_history[0]);
+                List<List<int>> input_data = this.process_layer_1(this.htm_layers[0], iteration_number == iteration_counter,
+                    cell_demage, counter, check_coding);
                 if (input_data.Count() == 0)
                     return;
 
@@ -235,15 +204,15 @@ namespace PracaMagisterska
                         next_layer.update_data(input_data);
                     }
 
-                    next_layer.execute();
+                    next_layer.execute(check_coding);
 
                     HTM_excite_history layer_history = this.layers_excite_history[i];
-                    layer_history.update_history(next_layer);
+                    layer_history.update_history(next_layer, counter);
                     input_data = this.prepare_input_data(layer_history.cell_excite_history.Last());
-
                 }
 
                 iteration_counter -= 1;
+                counter++;
             }
 
         }
@@ -266,20 +235,30 @@ namespace PracaMagisterska
             return input_data;
         }
 
-        private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, HTM_excite_history HTM_history)
+        private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, bool initialize, double cell_demage, int input_value, bool check_coding)
         {
+            List<List<int>> data = HTM_parameters.INPUT_DATA[input_value];
             List<List<int>> layer_one_data = new List<List<int>>();
-
-            List<List<int>> new_data = data_generator(HTM_layer_1);
-            bool data_uptaded = HTM_layer_1.update_data(new_data);
-            if (!data_uptaded)
+            if (initialize)
             {
-                Console.WriteLine("Different input size. Execution breaked.");
-                return layer_one_data;
+                HTM_layer_1.initialize_input(data, 1, cell_demage);
+                Tuple<int, int> grid_column_shape = HTM_layer_1.get_columns_grid_size();
+                this.layers_excite_history.Add(new HTM_excite_history(HTM_layer_1.layer, HTM_layer_1.cells_per_column, grid_column_shape.Item1, grid_column_shape.Item2));
+                if (cell_demage > 0)
+                    this.htm_layers[0].demageCells(cell_demage);
             }
-
-            HTM_layer_1.execute();
-            HTM_history.update_history(HTM_layer_1);
+            else
+            {
+                bool data_uptaded = HTM_layer_1.update_data(data);
+                if (!data_uptaded)
+                {
+                    Console.WriteLine("Different input size. Execution breaked.");
+                    return layer_one_data;
+                }
+            }
+            HTM_excite_history HTM_history = this.layers_excite_history[0];
+            HTM_layer_1.execute(check_coding);
+            HTM_history.update_history(HTM_layer_1, input_value);
             layer_one_data = HTM_history.cell_excite_history.Last();
             return this.prepare_input_data(layer_one_data);
         }
@@ -334,8 +313,6 @@ namespace PracaMagisterska
 
         public void fill_rectangle_with_data(List<int> data, List<Rectangle> rec_list)
         {
-
-
             const int INACTIVE = 0;
             const int ACTIVE = 1;
             const int PREDICTING = 2;
@@ -352,10 +329,9 @@ namespace PracaMagisterska
                 else if (data[i] == DEMAGE)
                     rec_list[i].Fill = demage_color;
             }
-
         }
 
-        public TextBlock prepare_text_block(string text, double height)
+        public TextBlock prepare_text_block(string text, double height, Thickness margin)
         {
 
             TextBlock text_block = new TextBlock()
@@ -364,7 +340,7 @@ namespace PracaMagisterska
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
-                Margin = new Thickness(0, 9, 0, 5),
+                Margin = margin,
                 Height = height,
                 FontSize = 12,
                 FontWeight = FontWeights.DemiBold,
@@ -375,72 +351,18 @@ namespace PracaMagisterska
 
         public void show_results(int rec_number)
         {
-            string input_marker = " ";
             int row_height = 11;
             for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
             {
                 int row_number = this.layers_excite_history[0].cell_excite_history[0].Count();
-                double height = row_height * row_number * this.htm_layers.Count + 10 * this.htm_layers.Count + 22 - 4; // 22 from Line margins
+                double height = row_height * row_number * (this.htm_layers.Count) + 10 * (this.htm_layers.Count) + 22 - 4; // 22 from Line margins
 
-                TextBlock iter_num = this.prepare_text_block((iter_counter + 1).ToString(), height);
+                TextBlock iter_num = this.prepare_text_block((iter_counter + 1).ToString(), height, new Thickness(0, 9, 0, 5));
                 iteration_panel.Children.Add(iter_num);
 
-                string marker_text = "";
-                if (input_marker == " ")
-                {
-                    marker_text = "R";
-                    input_marker = "R";
-                }
-                else
-                {
-                    marker_text = " ";
-                    input_marker = " ";
-                }
+                this.show_input_data(iter_counter + 1);
 
-                TextBlock marker = this.prepare_text_block(marker_text, height);
-                input_marker_panel.Children.Add(marker);
-
-                for (int layer_counter = 0; layer_counter < this.htm_layers.Count; layer_counter++)
-                {
-                    List<List<int>> iteration_result = this.layers_excite_history[layer_counter].cell_excite_history[iter_counter];
-                    int row_counter = 0;
-                    foreach (List<int> row in iteration_result)
-                    {
-                        Grid grid_for_rec = new Grid()
-                        {
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                        };
-                        if (row_counter == row_number - 1)
-                            grid_for_rec.Margin = new Thickness(10, 0, 0, 10);
-                        else
-                            grid_for_rec.Margin = new Thickness(10, 0, 0, 0);
-
-                        result_panel.Children.Add(grid_for_rec);
-
-                        double width = this.rec_width == 0 ? 600 : this.rec_width * row.Count;
-                        
-                        List<Rectangle> rectangles_list = this.split_rectangle(width, row_height, row.Count, grid_for_rec);
-                        fill_rectangle_with_data(row, rectangles_list);
-                        row_counter++;
-                    }
-
-                    double layer_info_height = row_height * row_number;
-                    if (layer_counter == htm_layers.Count() - 1)
-                        layer_info_height += 32;
-
-                    TextBlock layer = new TextBlock()
-                    {
-                        Text = (layer_counter + 1).ToString(),
-                        FontSize = 12,
-                        FontWeight = FontWeights.DemiBold,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        TextAlignment = TextAlignment.Center,
-                        Margin = new Thickness(15, 10, 0, 0),
-                        Height = layer_info_height,
-                    };
-                    this.layer_panel.Children.Add(layer);
-                }
+                this.show_layer_results(row_number, iter_counter, row_height);
 
                 Line line = new Line()
                 {
@@ -454,6 +376,79 @@ namespace PracaMagisterska
 
                 result_panel.Children.Add(line);
             }
+        }
+
+        public void show_layer_results(int row_number, int iter_counter, int row_height)
+        {
+            for (int layer_counter = 0; layer_counter < this.htm_layers.Count; layer_counter++)
+            {
+                HTM_excite_history layer_history = this.layers_excite_history[layer_counter];
+
+                List<List<int>> iteration_result = layer_history.cell_excite_history[iter_counter];
+                int row_counter = 0;
+                foreach (List<int> row in iteration_result)
+                {
+                    Grid grid_for_rec = new Grid()
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                    };
+                    if (row_counter == row_number - 1)
+                        grid_for_rec.Margin = new Thickness(10, 0, 0, 10);
+                    else
+                        grid_for_rec.Margin = new Thickness(10, 0, 0, 0);
+
+                    result_panel.Children.Add(grid_for_rec);
+
+                    double width = this.rec_width == 0 ? 800 : this.rec_width * row.Count;
+
+                    List<Rectangle> rectangles_list = this.split_rectangle(width, row_height, row.Count, grid_for_rec);
+                    fill_rectangle_with_data(row, rectangles_list);
+                    row_counter++;
+                }
+
+                double layer_info_height = row_height * row_number;
+                if (layer_counter == htm_layers.Count() - 1)
+                    layer_info_height += 32;
+
+                TextBlock layer = this.prepare_text_block((layer_counter + 1).ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
+                this.layer_panel.Children.Add(layer);
+
+                int best_matching_input = layer_history.find_similarities(iter_counter + 1);
+                TextBlock marker = this.prepare_text_block(best_matching_input.ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
+                input_marker_panel.Children.Add(marker);
+            }
+        }
+
+        public void show_input_data(int input_value)
+        {
+            List<StackPanel> panel_list = new List<StackPanel> {this.layer_panel, this.iteration_panel, this.input_marker_panel};
+            foreach ( StackPanel panel in panel_list)
+            {
+                string text = panel == this.layer_panel ? "0" : "";
+                TextBlock line = this.prepare_text_block(" ", 11, new Thickness(10, 0, 0, 10));
+                panel.Children.Add(line);
+            };
+
+            List<List<int>> input_data = HTM_parameters.INPUT_DATA[input_value];
+            int width = 800;
+            int height = 11;
+
+            Grid grid_for_rec = new Grid()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+
+            grid_for_rec.Margin = new Thickness(10, 0, 0, 10);
+
+            result_panel.Children.Add(grid_for_rec);
+            List<int> input_data_for_filling = this.prepare_data_for_filling_rectangles(input_data);
+            List<Rectangle> input_rectangle_list = this.split_rectangle(width, height, input_data_for_filling.Count, grid_for_rec);
+            fill_rectangle_with_data(input_data_for_filling, input_rectangle_list);
+        }
+
+        public void calculate_overlapping()
+        {
+
         }
 
         public void writeResToCSV()

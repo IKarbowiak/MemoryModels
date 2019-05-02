@@ -22,7 +22,7 @@ namespace PracaMagisterska.HTM
         public UpdateSegments perform()
         {
             this.phase1();
-            this.phase2();
+            //this.phase2();
             if (learning)
                 this.phase3();
 

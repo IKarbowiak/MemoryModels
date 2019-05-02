@@ -10,30 +10,26 @@ namespace PracaMagisterska.HTM
     {
         public int x;
         public int y;
-        private List<List<int>> input_data;
+        public List<List<int>> input_data;
         private bool predicted;
         public bool active;
         public bool learning;
+        public int value;
 
-        public InputCell(int x, int y, List<List<int>> input_data)
+        public InputCell(int x, int y, int value)
         {
             // x, y are location of cell in input data
             this.x = x;
             this.y = y;
-            this.input_data = input_data;
+            this.value = value;
+            //this.input_data = input_data;
             this.predicted = false;
             this.learning = false;
         }
 
-        // TODO: Fix was and i active
-        public bool is_active()
-        {
-            return this.input_data[this.x][this.y] == 1 ? true : false;
-        }
-
         public bool was_active()
         {
-            return this.input_data[this.x][this.y] == 1 ? true : false;
+            return this.value == 1 ? true : false;
         }
 
     }
