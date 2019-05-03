@@ -47,6 +47,11 @@ namespace PracaMagisterska.HTM
             }
         }
 
+        //public void clock_tick()
+        //{
+        //    segment.clock_tick();
+        //}
+
         public double calculate_distance(int inputx, int inputy, double input_compression)
         {
             double x_range = (double)this.x * input_compression;
@@ -111,6 +116,7 @@ namespace PracaMagisterska.HTM
 
         public double update_overlap_duty_cycle()
         {
+            // doc Numenta: Computes a moving average of how often column c has overlap greater than minOverlap.
             double new_duty_cycle = avg_scale * this.overlap_duty_cycle;
             if (this.overlap > this.min_overlap)
             {

@@ -11,7 +11,8 @@ namespace PracaMagisterska.HTM
         private const int INACTIVE = 0;
         private const int ACTIVE = 1;
         private const int PREDICTING = 2;
-        private const int DEMAGE = 3;
+        private const int ACTIVE_AND_PREDICTING = 3;
+        private const int DEMAGE = 4;
 
         private int layer;
         private int cells_per_column;
@@ -48,14 +49,15 @@ namespace PracaMagisterska.HTM
                 foreach (Cell cell in column.get_cells(false))
                 {
                     int state = INACTIVE;
-                    if (cell.demage)
+                    if (cell.damage)
                         state = DEMAGE;
-                    else if (cell.active)
-                        state = ACTIVE;
+                    else if (cell.active && cell.predicting)
+                        state = ACTIVE_AND_PREDICTING;
                     else if (cell.predicting)
                         state = PREDICTING;
+                    else if (cell.active)
+                        state = ACTIVE;
 
-                        
                     cell_exicte_time_slice[cell_num].Add(state);
                     cell_num++;
                 }

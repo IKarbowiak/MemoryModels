@@ -28,8 +28,8 @@
             <Run Text="Layer number"/><Run Text=" ("/><Run Text="from 1 to 5"/><Run Text=")"/></TextBlock>
             <TextBox x:Name="layer_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
                  HorizontalAlignment="Center" Text="1" Margin="0,0,5,0" />
-            <TextBlock Grid.Row="0" Width="130" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" TextAlignment="Center">Cell demage [%]</TextBlock>
-            <TextBox x:Name="cellDemage_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
+            <TextBlock Grid.Row="0" Width="130" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" TextAlignment="Center">Cell damage [%]</TextBlock>
+            <TextBox x:Name="cellDamage_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
                  HorizontalAlignment="Center" Text="0" Margin="0,0,5,0" />
         </StackPanel>
         <Grid Grid.Row="1">
@@ -55,8 +55,8 @@
                        Text="inactive state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="inactive_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
-                       Text="demage state" Margin="0,0,3,2"/>
-                <Rectangle x:Name="demage_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
+                       Text="damage state" Margin="0,0,3,2"/>
+                <Rectangle x:Name="damage_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="100" FontSize="10" TextAlignment="Right"
                        Margin="0,0,3,2"><Run FontWeight="Bold" Text="0 "/><Run Text="in layer means input"/></TextBlock>
             </StackPanel>

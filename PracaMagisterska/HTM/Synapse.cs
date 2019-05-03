@@ -15,20 +15,28 @@ namespace PracaMagisterska.HTM
         private double permanence;
         public InputCell input_cell;
         public Cell cell;
+        //public bool was_firing;
 
         public Synapse(Cell cell = null, InputCell input_cell = null, double permanence=(connected_permanence-0.001))
         {
             this.permanence = permanence;
             this.input_cell = input_cell;
             this.cell = cell;
+            //this.was_firing = false;
         }
+
+        //public void clock_tick()
+        //{
+        //    was_firing = this.is_firing();
+        //}
+
 
         public bool was_firing(bool connection_required = true)
         {
             if (input_cell != null)
                 return this.input_cell.was_active() && (this.connected() || !connection_required);
             else
-                return this.cell.was_active && (this.connected() || !connection_required);
+                return (this.cell.was_active && !this.cell.damage) && (this.connected() || !connection_required);
 
         }
 
@@ -37,7 +45,7 @@ namespace PracaMagisterska.HTM
             if (input_cell != null)
                 return this.input_cell.was_active() && ( this.connected() || !connection_required);
             else
-                return (this.cell.active && !this.cell.demage) && ( this.connected() || !connection_required );
+                return (this.cell.active && !this.cell.damage) && ( this.connected() || !connection_required );
         }
 
         public bool connected()

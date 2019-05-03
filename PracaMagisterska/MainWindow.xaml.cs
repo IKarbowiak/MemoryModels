@@ -40,7 +40,6 @@ namespace PracaMagisterska
 
         private void HH_model_button(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Bla bla nothing to show! ");
             HH_model_window hh_model = new HH_model_window();
             hh_model.ShowDialog();
         }
