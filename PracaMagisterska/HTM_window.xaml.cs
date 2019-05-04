@@ -406,8 +406,6 @@ namespace PracaMagisterska
 
                 List<int> list_difference = active_current.Except(predictive_previous).ToList();
                 double cov = (((double)active_current.Count() - (double)list_difference.Count()) / (double)active_current.Count() * 100.0);
-                Console.WriteLine(String.Format("Iteration num: {3} || Predicted correctly: {0}, total: {1} it is {2} %", ((double)active_current.Count() - (double)list_difference.Count()),
-                    active_current.Count(), cov, iter_num));
                 csv.AppendLine(String.Format("{0}; {1}; {2}; {3}", iter_num, ((double)active_current.Count() - (double)list_difference.Count()), active_current.Count(), cov));
             }
         }

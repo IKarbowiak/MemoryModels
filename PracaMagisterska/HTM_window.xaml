@@ -23,7 +23,7 @@
             <TextBlock Grid.Row="0" Width="230" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" >
             <Run Text="Iteration number"/><Run Text=" ("/><Run Text="from 5 to 500"/><Run Text=")"/></TextBlock>
             <TextBox x:Name="iteration_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
-                 HorizontalAlignment="Center" Text="50" Margin="0,0,5,0" />
+                 HorizontalAlignment="Center" Text="100" Margin="0,0,5,0" />
             <TextBlock Grid.Row="0" Width="200" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" TextAlignment="Center" >
             <Run Text="Layer number"/><Run Text=" ("/><Run Text="from 1 to 5"/><Run Text=")"/></TextBlock>
             <TextBox x:Name="layer_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
