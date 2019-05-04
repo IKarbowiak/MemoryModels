@@ -48,6 +48,7 @@ namespace PracaMagisterska
             this.active_legend.Fill = active_color;
             this.inactive_legend.Fill = inactive_color;
             this.predictive_legend.Fill = predicting_color;
+            this.active_predictive__legend.Fill = active_and_predicting_color;
             this.damage_legend.Fill = damage_color;
 
         }
@@ -66,7 +67,7 @@ namespace PracaMagisterska
             }
 
             this.iteration_number = Int32.Parse(iteration_textbox.Text);
-            if (iteration_number > 200 || iteration_number < 5)
+            if (iteration_number > 500 || iteration_number < 5)
             {
                 iteration_textbox.BorderBrush = Brushes.Red;
                 return;

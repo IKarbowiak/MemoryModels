@@ -21,7 +21,7 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5">
             <TextBlock Grid.Row="0" Width="230" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" >
-            <Run Text="Iteration number"/><Run Text=" ("/><Run Text="from 5 to 200"/><Run Text=")"/></TextBlock>
+            <Run Text="Iteration number"/><Run Text=" ("/><Run Text="from 5 to 500"/><Run Text=")"/></TextBlock>
             <TextBox x:Name="iteration_textbox" Grid.Row="0" Width="50" Height="20" TextAlignment="Center" VerticalAlignment="Bottom" 
                  HorizontalAlignment="Center" Text="50" Margin="0,0,5,0" />
             <TextBlock Grid.Row="0" Width="200" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" TextAlignment="Center" >
@@ -51,14 +51,15 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="80" FontSize="10" TextAlignment="Right"
                        Text="predicting state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="predictive_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="130" FontSize="10" TextAlignment="Right"
+                       Text="active and predictive state" Margin="0,0,3,2"/>
+                <Rectangle x:Name="active_predictive__legend" Width="10" Height="10" Stroke="Black"></Rectangle>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
                        Text="inactive state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="inactive_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="70" FontSize="10" TextAlignment="Right"
                        Text="damage state" Margin="0,0,3,2"/>
                 <Rectangle x:Name="damage_legend" Width="10" Height="10" Stroke="Black"></Rectangle>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="20" Width="100" FontSize="10" TextAlignment="Right"
-                       Margin="0,0,3,2"><Run FontWeight="Bold" Text="0 "/><Run Text="in layer means input"/></TextBlock>
             </StackPanel>
             <Line Grid.Row="1" Grid.ColumnSpan="3" Stretch="Fill" VerticalAlignment="Top" Stroke="Black" X2="2" Margin="0,1,0,0"/>
             
