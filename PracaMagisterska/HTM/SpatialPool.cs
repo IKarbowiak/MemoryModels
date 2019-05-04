@@ -62,7 +62,7 @@ namespace PracaMagisterska.HTM
             {
                 foreach (Synapse synapse in col.get_synapses())
                 {
-                    if (synapse.was_firing())
+                    if (synapse.was_firing_with_connection)
                         synapse.increment_permamence();
                     else
                         synapse.decrement_permamence();

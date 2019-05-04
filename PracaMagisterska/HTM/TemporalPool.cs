@@ -51,6 +51,8 @@ namespace PracaMagisterska.HTM
                                 cell.learning = true;
                                 this.update_segments.add(cell, segment, 0); // TODO: Check this. I added this
                             }
+
+                            break;
                         }
                     }
                 }

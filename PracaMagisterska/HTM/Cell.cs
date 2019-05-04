@@ -35,8 +35,8 @@ namespace PracaMagisterska.HTM
 
         public void clock_tick()
         {
-            //foreach (Segment segment in this.segments)
-            //    segment.clock_tick();
+            foreach (Segment segment in this.segments)
+                segment.clock_tick();
             this.was_active = this.active;
             this.was_learning = this.learning;
             this.was_predicted = this.predicting;
@@ -55,7 +55,7 @@ namespace PracaMagisterska.HTM
             List<Segment> near_segments = this.near_segments();
             foreach (Segment segment in near_segments)  // TODO: this.segments
             {
-                if (segment.was_active())
+                if (segment.was_active)
                     return segment;
             }
             return null;

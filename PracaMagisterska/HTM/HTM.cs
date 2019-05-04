@@ -247,8 +247,8 @@ namespace PracaMagisterska.HTM
             foreach(Cell cell in this.get_cells())
                 cell.clock_tick();
 
-            //foreach (Column col in this.get_columns())
-            //    col.clock_tick();
+            foreach (Column col in this.get_columns())
+                col.clock_tick();
 
             SpatialPool spatial_pool = new SpatialPool();
             spatial_pool.perform(this, learning);

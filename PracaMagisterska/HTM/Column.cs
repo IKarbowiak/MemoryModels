@@ -23,7 +23,6 @@ namespace PracaMagisterska.HTM
         public double overlap_duty_cycle; // doc numenta: A sliding average representing how often column c has had significant overlap (i.e. greater than minOverlap) with its inputs
         private const double avg_scale = HTM_parameters.AVG_SCALE;
         private Random rnd = new Random(Guid.NewGuid().GetHashCode());
-        // private Random rnd = new Random();
 
         public Column(HTM htm_obj, int x, int y, int cells_in_column)
         {
@@ -47,10 +46,10 @@ namespace PracaMagisterska.HTM
             }
         }
 
-        //public void clock_tick()
-        //{
-        //    segment.clock_tick();
-        //}
+        public void clock_tick()
+        {
+            segment.clock_tick();
+        }
 
         public double calculate_distance(int inputx, int inputy, double input_compression)
         {

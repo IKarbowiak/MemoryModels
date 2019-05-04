@@ -20,6 +20,9 @@ namespace PracaMagisterska.HTM
         private int column_length;
         //public List<List<int>> column_excite_history;
         public List<List<List<int>>> cell_excite_history;
+        public List<List<int>> active_cell_history;
+        public List<List<int>> predictive_cell_history;
+        public List<List<int>> predictive_and_active_cell_history;
         public Dictionary<int, List<int>> column_excite_history;
 
 
@@ -31,11 +34,38 @@ namespace PracaMagisterska.HTM
             this.column_length = column_length;
             this.column_excite_history = new Dictionary<int, List<int>>();
             this.cell_excite_history = new List<List<List<int>>>();
+            this.active_cell_history = new List<List<int>>();
+            this.predictive_cell_history = new List<List<int>>();
+            this.predictive_and_active_cell_history = new List<List<int>>();
         }
 
 
         public void update_history(HTM htm, int input_value)
         {
+            List<int> active_cell_history_time_slice = new List<int>();
+            List<int> predictive_cell_history_time_slice = new List<int>();
+            List<int> predictive_and_active_cell_history_time_slice = new List<int>();
+
+            int cell_counter = 0;
+            foreach (Column column in htm.get_columns())
+            {
+                foreach (Cell cell in column.get_cells(false))
+                {
+                    if (cell.active && cell.predicting)
+                        predictive_and_active_cell_history_time_slice.Add(cell_counter);
+                    if (cell.predicting)
+                        predictive_cell_history_time_slice.Add(cell_counter);
+                    if (cell.active)
+                        active_cell_history_time_slice.Add(cell_counter);
+                    cell_counter++;
+                }
+            }
+
+
+            active_cell_history.Add(active_cell_history_time_slice);
+            predictive_cell_history.Add(predictive_cell_history_time_slice);
+            predictive_and_active_cell_history.Add(predictive_and_active_cell_history_time_slice);
+
             List<List<int>> cell_exicte_time_slice = new List<List<int>>();
             
             for (int i = 0; i < HTM_parameters.CELLS_PER_COLUMN; i++)

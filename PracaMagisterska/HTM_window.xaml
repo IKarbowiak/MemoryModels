@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
-        Title="HTM_window" Height="750" Width="1120">
+        Title="HTM_window" Height="750" Width="1150">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -16,8 +16,8 @@
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,30,0,5">
             <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="50" Height="20" VerticalAlignment="Bottom" 
                  HorizontalAlignment="Center" Click="start_button_click" Margin="10,0,5,0">Start</Button>
-            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="50" Height="20" VerticalAlignment="Bottom" 
-                 HorizontalAlignment="Center"  Click="reset_button_click" Margin="10,0,0,0">Reset</Button>
+            <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="100" Height="20" VerticalAlignment="Bottom" 
+                 HorizontalAlignment="Center"  Click="change_sequence_button_click" Margin="10,0,0,0">Change sequence</Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5">
             <TextBlock Grid.Row="0" Width="230" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" >
@@ -75,7 +75,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="7*"/>
-                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="0.8*"/>
                         <ColumnDefinition Width="0.8*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel x:Name="iteration_panel" Grid.Column="0">
