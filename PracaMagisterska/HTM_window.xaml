@@ -18,6 +18,9 @@
                  HorizontalAlignment="Center" Click="start_button_click" Margin="10,0,5,0">Start</Button>
             <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="100" Height="20" VerticalAlignment="Bottom" 
                  HorizontalAlignment="Center"  Click="change_sequence_button_click" Margin="10,0,0,0">Change sequence</Button>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Width="60" Height="20" VerticalAlignment="Bottom" 
+                 HorizontalAlignment="Center"  Margin="10,0,0,0">Learning</TextBlock>
+            <CheckBox x:Name="learning_check_box" IsChecked="True"></CheckBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5">
             <TextBlock Grid.Row="0" Width="230" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="15" >

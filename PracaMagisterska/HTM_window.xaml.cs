@@ -33,6 +33,7 @@ namespace PracaMagisterska
         private double compression_factor = 2.1;
         private double row_height = 11;
         private int iteration_counter = 0;
+        private bool is_learning = true;
 
         private string coverage_file_path = "D:\\PWR\\Magisterka\\coverage_res.csv";
         private StringBuilder csv = new StringBuilder();
@@ -96,7 +97,14 @@ namespace PracaMagisterska
                 this.htm_layers.Add(htm_layer);
             }
 
-            this.execute(iteration_number, cell_damage);
+            this.is_learning = (bool)this.learning_check_box.IsChecked;
+            if (!is_learning)
+            {
+                this.modulo_value = 100;
+                this.iteration_number = 100;
+                this.iteration_textbox.Text = "50";
+            }
+            this.execute(iteration_number, cell_damage, is_learning);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
 
             //this.writeResToCSV();
@@ -189,7 +197,7 @@ namespace PracaMagisterska
         public void execute_ones(bool first_iter, int counter, double cell_damage, double compression_factor, bool learning, bool additional_iter = false)
         {
             List<List<int>> input_data = this.process_layer_1(this.htm_layers[0], first_iter,
-                    cell_damage, counter, additional_iter);
+                    cell_damage, counter, learning, additional_iter);
             if (input_data.Count() == 0)
                 return;
 
@@ -209,7 +217,7 @@ namespace PracaMagisterska
                     next_layer.update_data(input_data);
                 }
 
-                next_layer.execute();
+                next_layer.execute(learning);
 
                 HTM_excite_history layer_history = this.layers_excite_history[i];
                 if (additional_iter)
@@ -237,7 +245,7 @@ namespace PracaMagisterska
             return input_data;
         }
 
-        private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, bool initialize, double cell_damage, int input_value, bool additional_iter = false)
+        private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, bool initialize, double cell_damage, int input_value, bool learning, bool additional_iter = false)
         {
             int input_data_index = input_value % this.modulo_value + 1;
             if (additional_iter)
@@ -262,7 +270,7 @@ namespace PracaMagisterska
                 }
             }
             HTM_excite_history HTM_history = this.layers_excite_history[0];
-            HTM_layer_1.execute();
+            HTM_layer_1.execute(learning);
             HTM_history.update_history(HTM_layer_1, input_value);
             layer_one_data = HTM_history.cell_excite_history.Last();
             return this.prepare_input_data(layer_one_data);
@@ -445,9 +453,12 @@ namespace PracaMagisterska
                 TextBlock layer = this.prepare_text_block((layer_counter + 1).ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
                 this.layer_panel.Children.Add(layer);
 
-                //int best_matching_input = layer_history.find_similarities(iter_counter + 1);
-                //TextBlock marker = this.prepare_text_block(best_matching_input.ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
-                //input_marker_panel.Children.Add(marker);
+                if (!this.is_learning)
+                {
+                    int best_matching_input = layer_history.find_similarities(iter_counter + 1);
+                    TextBlock marker = this.prepare_text_block(best_matching_input.ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
+                    input_marker_panel.Children.Add(marker);
+                }
             }
         }
 

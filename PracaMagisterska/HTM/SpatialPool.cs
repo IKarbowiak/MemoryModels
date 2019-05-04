@@ -17,7 +17,6 @@ namespace PracaMagisterska.HTM
 
         public void perform(PracaMagisterska.HTM.HTM htm, bool learning = true)
         {
-            int res;
             this.overlap(htm);
             List<Column> active_columns = this.inhibition(htm);
             if (learning)
