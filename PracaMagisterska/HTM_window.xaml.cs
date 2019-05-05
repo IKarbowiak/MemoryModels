@@ -36,7 +36,10 @@ namespace PracaMagisterska
         private bool is_learning = true;
 
         private string coverage_file_path = "D:\\PWR\\Magisterka\\coverage_res.csv";
+        private string matching_file_path = "D:\\PWR\\Magisterka\\matching_res.csv";
         private StringBuilder csv = new StringBuilder();
+        private StringBuilder csv_matching = new StringBuilder();
+        private Dictionary<int, int> input_mapping = new Dictionary<int, int>();
 
 
         public HTM_window()
@@ -51,6 +54,10 @@ namespace PracaMagisterska
             this.predictive_legend.Fill = predicting_color;
             this.active_predictive__legend.Fill = active_and_predicting_color;
             this.damage_legend.Fill = damage_color;
+
+            input_mapping.Add(1, 1);
+            input_mapping.Add(2, 3);
+            input_mapping.Add(3, 5);
 
         }
 
@@ -100,8 +107,8 @@ namespace PracaMagisterska
             this.is_learning = (bool)this.learning_check_box.IsChecked;
             if (!is_learning)
             {
-                this.modulo_value = 100;
-                this.iteration_number = 100;
+                this.modulo_value = 50;
+                this.iteration_number = 50;
                 this.iteration_textbox.Text = "50";
             }
             this.execute(iteration_number, cell_damage, is_learning);
@@ -147,7 +154,7 @@ namespace PracaMagisterska
 
         public void change_sequence_button_click(object sender, RoutedEventArgs e)
         {
-            int new_input_value = rnd.Next(this.modulo_value, HTM_parameters.INPUT_DATA.Count); 
+            int new_input_value = rnd.Next(this.modulo_value, 80); 
             this.execute_ones(false, new_input_value, this.cell_damage, this.compression_factor, true, true);
             show_result_from_one_iteration(this.row_height, this.iteration_counter - 1, true);
             this.iteration_counter++;
@@ -181,7 +188,7 @@ namespace PracaMagisterska
             // data_generator: generate next input data sample
             // post_generator: function to call after each interation
             int iteration_counter = iteration_number;
-            int counter = 1;
+            int counter = 0;
             while (iteration_counter > 0)
             {
                 this.execute_ones(iteration_counter == iteration_number, counter, cell_damage, compression_factor, learning);
@@ -222,7 +229,7 @@ namespace PracaMagisterska
                 HTM_excite_history layer_history = this.layers_excite_history[i];
                 if (additional_iter)
                     counter = this.iteration_counter;
-                layer_history.update_history(next_layer, counter);
+                layer_history.update_history(next_layer, counter + 1);
                 input_data = this.prepare_input_data(layer_history.cell_excite_history.Last());
             }
         }
@@ -248,8 +255,11 @@ namespace PracaMagisterska
         private List<List<int>> process_layer_1(HTM.HTM HTM_layer_1, bool initialize, double cell_damage, int input_value, bool learning, bool additional_iter = false)
         {
             int input_data_index = input_value % this.modulo_value + 1;
+            if (this.is_learning)
+                input_data_index = this.input_mapping[input_data_index];
             if (additional_iter)
                 input_data_index = input_value;
+
             List<List<int>> data = HTM_parameters.INPUT_DATA[input_data_index];
             List<List<int>> layer_one_data = new List<List<int>>();
             if (initialize)
@@ -271,7 +281,7 @@ namespace PracaMagisterska
             }
             HTM_excite_history HTM_history = this.layers_excite_history[0];
             HTM_layer_1.execute(learning);
-            HTM_history.update_history(HTM_layer_1, input_value);
+            HTM_history.update_history(HTM_layer_1, input_data_index);
             layer_one_data = HTM_history.cell_excite_history.Last();
             return this.prepare_input_data(layer_one_data);
         }
@@ -373,6 +383,8 @@ namespace PracaMagisterska
             }
 
             File.WriteAllText(this.coverage_file_path, csv.ToString());
+            if (!this.is_learning)
+                File.WriteAllText(this.matching_file_path, csv_matching.ToString());
         }
 
         public void show_result_from_one_iteration(double row_height, int iter_counter, bool additional_iter = false)
@@ -456,6 +468,7 @@ namespace PracaMagisterska
                 if (!this.is_learning)
                 {
                     int best_matching_input = layer_history.find_similarities(iter_counter + 1);
+                    csv_matching.AppendLine(String.Format("{0}; {1}", iter_counter + 1, best_matching_input));
                     TextBlock marker = this.prepare_text_block(best_matching_input.ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
                     input_marker_panel.Children.Add(marker);
                 }
@@ -465,8 +478,11 @@ namespace PracaMagisterska
         public void show_input_data(int input_value, bool additional_iter= false)
         {
             int input_data_index = input_value % this.modulo_value + 1;
+            if (this.is_learning)
+                input_data_index = this.input_mapping[input_data_index];
             if (additional_iter)
                 input_data_index = input_value;
+
 
             List<StackPanel> panel_list = new List<StackPanel> {this.layer_panel, this.iteration_panel, this.input_marker_panel};
             foreach ( StackPanel panel in panel_list)
