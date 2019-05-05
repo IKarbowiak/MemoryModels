@@ -17,7 +17,7 @@ namespace PracaMagisterska.HTM
         public const int SYNAPSE_ACTIVATION_THRESHOLD = 1;
         public const double CONNECTED_PERMANENCE = 0.2;
         public const double PERMANENCE_INCREMENT = 0.04;
-        public const double PERMANENCE_DECREMENT = 0.04;
+        public const double PERMANENCE_DECREMENT = 0.1;
         public const int MAX_NEW_SYNAPSES = 3;
 
         public const int INPUT_BIAS_PEAK = 2;

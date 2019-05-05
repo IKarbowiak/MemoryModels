@@ -56,7 +56,7 @@ namespace PracaMagisterska
             this.damage_legend.Fill = damage_color;
 
             input_mapping.Add(1, 1);
-            input_mapping.Add(2, 3);
+            input_mapping.Add(2, 11);
             input_mapping.Add(3, 5);
 
         }
@@ -154,10 +154,17 @@ namespace PracaMagisterska
 
         public void change_sequence_button_click(object sender, RoutedEventArgs e)
         {
-            int new_input_value = rnd.Next(this.modulo_value, 80); 
-            this.execute_ones(false, new_input_value, this.cell_damage, this.compression_factor, true, true);
-            show_result_from_one_iteration(this.row_height, this.iteration_counter - 1, true);
-            this.iteration_counter++;
+            int old_iter_num = this.iteration_number;
+            this.iteration_number = Int32.Parse(iteration_textbox.Text);
+            int new_input_value = rnd.Next(20, 80);
+            new_input_value = 22;
+            //this.execute_ones(false, new_input_value, this.cell_damage, this.compression_factor, true, true);
+            //show_result_from_one_iteration(this.row_height, this.iteration_counter, true);
+            //this.iteration_counter++;
+
+            this.input_mapping[3] = new_input_value;
+            this.execute(iteration_number, cell_damage, true, true);
+            show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count, old_iter_num);
         }
 
         public List<List<int>> data_generator(HTM.HTM HTM_layer)
@@ -183,7 +190,7 @@ namespace PracaMagisterska
             return data;
         }
 
-        public void execute(int iteration_number, double cell_damage, bool learning = true)
+        public void execute(int iteration_number, double cell_damage, bool learning = true, bool additional_iter = false)
         {
             // data_generator: generate next input data sample
             // post_generator: function to call after each interation
@@ -191,7 +198,7 @@ namespace PracaMagisterska
             int counter = 0;
             while (iteration_counter > 0)
             {
-                this.execute_ones(iteration_counter == iteration_number, counter, cell_damage, compression_factor, learning);
+                this.execute_ones(iteration_counter == iteration_number, counter, cell_damage, compression_factor, learning, additional_iter);
 
                 iteration_counter -= 1;
                 counter++;
@@ -257,12 +264,12 @@ namespace PracaMagisterska
             int input_data_index = input_value % this.modulo_value + 1;
             if (this.is_learning)
                 input_data_index = this.input_mapping[input_data_index];
-            if (additional_iter)
-                input_data_index = input_value;
+            //if (additional_iter)
+            //    input_data_index = input_value;
 
             List<List<int>> data = HTM_parameters.INPUT_DATA[input_data_index];
             List<List<int>> layer_one_data = new List<List<int>>();
-            if (initialize)
+            if (initialize && !additional_iter)
             {
                 HTM_layer_1.initialize_input(data, 1, cell_damage);
                 Tuple<int, int> grid_column_shape = HTM_layer_1.get_columns_grid_size();
@@ -375,9 +382,9 @@ namespace PracaMagisterska
             return text_block;
         }
 
-        public void show_results(int rec_number)
+        public void show_results(int rec_number, int start_value = 0)
         {
-            for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
+            for (int iter_counter = start_value; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
             {
                 this.show_result_from_one_iteration(this.row_height, iter_counter);
             }
@@ -426,7 +433,7 @@ namespace PracaMagisterska
 
                 List<int> list_difference = active_current.Except(predictive_previous).ToList();
                 double cov = (((double)active_current.Count() - (double)list_difference.Count()) / (double)active_current.Count() * 100.0);
-                csv.AppendLine(String.Format("{0}; {1}; {2}; {3}", iter_num, ((double)active_current.Count() - (double)list_difference.Count()), active_current.Count(), cov));
+                csv.AppendLine(String.Format("{0}; {1}; {2}; {3}", iter_num + 1, ((double)active_current.Count() - (double)list_difference.Count()), active_current.Count(), cov));
             }
         }
 
