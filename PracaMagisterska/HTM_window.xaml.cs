@@ -56,8 +56,8 @@ namespace PracaMagisterska
             this.damage_legend.Fill = damage_color;
 
             input_mapping.Add(1, 1);
-            input_mapping.Add(2, 11);
-            input_mapping.Add(3, 5);
+            input_mapping.Add(2, 5);
+            input_mapping.Add(3, 3);
 
         }
 
@@ -114,8 +114,6 @@ namespace PracaMagisterska
             this.execute(iteration_number, cell_damage, is_learning);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
 
-            //this.writeResToCSV();
-
         }
 
         private bool validate_field(TextBox textbox)
@@ -157,43 +155,15 @@ namespace PracaMagisterska
             int old_iter_num = this.iteration_number;
             this.iteration_number = Int32.Parse(iteration_textbox.Text);
             int new_input_value = rnd.Next(20, 80);
-            new_input_value = 22;
-            //this.execute_ones(false, new_input_value, this.cell_damage, this.compression_factor, true, true);
-            //show_result_from_one_iteration(this.row_height, this.iteration_counter, true);
-            //this.iteration_counter++;
 
             this.input_mapping[3] = new_input_value;
             this.execute(iteration_number, cell_damage, true, true);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count, old_iter_num);
         }
 
-        public List<List<int>> data_generator(HTM.HTM HTM_layer)
-        {
-            List<List<int>> old_data = HTM_layer.data;
-            List<List<int>> data = new List<List<int>>();
-
-            for (int i = 0; i < old_data.Count; i++) 
-            {
-                List<int> row = old_data[i];
-                List<int> new_row = new List<int>();
-
-                for (int j = 0; j < row.Count; j++)
-                {
-                    //int value = row[j] == 1 ? 0 : 1;
-                    int value = row[j];
-                    new_row.Add(value);
-                }
-
-                data.Add(new_row);
-            }
-
-            return data;
-        }
 
         public void execute(int iteration_number, double cell_damage, bool learning = true, bool additional_iter = false)
         {
-            // data_generator: generate next input data sample
-            // post_generator: function to call after each interation
             int iteration_counter = iteration_number;
             int counter = 0;
             while (iteration_counter > 0)
@@ -514,45 +484,6 @@ namespace PracaMagisterska
             List<int> input_data_for_filling = this.prepare_data_for_filling_rectangles(input_data);
             List<Rectangle> input_rectangle_list = this.split_rectangle(width, height, input_data_for_filling.Count, grid_for_rec);
             fill_rectangle_with_data(input_data_for_filling, input_rectangle_list);
-        }
-
-        public void writeResToCSV()
-        {
-            string filePath = "D:\\PWR\\Magisterka\\res1.csv";
-            var csv = new StringBuilder();
-
-            for (int iter_counter = 0; iter_counter < this.layers_excite_history[0].cell_excite_history.Count(); iter_counter++)
-            {
-                string res = string.Format("{0}; ", iter_counter + 1);
-                for (int layer_counter = 0; layer_counter < this.htm_layers.Count; layer_counter++)
-                {
-                    int active_cells = 0;
-                    int inactive_cells = 0;
-                    int predictive_cells = 0;
-                    List<List<int>> iteration_result = this.layers_excite_history[layer_counter].cell_excite_history[iter_counter];
-                    foreach (List<int> row in iteration_result)
-                    {
-                        foreach (int element in row)
-                        {
-                            if (element == 0)
-                                inactive_cells += 1;
-                            else if (element == 1)
-                                active_cells += 1;
-                            else if (element == 2)
-                                predictive_cells += 1;
-
-                        }
-                    }
-                    res += string.Format("{0}; {1}; {2}; ", active_cells, predictive_cells, inactive_cells);
-
-                }
-
-                csv.AppendLine(res);
-
-            }
-
-            File.WriteAllText(filePath, csv.ToString());
-
         }
 
     }

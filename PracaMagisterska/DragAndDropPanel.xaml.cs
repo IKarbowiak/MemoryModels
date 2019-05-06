@@ -502,14 +502,15 @@ namespace PracaMagisterska
             List<double> neuron0_params = new List<double>();
             List<double> neuron1_params = new List<double>();
             List<double> neuron2_params = new List<double>();
+            Dictionary<int, bool> neuron_damage_list = new Dictionary<int, bool>();
             Console.WriteLine("In load");
             XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
             foreach (XElement element in xmlTree.Elements())
             {
+                List<XElement> values_list = element.Elements().ToList();
                 string element_name = element.Name.ToString();
                 if (element_name == "General")
                 {
-                    List<XElement> values_list = element.Elements().ToList();
                     this.flowVolume = double.Parse(values_list[0].Value.ToString()) / this.divider;
                     this.flowTime = double.Parse(values_list[1].Value.ToString());
                     this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
@@ -517,15 +518,18 @@ namespace PracaMagisterska
                 }
                 else if (element_name == "Model1")
                 {
-                    neuron0_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    neuron_damage_list[1] = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron0_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
                 }
                 else if (element_name == "Model2")
                 {
-                    neuron1_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    neuron_damage_list[2] = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron1_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
                 }
                 else if (element_name == "Model3")
                 {
-                    neuron2_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
+                    neuron_damage_list[3] = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron2_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
                 }
             }
 
@@ -533,11 +537,11 @@ namespace PracaMagisterska
             {
                 double numberOfDendrites = element.getNumberOfDendrites();
                 if (numberOfDendrites == 0)
-                     element.setNeuronParams(neuron0_params, divider);
+                     element.setNeuronParams(neuron0_params, divider, neuron_damage_list[1]);
                 else if (numberOfDendrites == 1)
-                    element.setNeuronParams(neuron1_params, divider);
+                    element.setNeuronParams(neuron1_params, divider, neuron_damage_list[2]);
                 else if (numberOfDendrites == 2)
-                    element.setNeuronParams(neuron2_params, divider);
+                    element.setNeuronParams(neuron2_params, divider, neuron_damage_list[3]);
             }
 
             Console.WriteLine("Drag and drop " + this.blockTheEnd);
@@ -584,6 +588,8 @@ namespace PracaMagisterska
                 foreach (KeyValuePair<NeuronViewbox, double[]> element in this.canvasElements)
                 {
                     NeuronViewbox viewboxObj = (NeuronViewbox)element.Key;
+                    if (viewboxObj.is_damage())
+                        continue;
                     if (viewboxObj.getNumberOfDendrites() > 1)
                     {
                         viewboxObj.openDendrites();
@@ -604,6 +610,8 @@ namespace PracaMagisterska
                 if (this.neuronQueue[i].Count() > 0)
                 {
                     NeuronViewbox first_el = this.neuronQueue[i][0];
+                    if (first_el.is_damage())
+                        continue;
                     if (!whatToPush.ContainsKey(first_el))
                     {
                         if (first_el.getNumberOfDendrites() > 1)
@@ -622,6 +630,9 @@ namespace PracaMagisterska
                         toPush = 0;
                         NeuronViewbox viewbox_prev = this.neuronQueue[i][j - 1];
                         NeuronViewbox viewbox_current = this.neuronQueue[i][j];
+
+                        if (viewbox_current.is_damage())
+                            continue;
 
                         toPush += viewbox_prev.getVolumeToPush();
 
@@ -700,12 +711,6 @@ namespace PracaMagisterska
                 }
         
             }
-            //foreach (KeyValuePair<NeuronViewbox, List<double>> element in whatToPush)
-            //{
-            //    NeuronViewbox viewboxObj = element.Key;
-            //    bool missMaxAxonSpeed = this.remindStarted && this.startOutFlowTime == 0 ? true : false; 
-            //    double additionalVolume = viewboxObj.neuronFlow(sender, e, element.Value, color, missMaxAxonSpeed);
-            //}
         }
 
         private bool pushAdditionalVolume(object sender, EventArgs e, double additionalVolume, Dictionary<NeuronViewbox, List<double>> whatToPush, int index)

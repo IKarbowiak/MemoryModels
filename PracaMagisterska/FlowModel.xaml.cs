@@ -400,28 +400,31 @@ namespace PracaMagisterska
             XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
             foreach (XElement element in xmlTree.Elements())
             {
+                List<XElement> values_list = element.Elements().ToList();
                 string element_name = element.Name.ToString();
                 if (element_name == "General")
                 {
-                    List<XElement> values_list = element.Elements().ToList();
                     this.setFlowVolume(double.Parse(values_list[0].Value.ToString()));
                     this.time = double.Parse(values_list[1].Value.ToString());
                     this.blockTheEnd = values_list[2].Value.ToString() == "True" ? true : false;
                 }
                 else if (element_name == "Model1")
                 {
-                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
-                    this.setNeuronParams(neuron0, neuron_params);
+                    bool neuron_damage = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron0, neuron_params, neuron_damage);
                 }
                 else if (element_name == "Model2")
                 {
-                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
-                    this.setNeuronParams(neuron1, neuron_params);
+                    bool neuron_damage = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron1, neuron_params, neuron_damage);
                 }
                 else if (element_name == "Model3")
                 {
-                    neuron_params = element.Elements().Select(el => double.Parse(el.Value)).ToList();
-                    this.setNeuronParams(neuron2, neuron_params);
+                    bool neuron_damage = bool.Parse(values_list[values_list.Count - 1].Value);
+                    neuron_params = values_list.GetRange(0, values_list.Count - 1).Select(el => double.Parse(el.Value)).ToList();
+                    this.setNeuronParams(neuron2, neuron_params, neuron_damage);
                 }
             }
 
@@ -435,7 +438,7 @@ namespace PracaMagisterska
         }
 
         // set params from xml to neuron, function is used by loadParams()
-        private void setNeuronParams(Neuron neuron, List<double> params_list)
+        private void setNeuronParams(Neuron neuron, List<double> params_list, bool damage)
         {
             double divider = ((double)1000 / (double)this.timerTimeSpan);
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
@@ -443,7 +446,7 @@ namespace PracaMagisterska
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("set params in neuron 0 ");
-                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider);
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider, damage);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
@@ -453,7 +456,7 @@ namespace PracaMagisterska
                     Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);
                     denList.Add(denTuple);
                 }
-                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider);
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider, damage);
             }
 
         }

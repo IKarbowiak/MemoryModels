@@ -33,7 +33,6 @@ namespace PracaMagisterska
             if (conf != "")
             {
                 this.load(conf);
-
             }
             this.projectPath = string.Join("\\", Directory.GetCurrentDirectory().Split('\\').Take(4).ToArray());
             this.callback = action;
@@ -144,7 +143,14 @@ namespace PracaMagisterska
                     {
                         ComboBox comboBox = (ComboBox)window_element;
                         Console.WriteLine("Selected value combo box! " + childElement.Value);
-                        comboBox.SelectedItem = childElement.Value == "True" ? trueItem : falseItem;
+                        if (name.EndsWith("M1"))
+                            comboBox.SelectedItem = childElement.Value == "True" ? trueItemM1 : falseItemM1;
+                        else if (name.EndsWith("M2"))
+                            comboBox.SelectedItem = childElement.Value == "True" ? trueItemM2 : falseItemM2;
+                        else if (name.EndsWith("M3"))
+                            comboBox.SelectedItem = childElement.Value == "True" ? trueItemM3 : falseItemM3;
+                        else
+                            comboBox.SelectedItem = childElement.Value == "True" ? trueItem : falseItem;
                     }
                     else if (window_element.GetType() == typeof(TextBox))
                     {

@@ -42,6 +42,11 @@ namespace PracaMagisterska.PersonalSolution
             parentWindow = (DragAndDropPanel)Window.GetWindow(this);
         }
 
+        public bool is_damage()
+        {
+            return this.neuron.damage;
+        }
+
         private double[] adjustPosition(Point position)
         {
             var newX = position.X - (viewbox.Width / 2);
@@ -192,14 +197,14 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // set params from xml to neuron, function is used by loadParams()
-        public void setNeuronParams(List<double> params_list, double divider)
+        public void setNeuronParams(List<double> params_list, double divider, bool damage = false)
         {
             List<Tuple<double, double>> denList = new List<Tuple<double, double>>();
             int params_length = params_list.Count();
             if (neuron.dendrites_list.Count() == 0)
             {
                 Console.WriteLine("set params in neuron 0 ");
-                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider);
+                neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider, damage);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
@@ -209,7 +214,7 @@ namespace PracaMagisterska.PersonalSolution
                     Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i] / divider);
                     denList.Add(denTuple);
                 }
-                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider);
+                neuron.SetParameters(denList, params_list[params_length - 4], params_list[params_length - 3], params_list[params_length - 2], false, params_list[params_length - 1] / divider, damage);
             }
 
         }
