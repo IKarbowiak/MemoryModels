@@ -63,7 +63,6 @@ namespace PracaMagisterska
 
         public void start_button_click(object sender, RoutedEventArgs e)
         {
-            this.reset_panels();
 
             bool is_iteration_field_correct = this.validate_field(iteration_textbox);
             bool is_layer_filed_correct = this.validate_field(layer_textbox);
@@ -95,6 +94,15 @@ namespace PracaMagisterska
                 return;
             }
 
+            this.is_learning = (bool)this.learning_check_box.IsChecked;
+            if (!is_learning)
+            {
+                this.modulo_value = 50;
+                this.iteration_number = 50;
+                this.iteration_textbox.Text = "50";
+            }
+
+            this.reset_panels();
             this.layers_excite_history.Clear();
             this.htm_layers.Clear();
 
@@ -104,13 +112,6 @@ namespace PracaMagisterska
                 this.htm_layers.Add(htm_layer);
             }
 
-            this.is_learning = (bool)this.learning_check_box.IsChecked;
-            if (!is_learning)
-            {
-                this.modulo_value = 50;
-                this.iteration_number = 50;
-                this.iteration_textbox.Text = "50";
-            }
             this.execute(iteration_number, cell_damage, is_learning);
             show_results(this.layers_excite_history[0].cell_excite_history[0][0].Count);
 
@@ -138,6 +139,8 @@ namespace PracaMagisterska
             foreach (KeyValuePair<StackPanel, string> data in new Dictionary<StackPanel, string> { { iteration_panel, "Iteration number" },
                 { result_panel, "HTM layers" }, { input_marker_panel, "Best matching" },  { layer_panel, "Layer" } })
             {
+                if (data.Value == "Best matching" & this.is_learning)
+                    continue;
                 TextBlock info = new TextBlock()
                 {
                     Text = data.Value,

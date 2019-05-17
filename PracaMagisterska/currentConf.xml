@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <General>
-    <flowBox>500</flowBox>
-    <timeBox>30</timeBox>
+    <flowBox>250</flowBox>
+    <timeBox>20</timeBox>
     <blockFlow>False</blockFlow>
     <factorBox>2</factorBox>
   </General>
   <Model1>
     <neuLenBoxM1>5</neuLenBoxM1>
     <neuDiamBoxM1>1</neuDiamBoxM1>
-    <maxSpeedBoxM1>600</maxSpeedBoxM1>
+    <maxSpeedBoxM1>300</maxSpeedBoxM1>
     <damageM1>False</damageM1>
   </Model1>
   <Model2>
@@ -18,7 +18,7 @@
     <somaDiamBoxM2>21</somaDiamBoxM2>
     <axonDiamM2>5</axonDiamM2>
     <axonLenM2>1</axonLenM2>
-    <maxSpeedBoxM2>600</maxSpeedBoxM2>
+    <maxSpeedBoxM2>300</maxSpeedBoxM2>
     <damageM2>False</damageM2>
   </Model2>
   <Model3>
@@ -29,7 +29,7 @@
     <somaDiamBoxM3>21</somaDiamBoxM3>
     <axonDiamM3>5</axonDiamM3>
     <axonLenM3>1</axonLenM3>
-    <maxSpeedBoxM3>1500</maxSpeedBoxM3>
+    <maxSpeedBoxM3>300</maxSpeedBoxM3>
     <damageM3>False</damageM3>
   </Model3>
 </Configuration>

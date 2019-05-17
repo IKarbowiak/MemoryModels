@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PracaMagisterska"
         mc:Ignorable="d"
         ResizeMode="CanResize"
-        Title="MainWindow" Height="400" Width="500">
+        Title="MainWindow" Height="350" Width="450">
     <Border BorderBrush="DimGray" BorderThickness="1" Margin="7,7,7,7">
         <Grid>
             <Grid.RowDefinitions>
@@ -18,20 +18,19 @@
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Text="Memory models" TextAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
             <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                <TextBlock Margin="0,0,0,5" TextAlignment="Center">
+                <TextBlock Margin="0,0,0,5" TextAlignment="Center" TextWrapping="Wrap">
                 Personal solution which try to model memory with use of liquid flow inside neurons.
                 </TextBlock>
                 <Button Width="100" Height="20" Click="personal_sulution_button">Personal solution</Button>
-                <TextBlock Margin="0,20,0,5" TextAlignment="Center">
-                Hierarchial temporal Memory is biologically theory proposed by Jeff Hawkins.
+                <TextBlock Margin="0,20,0,5" TextAlignment="Center" TextWrapping="Wrap">
+                Hierarchial temporal Memory is biologically theory proposed by <LineBreak/> Jeff Hawkins.
                 </TextBlock>
                 <Button Width="100" Height="20" Margin="0,0,0,0" Click="HTM_model_button">HTM Model</Button>
-                <TextBlock Margin="0,20,0,5" TextAlignment="Center">
+                <!--<TextBlock Margin="0,20,0,5" TextAlignment="Center">
                 Hodgkin-Huxley model. <LineBreak/>
                 Mathemathical model describing inititation and propagation of action potential.
-                <!--Hodgkin-Huxley model.  extended about flow equations.-->
                 </TextBlock>
-                <Button Width="100" Height="20" Margin="0,0,0,0" Click="HH_model_button">HH Model</Button>
+                <Button Width="100" Height="20" Margin="0,0,0,0" Click="HH_model_button">HH Model</Button>-->
             </StackPanel>
 
         </Grid>
