@@ -114,8 +114,6 @@ namespace PracaMagisterska
                 }
                 if (!emptyResults.Contains(false))
                 {
-                    Console.WriteLine("Stop draining timer");
-                    Console.WriteLine("Stop draining timer");
                     drainingTimer.Stop();
                     this.enableViewboxInQueuMoving();
                 }
@@ -183,7 +181,6 @@ namespace PracaMagisterska
                         {
                             res_List.Add(i);
                             res_List.Add(j);
-                            Console.WriteLine("Contains " + i + " " + j);
                         }
                     }
                 }
@@ -229,7 +226,6 @@ namespace PracaMagisterska
             if (checkList.Count() > 1)
             {
                 NeuronViewbox viewbox = checkList[checkList.Count() - 1];
-                Console.WriteLine("Remove ability");
                 viewbox.removeViewboxAbilityToMove();
             }
         }
@@ -306,7 +302,6 @@ namespace PracaMagisterska
 
             int list_num = checkList[0];
             int elInList = checkList[1];
-            Console.WriteLine("Delete from List");
             this.neuronQueue[list_num].RemoveAt(elInList);
             bool removeList = false;
             this.clearFlow();
@@ -357,14 +352,12 @@ namespace PracaMagisterska
             {
                 if (element.Value[2] - param[2] <= 0)
                 {
-                    Console.WriteLine("Down");
                     posY = element.Value[2] + offset;
                     setConnectionToDen(viewbox, "down", element.Key, side);
                 }
                 else
                 {
                     posY = element.Value[2] - offset;
-                    Console.WriteLine("Up");
                     setConnectionToDen(viewbox, "up", element.Key, side);
                 }
             }
@@ -427,17 +420,10 @@ namespace PracaMagisterska
             double[] parameters = viewboxObj.getCanvasParameters();
             canvasElements[viewboxObj] = parameters;
 
-
-            Console.WriteLine("List count " + this.neuronQueue.Count());
-            Console.WriteLine(canvasElements[viewboxObj][0]);
-            Console.WriteLine("Dictionary count !!!!! " + canvasElements.Count());
-
             // Check to remove 
             counter = 0;
             foreach (List<NeuronViewbox> el in this.neuronQueue)
             {
-                Console.WriteLine("List " + counter);
-                Console.WriteLine(el.Count());
                 counter++;
             }
         }
@@ -465,8 +451,6 @@ namespace PracaMagisterska
                 TimeSpan delay = TimeSpan.Parse("00:" + timerTextBlock.Text);
                 TimeSpan currentValue = DateTime.Now - this.TimerStart;
                 this.timeOffset = currentValue - delay;
-                Console.WriteLine("******************************************************************");
-                Console.WriteLine(this.flowTime - delay.Seconds);
                 this.timer.Start();
                 startButton.IsEnabled = false;
                 return;
@@ -474,19 +458,16 @@ namespace PracaMagisterska
 
             this.clearFlow();
 
-            Console.WriteLine("Current path: " + this.currentConf);
             if (currentConf == null)
             {
                 this.setCurrentConf();
             }
             this.loadParams();
-            Console.WriteLine(this.flowVolume);
 
             counter = 0;
 
             this.calculateTimeOfOutFlow();
 
-            Console.WriteLine("Flow Volume!!! Drag nad Drop!!!!" + this.flowVolume);
             if (canvasElements.Count() > 0)
             {
                 this.tickThreshold = (int)(this.flowTime * 1000 / this.timerTimeSpan);
@@ -503,7 +484,6 @@ namespace PracaMagisterska
             List<double> neuron1_params = new List<double>();
             List<double> neuron2_params = new List<double>();
             Dictionary<int, bool> neuron_damage_list = new Dictionary<int, bool>();
-            Console.WriteLine("In load");
             XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
             foreach (XElement element in xmlTree.Elements())
             {
@@ -544,7 +524,6 @@ namespace PracaMagisterska
                     element.setNeuronParams(neuron2_params, divider, neuron_damage_list[3]);
             }
 
-            Console.WriteLine("Drag and drop " + this.blockTheEnd);
             if (blockTheEnd)
             {
                 foreach (List<NeuronViewbox> viewbox_list in this.neuronQueue)
@@ -580,7 +559,6 @@ namespace PracaMagisterska
         private void flow(object sender, EventArgs e, double flow)
         {
             Dictionary<NeuronViewbox, List<double>> whatToPush = new Dictionary<NeuronViewbox, List<double>>();
-            Console.WriteLine("Count whatToPush" + whatToPush.Count());
 
             // if there is no queue but any neuron in panel exist
             if (this.neuronQueue.Count() == 0 && this.canvasElements.Count > 0)
@@ -678,7 +656,6 @@ namespace PracaMagisterska
                                 else
                                     whatToPush[viewbox_current] = new List<double> { toPush };
                             }
-                            Console.WriteLine(viewbox_prev.Name);
                             string side = viewbox_prev.Name;
                             if (side == "up" || side == "down")
                             {
@@ -686,7 +663,6 @@ namespace PracaMagisterska
                                 this.addToNeuronsToCloseDendriteList(viewbox_current);
                             }
                         }
-                        Console.WriteLine("After break @@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
                     }
                 }
@@ -763,7 +739,6 @@ namespace PracaMagisterska
             {
                 if (this.timeBegginingOfOutflowInReminder == 0 &&  ( (this.neuronQueue.Count() == 0) || viewboxObj == this.neuronQueue[0][this.neuronQueue[0].Count() - 1]))
                 {
-                    Console.WriteLine("Axon return volume !!!! " + counter);
                     if (this.remindStarted)
                         this.timeBegginingOfOutflowInReminder = ((double)counter * (double)this.timerTimeSpan) / 1000;
                     else 
@@ -791,10 +766,6 @@ namespace PracaMagisterska
         // change time in the stopwatch
         private void myTimerTick(object sender, EventArgs e)
         {
-            Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            Console.WriteLine(this.timeOffset);
-            Console.WriteLine(DateTime.Now - this.TimerStart);
-            Console.WriteLine(DateTime.Now - this.TimerStart - this.timeOffset);
             TimeSpan currentValue = DateTime.Now - this.TimerStart - this.timeOffset;
             this.timerTextBlock.Text = currentValue.ToString(@"mm\:ss");
         }
@@ -834,9 +805,6 @@ namespace PracaMagisterska
         // stop flow after 'Stop' button clicked
         private void stop(bool fromTimer)
         {
-            Console.WriteLine("In stop!!!!!!!!!!!");
-            Console.WriteLine(this.tickThreshold);
-            Console.WriteLine(this.counter);
             this.timer.Stop();
             startButton.IsEnabled = true;
             this.timeOffset = TimeSpan.Parse("00:00:00");
@@ -851,7 +819,6 @@ namespace PracaMagisterska
                 this.unloadNeurons();
 
                 // Block dendrite of neurons
-                Console.WriteLine("List block length: " + this.neuronsToCloseDendrites.Count());
                 this.blockNeuronsDendrites();
             }
 
@@ -861,7 +828,6 @@ namespace PracaMagisterska
             }
             else
             {
-                Console.WriteLine("Counter value!!! " + this.timeBegginingOfOutflowInReminder);
                 if (this.startOutFlowTime > 0 && this.timeBegginingOfOutflowInReminder < this.startOutFlowTime)
                 {
                     this.somethingInNeuron = true;
@@ -966,7 +932,6 @@ namespace PracaMagisterska
         private void getConfParamsXML(string path, double time, double flow)
         {
             this.currentConf = path;
-            Console.WriteLine("In main Window" + path);
         }
 
         // pause flow after 'Pasue' button click
@@ -1042,7 +1007,6 @@ namespace PracaMagisterska
                 }
                 //elements = elements == 0 ? elementsAmount: elements;
                 //elements = elements > elementsAmount ? elementsAmount : elements;
-                Console.WriteLine("Single neuron volume" + volumeForNeuron);
                 resList.Add(volumeForNeuron);
                 somaCounter.Add(somaC);
                 sumOfSomaVolume.Add(somaVol);
@@ -1060,7 +1024,6 @@ namespace PracaMagisterska
                 minTimeForQueue = this.timerTimeSpan * elements / (double)1000;
             double round = Math.Floor(minTimeForQueue * 10) / 10;
             this.minTimeToOutFlow = Math.Floor(minTimeForQueue * 10) / 10 + ((double)this.timerTimeSpan * (double)somaAmount) / (double)1000;
-            Console.WriteLine("Test time: " + this.minTimeToOutFlow);
         }
 
         //create add prarameters values and open results window

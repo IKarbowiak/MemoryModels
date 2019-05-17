@@ -29,7 +29,7 @@
     <somaDiamBoxM3>21</somaDiamBoxM3>
     <axonDiamM3>5</axonDiamM3>
     <axonLenM3>1</axonLenM3>
-    <maxSpeedBoxM3>300</maxSpeedBoxM3>
+    <maxSpeedBoxM3>600</maxSpeedBoxM3>
     <damageM3>False</damageM3>
   </Model3>
 </Configuration>

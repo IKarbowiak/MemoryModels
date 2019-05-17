@@ -86,7 +86,6 @@ namespace PracaMagisterska
                 bool empty3 = neuron2.draining(remainingMemory);
                 if (empty1 && empty2 && empty3)
                 {
-                    Console.WriteLine("Stop draining timer");
                     drainingTimer.Stop();
                 }
             };
@@ -155,7 +154,6 @@ namespace PracaMagisterska
             this.calculateTimeOfOutFlow();
             if (!this.newFlow && timerTextBlock.Text != "00:00")
             {
-                Console.WriteLine("In bad place");
                 string[] seconds = timerTextBlock.Text.Split(':');
                 delay = Int32.Parse(seconds[1].Trim(new Char[] { '0', }));
                 newTime = time - delay;
@@ -164,12 +162,10 @@ namespace PracaMagisterska
             }
             else
             {
-                Console.WriteLine("In good place");
                 this.tickThreshold = (int)(this.time * 1000 / this.timerTimeSpan);
 
                 if ((this.flow > 0) && (time > 0))
                 {
-                    Console.WriteLine("Deeper");
                     startButton.IsEnabled = false;
                     this.TimerStart = DateTime.Now;
 
@@ -184,11 +180,8 @@ namespace PracaMagisterska
         // function that manages the flow of fluids through neurons
         private void neuronFlow(object sender, EventArgs e, Neuron neuron, double flow)
         {
-            Console.WriteLine("Tick treshold" + this.tickThreshold);
             double toPush = 0;
-            Console.WriteLine("Flow !" + flow);
             bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
-            Console.WriteLine("In neuron flow");
             if (neuron.dendrites_list.Count() == 0)
             {
                 if (neuron.axon.maxSpeed < flow)
@@ -200,9 +193,7 @@ namespace PracaMagisterska
                 neuron.volumeToPush = axRes.Item2;
                 if (!axonFull && !remindStarted)
                 {
-                    Console.WriteLine("Out flow Volume" + neuron.outFlowVolume);
                     neuron.outFlowVolume += axRes.Item2;
-                    Console.WriteLine("AXON $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + axRes.Item2);
                 }
                 if (axRes.Item2 > 0 && !this.startOutFlowTime.ContainsKey(neuron))
                 {
@@ -212,7 +203,6 @@ namespace PracaMagisterska
                 return;
             }
 
-            Console.WriteLine("Multiply neuron");
             foreach (Dendrite dendrite in neuron.dendrites_list)
             {
                 if (!dendrite.isBlocked)
@@ -226,7 +216,6 @@ namespace PracaMagisterska
             }
             if (toPush > 0)
             {
-                Console.WriteLine("Axon is full : " + axonFull);
                 Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
                 if (somaRes.Item1 && !axonFull)
                 {
@@ -247,7 +236,6 @@ namespace PracaMagisterska
                     axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
                     if (!axonFull && !remindStarted)
                     {
-                        Console.WriteLine("AXON ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" + axonRes.Item2);
                         neuron.outFlowVolume += axonRes.Item2;
                         if (axonRes.Item2 > 0 && !this.startOutFlowTime.ContainsKey(neuron))
                         {
@@ -291,11 +279,6 @@ namespace PracaMagisterska
             M2VolumeBlock.Text = neuron1.outFlowVolume.ToString("0.00");
             M3VolumeBlock.Text = neuron2.outFlowVolume.ToString("0.00");
 
-            Console.WriteLine("In show results");
-            Console.WriteLine(neuron1.outFlowVolume);
-            Console.WriteLine(neuron1.totalOutFlowVolume);
-            Console.WriteLine(neuron1.outFlowVolume + Double.Parse(M2VolumeTotalBlock.Text));
-
             M1VolumeTotalBlock.Text = (neuron0.totalOutFlowVolume).ToString("0.00");
             M2VolumeTotalBlock.Text = (neuron1.totalOutFlowVolume).ToString("0.00");
             M3VolumeTotalBlock.Text = (neuron2.totalOutFlowVolume).ToString("0.00");
@@ -306,9 +289,6 @@ namespace PracaMagisterska
                 drainingTimer.Start();
 
             this.remindStarted = false;
-
-            Console.WriteLine(counter);
-
         }
 
         private void clear_params()
@@ -383,7 +363,6 @@ namespace PracaMagisterska
             this.currentConf = path;
             this.time = time;
             this.setFlowVolume(flow);
-            Console.WriteLine("In main Window" + path);
         }
 
         private void setFlowVolume(double flowValue)
@@ -396,7 +375,6 @@ namespace PracaMagisterska
         private void loadParams()
         {
             List<double> neuron_params = new List<double>();
-            Console.WriteLine("In load");
             XElement xmlTree = XElement.Load(this.currentConf, LoadOptions.None);
             foreach (XElement element in xmlTree.Elements())
             {
@@ -428,7 +406,6 @@ namespace PracaMagisterska
                 }
             }
 
-            Console.WriteLine("Main Window" + this.blockTheEnd);
             if (blockTheEnd)
             {
                 neuron0.axon.blockTheEnd = true;
@@ -445,12 +422,10 @@ namespace PracaMagisterska
             int params_length = params_list.Count();
             if (neuron.dendrites_list.Count() == 0)
             {
-                Console.WriteLine("set params in neuron 0 ");
                 neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider, damage);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
-                Console.WriteLine("set params in neuron 1 or 2 ");
                 for (int i = 0; i < params_length - 4; i += 2)
                 {
                     Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i]);

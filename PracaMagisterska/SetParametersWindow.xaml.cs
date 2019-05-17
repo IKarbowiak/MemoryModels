@@ -142,7 +142,6 @@ namespace PracaMagisterska
                     if (window_element.GetType() == typeof(ComboBox))
                     {
                         ComboBox comboBox = (ComboBox)window_element;
-                        Console.WriteLine("Selected value combo box! " + childElement.Value);
                         if (name.EndsWith("M1"))
                             comboBox.SelectedItem = childElement.Value == "True" ? trueItemM1 : falseItemM1;
                         else if (name.EndsWith("M2"))
@@ -187,7 +186,6 @@ namespace PracaMagisterska
                         TextBox textbox = (TextBox)window_element;
                         if (String.IsNullOrEmpty(textbox.Text) || textbox.Text.Contains('.'))
                         {
-                            Console.WriteLine("Checking");
                             textbox.BorderBrush = System.Windows.Media.Brushes.Red;
                             textbox.Foreground = Brushes.Red;
                             allFieldsFull = false;
@@ -217,7 +215,6 @@ namespace PracaMagisterska
             if (validateXmlFields("\\defaultConf.xml"))
             {
                 saveXML(this.projectPath + "\\defaultConf.xml");
-                Console.WriteLine("DefaultConf updated");
             }
         }
 
@@ -228,7 +225,6 @@ namespace PracaMagisterska
             saveXML(path);
             if (validateField(timeBox) && validateField(flowBox))
                 changeCurrentConfInParentWindow(path);
-            Console.WriteLine("Current path: " + path);
         }
     }
 

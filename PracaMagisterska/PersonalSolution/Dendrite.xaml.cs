@@ -67,7 +67,6 @@ namespace PracaMagisterska.PersonalSolution
             {
                 this.liquidVolume += volumeIncrease;
                 int colLevelToFill = (int)((double)denrdriteRec.Width * volumeIncrease / this.volume);
-                Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
                 if (colLevelToFill > 0 && this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
                     this.fillRect(colLevelToFill, color);
@@ -79,7 +78,6 @@ namespace PracaMagisterska.PersonalSolution
                 volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
                 int colToFillin1s = (int)denrdriteRec.Width;
-                Console.WriteLine("Col counter: " + columnsCounter + ", recDenArray " + recDenArray[0].Length);
                 if (this.columnsCounter < this.recDenArray[0].Length - 1)
                 {
                     this.fillRect(colToFillin1s, color);
@@ -88,7 +86,6 @@ namespace PracaMagisterska.PersonalSolution
                 this.isFull = true;
             }
 
-            Console.WriteLine("In dendrite " + volumeToPush);
             Tuple<bool, double> result = new Tuple<bool, double>(this.isFull, volumeToPush);
             return result;
         }
@@ -116,19 +113,14 @@ namespace PracaMagisterska.PersonalSolution
 
             if (this.columnsCounter >= recDenArray[0].Length)
             {
-                Console.WriteLine("In stop dend");
                 isFull = true;
                 this.columnsCounter = recDenArray[0].Length - 1;
-
             }
         }
 
         // partial empty rectangles to specific level
         public void unloadFunc()
         {
-            Console.WriteLine("Dendirte unload");
-            Console.WriteLine(this.columnsCounter);
-
             for (int i = this.recDenArray[0].Length - 1; i >= 0; i--)
             {
                 for (int j = 0; j < recDenArray.Length; j++)
@@ -136,7 +128,6 @@ namespace PracaMagisterska.PersonalSolution
                     recDenArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
                 }
             }
-
             this.resetParams();
         }
 
@@ -169,10 +160,7 @@ namespace PracaMagisterska.PersonalSolution
             int columnNumber = Convert.ToInt32(modelElement.Width);
 
             Rectangle rec;
-
-
             Rectangle[][] recArray = new Rectangle[rowNumber][];
-
 
             for (int i = 0; i < rowNumber; i++)
             {

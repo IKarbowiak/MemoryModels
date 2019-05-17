@@ -59,7 +59,6 @@ namespace PracaMagisterska.PersonalSolution
                 this.volume = this.diameter * this.diameter;
             }
             this.threshold = (this.diameter / 2 - this.axonDiameter / 2) * this.volume /  (this.diameter);
-            Console.WriteLine("Calculate thrwshold " + this.threshold);
             this.rowToReachTeshold = (int)(somaRec.Height / 2 - 1);
         }
 
@@ -67,11 +66,9 @@ namespace PracaMagisterska.PersonalSolution
         public Tuple<bool, double> newFlow(object sender, EventArgs e, double volumeIncrease, bool axonIsFull, System.Windows.Media.SolidColorBrush color)
         {
             bool push = false;
-            Console.WriteLine("In new Soma " + volumeIncrease);
             double increase = this.liquidVolume + volumeIncrease;
             double rowToFill;
             double volumeToPush = 0;
-            Console.WriteLine("volume" + volume + "    threshold: " + this.threshold + "       increase: " + increase);
 
             if (this.isFull)
             {
@@ -82,12 +79,9 @@ namespace PracaMagisterska.PersonalSolution
 
             if (increase > this.threshold && !axonIsFull)
             {
-                Console.WriteLine("Reach treshold");
-
                 volumeToPush = increase - this.threshold;
                 this.liquidVolume += (volumeIncrease - volumeToPush);
                 rowToFill = this.rowToReachTeshold;
-                Console.WriteLine("Row to fills" + rowToFill);
                 this.fillRect(rowToFill, color);
                 this.isFull = false;
                 push = true;
@@ -96,8 +90,6 @@ namespace PracaMagisterska.PersonalSolution
 
             else if (increase > this.volume)
             {
-                Console.WriteLine("In full soma axon");
-
                 volumeToPush = increase - this.volume;
                 this.liquidVolume = this.volume;
                 rowToFill = (double)somaRec.Height;
@@ -121,7 +113,6 @@ namespace PracaMagisterska.PersonalSolution
         // fill rectangle to specific level
         private void fillRect(double rowLevel, System.Windows.Media.SolidColorBrush color)
         {
-            Console.WriteLine("In soma fill REC !!! Row to fill: " + rowLevel);
             int rowToFill = (int)(somaRec.Height - rowLevel);
 
             if (rowToFill < 0)
@@ -134,9 +125,7 @@ namespace PracaMagisterska.PersonalSolution
                     recSomaArray[j][i].Fill = color;
                 }
             }
-
             rowCounter = rowToFill > 0 ? rowToFill : 0; 
-
         }
 
         // reset parameters and empty soma to the level below treshold
@@ -182,9 +171,7 @@ namespace PracaMagisterska.PersonalSolution
                 }
                 return;
             }
-
             rowCounter = toReach;
-
         }
 
         // reset soma parameters

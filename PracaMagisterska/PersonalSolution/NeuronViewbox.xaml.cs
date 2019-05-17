@@ -30,7 +30,6 @@ namespace PracaMagisterska.PersonalSolution
 
         public NeuronViewbox(int den_number)
         {
-            Console.WriteLine("Here");
             InitializeComponent();
             this.neuron = new Neuron(den_number);
             this.viewbox.Child = this.neuron;
@@ -81,7 +80,6 @@ namespace PracaMagisterska.PersonalSolution
 
             this.startPosition = e.GetPosition(parentWindow.dropCanvas);
             viewbox.CaptureMouse();
-            Console.WriteLine("In Mouse Down");
             viewbox.MouseMove += neuron_MouseMove;
             viewbox.MouseUp += neuron_MouseUp;
         }
@@ -116,8 +114,6 @@ namespace PracaMagisterska.PersonalSolution
             Viewbox viewbox = (Viewbox)sender;
             Canvas canvas = parentWindow.dropCanvas;
             Neuron neuron = (Neuron)viewbox.Child;
-            Console.WriteLine("In mouse up ");
-
 
             viewbox.ReleaseMouseCapture();
             viewbox.MouseMove -= neuron_MouseMove;
@@ -133,7 +129,6 @@ namespace PracaMagisterska.PersonalSolution
         // remove ability to move neuron in neuron panel
         public void removeViewboxAbilityToMove()
         {
-            Console.WriteLine("Remove ability");
             this.viewbox.MouseDown -= this.neuron_MouseDown;
             this.viewbox.MouseMove -= this.neuron_MouseMove;
             this.viewbox.MouseUp -= this.neuron_MouseUp;
@@ -203,12 +198,10 @@ namespace PracaMagisterska.PersonalSolution
             int params_length = params_list.Count();
             if (neuron.dendrites_list.Count() == 0)
             {
-                Console.WriteLine("set params in neuron 0 ");
                 neuron.SetParameters(new List<Tuple<double, double>>(), 0, params_list[1], params_list[0], false, params_list[2] / divider, damage);
             }
             else if (neuron.dendrites_list.Count() > 0)
             {
-                Console.WriteLine("set params in neuron 1 or 2 ");
                 for (int i = 0; i < params_length - 4; i += 2)
                 {
                     Tuple<double, double> denTuple = new Tuple<double, double>(params_list[i + 1], params_list[i] / divider);
@@ -225,7 +218,6 @@ namespace PracaMagisterska.PersonalSolution
 
             double toPush = 0;
             double volumeToPushNext = 0;
-            Console.WriteLine("In neuron flow");
             // if there is no dendrite in neuron
             if (neuron.dendrites_list.Count() == 0)
             {
@@ -264,7 +256,6 @@ namespace PracaMagisterska.PersonalSolution
             if (toPush > 0)
             {
                 bool axonFull = neuron.axon.isFull && neuron.axon.blockTheEnd;
-                Console.WriteLine("Axon is full : " + axonFull);
 
                 Tuple<bool, double> somaRes = neuron.soma.newFlow(sender, e, toPush, axonFull, color);
                 // push volume to axon if axon is not full
@@ -348,7 +339,6 @@ namespace PracaMagisterska.PersonalSolution
             foreach (Dendrite den in this.neuron.dendrites_list)
             {
                 den.isBlocked = true;
-                Console.WriteLine("Block DEN!");
             }
         }
 
@@ -356,12 +346,10 @@ namespace PracaMagisterska.PersonalSolution
         {
             if (viewbox.Name == "up")
             {
-                Console.WriteLine("Unblock Den");
                 (neuron.dendrites_list[0]).isBlocked = false;
             }
             else if (viewbox.Name == "down")
             {
-                Console.WriteLine("Unblock Den");
                 (neuron.dendrites_list[1]).isBlocked = false;
             }
 
@@ -381,13 +369,11 @@ namespace PracaMagisterska.PersonalSolution
         public void blockAxonEnd()
         {
             neuron.axon.blockTheEnd = true;
-            Console.WriteLine("set axon to block");
         }
 
         public void unblockAxonEnd()
         {
             neuron.axon.blockTheEnd = false;
-            Console.WriteLine("set axon to unblock");
         }
 
         public void unloadNeuron(bool remindStarted)

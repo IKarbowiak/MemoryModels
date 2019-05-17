@@ -90,7 +90,6 @@ namespace PracaMagisterska.PersonalSolution
             {
                 this.liquidVolume += volumeIncrease;
                 int colLevelToFill = (int)((double)axonRec.Width * volumeIncrease / this.volume);
-                Console.WriteLine("Poniżej max");
                 if (colLevelToFill == 0)
                 {
                     colLevelToFill = 1;
@@ -102,7 +101,6 @@ namespace PracaMagisterska.PersonalSolution
             }
             else
             {
-                Console.WriteLine("Powyżej!");
                 volumeToPush = this.liquidVolume + volumeIncrease - this.volume;
                 this.liquidVolume = this.volume;
                 int colLevelToFill = (int)axonRec.Width;
@@ -114,8 +112,6 @@ namespace PracaMagisterska.PersonalSolution
                     }
                 }
                 this.isFull = true;
-                Console.WriteLine("Is full exon in powyzej: " + this.isFull);
-                Console.WriteLine("Axon is block ath the ende: " + this.blockTheEnd);
                 this.flowedOutVolume += volumeToPush;
 
             }
@@ -125,9 +121,7 @@ namespace PracaMagisterska.PersonalSolution
         // fill part axon rectangle
         private void fillRect(int numberOfCol, System.Windows.Media.SolidColorBrush color)
         {
-            Console.WriteLine("In fill ax " + numberOfCol);
             int colLevel = this.columnsCounter + numberOfCol;
-            Console.WriteLine("In fill ax col Level " + colLevel);
 
             if (colLevel > recAxonArray[0].Length)
             {
@@ -147,8 +141,6 @@ namespace PracaMagisterska.PersonalSolution
 
             if (this.columnsCounter >= recAxonArray[0].Length)
             {
-                Console.WriteLine("In stop AXON");
-                Console.WriteLine("block the end" + blockTheEnd);
                 isFull = this.blockTheEnd == true ? true : false;
                 this.columnsCounter = recAxonArray[0].Length - 1;
 
@@ -158,9 +150,6 @@ namespace PracaMagisterska.PersonalSolution
         // partial empty axon recatngles
         public void unloadFunc()
        {
-            Console.WriteLine("Axon unload");
-            Console.WriteLine(this.columnsCounter);
-
             for (int i = this.recAxonArray[0].Length - 1; i >= 0; i--)
             {
                 for (int j = 0; j < recAxonArray.Length; j++)
@@ -169,9 +158,7 @@ namespace PracaMagisterska.PersonalSolution
             
                  }
              }
-
             this.resetParameters();
-
         }
 
         // reste axon - empty rectangles
@@ -185,13 +172,11 @@ namespace PracaMagisterska.PersonalSolution
                     recAxonArray[j][i].Fill = System.Windows.Media.Brushes.Transparent;
                 }
             }
-
         }
 
         // reset axon parameters
         public void resetParameters()
         {
-            Console.WriteLine("Reset axon parms");
             this.columnsCounter = 0;
             this.isFull = false;
             this.liquidVolume = 0;
@@ -224,7 +209,6 @@ namespace PracaMagisterska.PersonalSolution
                     {
                         Width = 1,
                         Height = 1,
-                        //Stroke = Brushes.Red,
                         StrokeThickness = 1,
 
                         Name = "rec_" + i + "_" + j

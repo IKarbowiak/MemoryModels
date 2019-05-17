@@ -35,10 +35,6 @@ namespace PracaMagisterska
         private int iteration_counter = 0;
         private bool is_learning = true;
 
-        private string coverage_file_path = "D:\\PWR\\Magisterka\\coverage_res.csv";
-        private string matching_file_path = "D:\\PWR\\Magisterka\\matching_res.csv";
-        private StringBuilder csv = new StringBuilder();
-        private StringBuilder csv_matching = new StringBuilder();
         private Dictionary<int, int> input_mapping = new Dictionary<int, int>();
 
 
@@ -362,9 +358,6 @@ namespace PracaMagisterska
                 this.show_result_from_one_iteration(this.row_height, iter_counter);
             }
 
-            File.WriteAllText(this.coverage_file_path, csv.ToString());
-            if (!this.is_learning)
-                File.WriteAllText(this.matching_file_path, csv_matching.ToString());
         }
 
         public void show_result_from_one_iteration(double row_height, int iter_counter, bool additional_iter = false)
@@ -380,7 +373,7 @@ namespace PracaMagisterska
 
             this.show_layer_results(row_number, iter_counter, row_height);
 
-            check_coverage(this.layers_excite_history[0], iter_counter, this.csv);
+            check_coverage(this.layers_excite_history[0], iter_counter);
 
             Line line = new Line()
             {
@@ -395,7 +388,7 @@ namespace PracaMagisterska
             result_panel.Children.Add(line);
         }
 
-        public void check_coverage(HTM_excite_history history, int iter_num, StringBuilder csv)
+        public void check_coverage(HTM_excite_history history, int iter_num)
         {
             List<int> predictive_previous = new List<int>();
             List<int> active_current = new List<int>();
@@ -406,7 +399,6 @@ namespace PracaMagisterska
 
                 List<int> list_difference = active_current.Except(predictive_previous).ToList();
                 double cov = (((double)active_current.Count() - (double)list_difference.Count()) / (double)active_current.Count() * 100.0);
-                csv.AppendLine(String.Format("{0}; {1}; {2}; {3}", iter_num + 1, ((double)active_current.Count() - (double)list_difference.Count()), active_current.Count(), cov));
             }
         }
 
@@ -448,7 +440,6 @@ namespace PracaMagisterska
                 if (!this.is_learning)
                 {
                     int best_matching_input = layer_history.find_similarities(iter_counter + 1);
-                    csv_matching.AppendLine(String.Format("{0}; {1}", iter_counter + 1, best_matching_input));
                     TextBlock marker = this.prepare_text_block(best_matching_input.ToString(), layer_info_height, new Thickness(15, 10, 0, 0));
                     input_marker_panel.Children.Add(marker);
                 }

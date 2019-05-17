@@ -56,7 +56,6 @@ namespace PracaMagisterska.PersonalSolution
             this.dendrites_list = new List<Dendrite>();
             if (dendrideNum == 0)
             {
-                Console.WriteLine("0 den");
                 axon = new Axon(recWidth: 380);
                 axon.HorizontalAlignment = HorizontalAlignment.Left;
                 neuronGrid.Children.Add(axon);
@@ -114,7 +113,7 @@ namespace PracaMagisterska.PersonalSolution
             }
             else
             {
-                Console.WriteLine("You must specify number of dendrites - 0 i sminimum");
+                Console.WriteLine("You must specify number of dendrites - 0 is minimum");
             }
 
         }
@@ -133,7 +132,6 @@ namespace PracaMagisterska.PersonalSolution
                 this.minVolumeToOutflow += this.dendrites_list[0].volume;
                 this.volumeToOutFlowWhenNeuronFull += this.dendrites_list[0].volume;
             }
-            Console.WriteLine("%%%%%%%%%%%%%%%%%%%Total volume " + this.minVolumeToOutflow);
         }
 
         // unload neuron - empty axon, soma, dendrite
@@ -142,24 +140,18 @@ namespace PracaMagisterska.PersonalSolution
             this.axon.unloadFunc();
             if (this.soma != null)
             {
-                Console.WriteLine("Soma unload");
                 this.soma.unloadFunc(true);
-
             }
             foreach (Dendrite den in this.dendrites_list)
             {
                 den.unloadFunc();
             }
-            Console.WriteLine("In neuron onload");
-            Console.WriteLine(this.outFlowVolume);
-            Console.WriteLine(this.totalOutFlowVolume);
             Thread.Sleep(100);
             if (!reminder)
             {
                 double value = this.totalOutFlowVolume + this.outFlowVolume;
                 this.totalOutFlowVolume = value;
             }
-            Console.WriteLine("After" + this.totalOutFlowVolume);
         }
 
         // set neuron parameter - update axon, soma, dendrite parameters
@@ -169,7 +161,6 @@ namespace PracaMagisterska.PersonalSolution
 
             if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
             {
-                Console.WriteLine("Change den params");
                 for (int i = 0; i < this.dendrites_list.Count(); i++)
                 {
                     Dendrite den = this.dendrites_list[i];
@@ -181,7 +172,6 @@ namespace PracaMagisterska.PersonalSolution
             }
             else if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == 1)
             {
-                Console.WriteLine("Change den params");
                 foreach (Dendrite den in this.dendrites_list)
                 {
                     den.diameter = dendriteLenAndDiam_List[0].Item1 == 0 ? this.denDiam : dendriteLenAndDiam_List[0].Item1;
@@ -191,7 +181,6 @@ namespace PracaMagisterska.PersonalSolution
             }
             else
             {
-                Console.WriteLine("Change den params");
                 foreach (Dendrite den in this.dendrites_list)
                 {
                     den.diameter = this.denDiam;
@@ -202,12 +191,10 @@ namespace PracaMagisterska.PersonalSolution
 
             if (soma != null)
             {
-                Console.WriteLine("change som");
                 this.soma.diameter = somaDiam == 0 ? this.somaDiam : somaDiam;
                 this.soma.axonDiameter = axonDiam == 0 ? this.axDiam : axonDiam;
                 this.soma.calculateParameters();
             }
-            Console.WriteLine("Change axon");
             this.axon.length = axonLen == 0 ? this.axonLength : axonLen * 1000;
             this.axon.diameter = axonDiam == 0 ? this.axDiam : axonDiam;
             this.axon.blockTheEnd = blockAxon;
@@ -227,7 +214,6 @@ namespace PracaMagisterska.PersonalSolution
             this.outFlowVolume = 0;
             if (this.soma != null)
             {
-                Console.WriteLine("Reset soma");
                 this.soma.reset();
             }
             foreach (Dendrite den in this.dendrites_list)
@@ -242,7 +228,6 @@ namespace PracaMagisterska.PersonalSolution
             {
                 empty = this.soma.partialEmpty(remainingMemory);
             }
-            Console.WriteLine("Neron draining return: " + empty);
             return empty;
         }
 
