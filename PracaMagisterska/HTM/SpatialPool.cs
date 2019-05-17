@@ -15,11 +15,12 @@ namespace PracaMagisterska.HTM
 
         }
 
-        public void perform(PracaMagisterska.HTM.HTM htm)
+        public void perform(PracaMagisterska.HTM.HTM htm, bool learning = true)
         {
             this.overlap(htm);
             List<Column> active_columns = this.inhibition(htm);
-            htm.inhibition_radius = (int)this.learning(active_columns, htm);
+            if (learning)
+                htm.inhibition_radius = (int)this.learning(active_columns, htm, false);
         }
 
         private void overlap(HTM htm)
@@ -54,18 +55,21 @@ namespace PracaMagisterska.HTM
             return active_columns;
         }
 
-        private double learning(List<Column> active_columns, HTM htm)
+        private double learning(List<Column> active_columns, HTM htm, bool boosting_on = true)
         {
             foreach (Column col in active_columns)
             {
                 foreach (Synapse synapse in col.get_synapses())
                 {
-                    if (synapse.was_firing())
+                    if (synapse.was_firing_with_connection)
                         synapse.increment_permamence();
                     else
                         synapse.decrement_permamence();
                 }
             }
+
+            if (!boosting_on)
+                return htm.average_receptive_field_size();
 
             // boost columns which does not win often
             // help column learn connections

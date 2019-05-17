@@ -19,7 +19,7 @@ namespace PracaMagisterska.HTM
         public bool was_learning = false;
         private bool predicting_next = false;
         private bool was_predicted_next = false;
-        public bool demage = false;
+        public bool damage = false;
         public List<Segment> segments;
 
         public Cell(Column col, int layer)
@@ -35,6 +35,8 @@ namespace PracaMagisterska.HTM
 
         public void clock_tick()
         {
+            foreach (Segment segment in this.segments)
+                segment.clock_tick();
             this.was_active = this.active;
             this.was_learning = this.learning;
             this.was_predicted = this.predicting;
@@ -44,19 +46,19 @@ namespace PracaMagisterska.HTM
             this.learning = false;
             this.predicting = false;
             this.predicting_next = false;
+
             //this.demage = false;
         }
 
         public Segment get_active_segment()
         {
-            List<Segment> segments = this.near_segments();
-            foreach (Segment segment in segments)
+            List<Segment> near_segments = this.near_segments();
+            foreach (Segment segment in near_segments)  // TODO: this.segments
             {
-                if (segment.was_active())
+                if (segment.was_active)
                     return segment;
             }
             return null;
-
 
         }
 
@@ -110,7 +112,7 @@ namespace PracaMagisterska.HTM
         {
             const int synapses_per_segment = HTM_parameters.SYNAPSES_PER_SEGMENT;
             Segment segment = new Segment(next_step: next_step);
-            int synapse_len = this.create_synapses(segment, htm.get_cells(), synapses_per_segment, true, false);
+            int synapse_len = this.create_synapses(segment, htm.get_cells(), synapses_per_segment, true, false); // TODO: check what bool parameters shpuld be here. I change chec_was_active to true
 
             if (!next_step && synapse_len < synapses_per_segment)
             {
@@ -134,10 +136,6 @@ namespace PracaMagisterska.HTM
                     matching_cells.Add(cell);
                 }
                 else if (this != cell && check_was_active && cell.was_active)
-                {
-                    matching_cells.Add(cell);
-                }
-                else if (this != cell)
                 {
                     matching_cells.Add(cell);
                 }

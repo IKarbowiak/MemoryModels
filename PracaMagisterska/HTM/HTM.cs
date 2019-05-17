@@ -28,7 +28,7 @@ namespace PracaMagisterska.HTM
             rnd = new Random();
         }
 
-        public void initialize_input(List<List<int>> data, int layer, double cell_demage, double compression_factor=1.0)
+        public void initialize_input(List<List<int>> data, int layer, double cell_damage, double compression_factor=1.0)
         {
             // compression_fctor: the ratio of input elements to columns
             this.data = data;
@@ -51,34 +51,34 @@ namespace PracaMagisterska.HTM
 
             this.wire_columns_to_input(input_width, input_length);
 
-            if (cell_demage > 0)
+            if (cell_damage > 0)
             {
-                this.demageCells(cell_demage);
+                this.damageCells(cell_damage);
             }
         }
 
-        public void demageCells(double demage_cells)
+        public void damageCells(double damage_cells)
         {
             int total_cell_num = this.width * this.length * this.cells_per_column - 1;
-            int cell_to_demage = (int)(total_cell_num * demage_cells / 100);
-            List<int> cells_list_to_demage = new List<int>();
+            int cell_to_damage = (int)(total_cell_num * damage_cells / 100);
+            List<int> cells_list_to_damage = new List<int>();
             int index;
-            for (int i = 0; i < cell_to_demage; i++)
+            for (int i = 0; i < cell_to_damage; i++)
             {
                 do
                 {
                     index = this.rnd.Next(0, total_cell_num);
-                } while (cells_list_to_demage.Contains(index));
+                } while (cells_list_to_damage.Contains(index));
                 
-                cells_list_to_demage.Add(index);
+                cells_list_to_damage.Add(index);
             }
 
             int counter = 0;
             foreach( Cell cell in this.get_cells())
             {
-                if (cells_list_to_demage.Contains(counter))
+                if (cells_list_to_damage.Contains(counter))
                 {
-                    cell.demage = true;
+                    cell.damage = true;
                 }
                 counter++;
             }
@@ -136,7 +136,7 @@ namespace PracaMagisterska.HTM
                 this.proxy_cells[i] = new InputCell[input_length];
                 for (int j=0; j < input_length; j++)
                 {
-                    this.proxy_cells[i][j] = new InputCell(i, j, this.data);
+                    this.proxy_cells[i][j] = new InputCell(i, j, this.data[i][j]);
                 }
             }
 
@@ -179,9 +179,23 @@ namespace PracaMagisterska.HTM
             if (new_data.Count == this.data.Count && new_data[0].Count == this.data[0].Count)
             {
                 this.data = new_data;
+                this.update_proxy_data(new_data);
                 return true;
             }
             return false;
+        }
+
+        private void update_proxy_data(List<List<int>> new_data)
+        {
+            int input_width = new_data.Count;
+            int input_length = new_data[0].Count;
+            for (int i = 0; i < input_width; i++)
+            {
+                for (int j = 0; j < input_length; j++)
+                {
+                    this.proxy_cells[i][j].value = new_data[i][j];
+                }
+            }
         }
 
         public int lower_limit(int value)
@@ -228,14 +242,16 @@ namespace PracaMagisterska.HTM
             return active_columns;
         }
 
-        public void execute(bool learning = true)
+        public void execute(bool learning = true, bool check_coding = false)
         {
             foreach(Cell cell in this.get_cells())
-            {
                 cell.clock_tick();
-            }
+
+            foreach (Column col in this.get_columns())
+                col.clock_tick();
+
             SpatialPool spatial_pool = new SpatialPool();
-            spatial_pool.perform(this);
+            spatial_pool.perform(this, learning);
 
             TemporalPool temporal_pool = new TemporalPool(this, learning, this.update_segments);
             UpdateSegments update_segments = temporal_pool.perform();

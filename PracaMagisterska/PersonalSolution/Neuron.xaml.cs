@@ -39,6 +39,7 @@ namespace PracaMagisterska.PersonalSolution
         public bool isFull { get; set; }
         public double minVolumeToOutflow { get; set; }
         public double volumeToOutFlowWhenNeuronFull { get; set; }
+        public bool damage;
 
         // set main neuron paramaters, create dendrite, soma and axon objects
         public Neuron(int dendrideNum)
@@ -50,6 +51,7 @@ namespace PracaMagisterska.PersonalSolution
             this.axDiam = 0.4;
             this.axonLength = 25;
             this.somaDiam = 13.5;
+            this.damage = false;
             
             this.dendrites_list = new List<Dendrite>();
             if (dendrideNum == 0)
@@ -161,8 +163,10 @@ namespace PracaMagisterska.PersonalSolution
         }
 
         // set neuron parameter - update axon, soma, dendrite parameters
-        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon, double axonMaxSpeed)
+        public void SetParameters(List<Tuple<double, double>> dendriteLenAndDiam_List, double somaDiam, double axonDiam, double axonLen, bool blockAxon, double axonMaxSpeed, bool neuron_damage = false)
         {
+            this.damage = neuron_damage;
+
             if (dendriteLenAndDiam_List != null && dendriteLenAndDiam_List.Count() == this.dendrites_list.Count())
             {
                 Console.WriteLine("Change den params");

@@ -37,7 +37,7 @@ namespace PracaMagisterska.HTM
                 bool is_cell_chosen = false;
                 foreach (Cell cell in column.get_cells())
                 {
-                    if (cell.was_predicted && !cell.demage)
+                    if (cell.was_predicted && !cell.damage)
                     {
                         Segment segment = cell.get_active_segment();
                         if (segment != null && segment.distal)
@@ -49,7 +49,10 @@ namespace PracaMagisterska.HTM
                             {
                                 is_cell_chosen = true;
                                 cell.learning = true;
+                                this.update_segments.add(cell, segment, 0); // TODO: Check this. I added this
                             }
+
+                            break;
                         }
                     }
                 }
@@ -115,7 +118,8 @@ namespace PracaMagisterska.HTM
                     {
                         this.adapt_true(states);
                     }
-                    this.update_segments.reset(cell);
+                    if (!cell.predicting)
+                        this.update_segments.reset(cell);
                 }
 
                 else if (!cell.predicting && cell.was_predicted)

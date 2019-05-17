@@ -15,29 +15,40 @@ namespace PracaMagisterska.HTM
         private double permanence;
         public InputCell input_cell;
         public Cell cell;
+        public bool was_firing_with_connection;
+        public bool was_firing_without_connection;
 
         public Synapse(Cell cell = null, InputCell input_cell = null, double permanence=(connected_permanence-0.001))
         {
             this.permanence = permanence;
             this.input_cell = input_cell;
             this.cell = cell;
+            this.was_firing_with_connection = false;
+            this.was_firing_without_connection = false;
         }
 
-        public bool was_firing(bool connection_required = true)
+        public void clock_tick()
         {
-            if (input_cell != null)
-                return this.input_cell.was_active() && (this.connected() || !connection_required);
-            else
-                return this.cell.was_active && (this.connected() || !connection_required);
-
+            was_firing_with_connection = this.is_firing(true);
+            was_firing_without_connection = this.is_firing(false);
         }
+
+
+        //public bool was_firing(bool connection_required = true)
+        //{
+        //    if (input_cell != null)
+        //        return this.input_cell.was_active() && (this.connected() || !connection_required);
+        //    else
+        //        return (this.cell.was_active && !this.cell.damage) && (this.connected() || !connection_required);
+
+        //}
 
         public bool is_firing(bool connection_required = true)
         {
             if (input_cell != null)
-                return this.input_cell.is_active() && ( this.connected() || !connection_required);
+                return this.input_cell.was_active() && ( this.connected() || !connection_required);
             else
-                return (this.cell.active && !this.cell.demage) && ( this.connected() || !connection_required );
+                return (this.cell.active && !this.cell.damage) && ( this.connected() || !connection_required );
         }
 
         public bool connected()
@@ -68,7 +79,7 @@ namespace PracaMagisterska.HTM
             if (time_delta == 0)
                 return this.is_firing(connection_required);
             else if (time_delta == -1)
-                return this.was_firing(connection_required);
+                return connection_required ? this.was_firing_with_connection : this.was_firing_without_connection;
             else
             {
                 Console.WriteLine("Time delta is different than 0 and -1");

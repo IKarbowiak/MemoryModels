@@ -9,11 +9,12 @@ namespace PracaMagisterska.HTM
     public class Segment
     {
         private int synapses_per_segment = HTM_parameters.SYNAPSES_PER_SEGMENT;
-        private double fraction_segment_activation_threshold = HTM_parameters.THRESHOLD_SYNAPSES_PER_SEGMENT / 100;
+        private double fraction_segment_activation_threshold = (double)HTM_parameters.THRESHOLD_SYNAPSES_PER_SEGMENT / 100;
 
         public List<Synapse> synapses;
         public bool distal;
         public bool next_step;
+        public bool was_active;
 
         public Segment(bool distal=true, bool next_step=false)
         {
@@ -21,6 +22,14 @@ namespace PracaMagisterska.HTM
             this.synapses = new List<Synapse>();
             this.distal = distal;
             this.next_step = next_step;
+            this.was_active = false;
+        }
+
+        public void clock_tick()
+        {
+            was_active = this.is_active();
+            foreach (Synapse synapse in this.synapses)
+                synapse.clock_tick();
         }
 
         public void add_synapse(Synapse synapse)
@@ -33,7 +42,7 @@ namespace PracaMagisterska.HTM
             List<Synapse> firing_synapses = new List<Synapse>();
             foreach (Synapse synapse in this.synapses)
             {
-                if (synapse.was_firing(connection_required))
+                if ((connection_required && synapse.was_firing_with_connection) || (!connection_required && synapse.was_firing_without_connection))
                     firing_synapses.Add(synapse);
             }
             return firing_synapses;
@@ -42,7 +51,7 @@ namespace PracaMagisterska.HTM
         public void increase_permanences(double factor)
         {
             foreach (Synapse synapse in this.synapses)
-                synapse.increment_permamence();
+                synapse.increment_permamence(factor);
         }
 
         public List<Synapse> get_connected_synapses()
@@ -56,23 +65,23 @@ namespace PracaMagisterska.HTM
             return connected_synapses;
         }
 
-        public bool was_active()
-        {
-            // True if segment fire - enough synapses fire to reach the activation threshold
-            // synapse is said to be active if the cell it came from was active in the previous step
-            int total = this.synapses.Count();
-            if (total == 0)
-                return false;
+        //public bool was_active()
+        //{
+        //    // True if segment fire - enough synapses fire to reach the activation threshold
+        //    // synapse is said to be active if the cell it came from was active in the previous step
+        //    int total = this.synapses.Count();
+        //    if (total == 0)
+        //        return false;
 
-            List<Synapse> firing_synapses = new List<Synapse>();
-            foreach (Synapse synapse in this.synapses)
-            {
-                if (synapse.was_firing())
-                    firing_synapses.Add(synapse);
-            }
+        //    List<Synapse> firing_synapses = new List<Synapse>();
+        //    foreach (Synapse synapse in this.synapses)
+        //    {
+        //        if (synapse.was_firing())
+        //            firing_synapses.Add(synapse);
+        //    }
 
-            return (firing_synapses.Count() / total) >= fraction_segment_activation_threshold;
-        }
+        //    return (firing_synapses.Count() / total) >= fraction_segment_activation_threshold;
+        //}
 
         public bool was_active_from_learning_cells()
         {
@@ -82,7 +91,7 @@ namespace PracaMagisterska.HTM
             List<Synapse> firing_synapses = new List<Synapse>();
             foreach (Synapse synapse in this.synapses)
             {
-                if (synapse.was_firing() && synapse.was_input_learning())
+                if (synapse.was_firing_with_connection && synapse.was_input_learning())
                     firing_synapses.Add(synapse);
             }
 
@@ -107,12 +116,12 @@ namespace PracaMagisterska.HTM
                     firing_synapses.Add(synapse);
             }
 
-            return (firing_synapses.Count() / total) >= fraction_segment_activation_threshold;
+            return ((double)firing_synapses.Count() / (double)total) >= fraction_segment_activation_threshold;
         }
 
         public void adjust_synapses_amount(HTM htm)
         {
-            // add synapses if not enoygh is active
+            // add synapses if not enough is active
             List<Synapse> synapses = this.old_firing_synapses(false);
             int amount_of_missing_synapses = HTM_parameters.MAX_NEW_SYNAPSES - synapses.Count();
 
